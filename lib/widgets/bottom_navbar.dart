@@ -95,15 +95,15 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
             ),
             label: '',
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage(
-                heartIcon,
-              ),
-              size: 28,
-            ),
-            label: '',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: ImageIcon(
+          //     AssetImage(
+          //       heartIcon,
+          //     ),
+          //     size: 28,
+          //   ),
+          //   label: '',
+          // ),
           BottomNavigationBarItem(
             icon: ImageIcon(
               AssetImage(

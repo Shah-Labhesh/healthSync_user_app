@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_mobile_app/Utils/firebase.dart';
 import 'package:user_mobile_app/Utils/routes.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
@@ -16,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: implement initState
     super.initState();
     changeScreen();
+    FirebaseService.requestPermission();
   }
 
   changeScreen() async {

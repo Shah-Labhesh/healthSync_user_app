@@ -18,6 +18,7 @@ class CustomTextfield extends StatefulWidget {
     this.minLines = 1,
     this.maxLines = 1,
     this.readOnly = false,
+    this.initialValue,
     this.controller,
     this.onChanged,
     this.validator,
@@ -33,6 +34,7 @@ class CustomTextfield extends StatefulWidget {
   final int? minLines;
   final int? maxLines;
   final bool readOnly;
+  final String? initialValue;
   bool obscure;
   final TextEditingController? controller;
   final Function(String)? onChanged;
@@ -78,6 +80,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
             controller: widget.controller,
             onChanged: widget.onChanged,
             validator: widget.validator,
+            initialValue: widget.initialValue,
             focusNode: widget.focusNode,
             style: TextStyle(
               fontFamily: GoogleFonts.montserrat().fontFamily,

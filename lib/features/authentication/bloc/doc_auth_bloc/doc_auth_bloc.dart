@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
+import 'package:user_mobile_app/features/authentication/data/model/Specialities.dart';
 import 'package:user_mobile_app/features/authentication/data/repo/auth_repo.dart';
 
 import 'doc_auth_event.dart';
@@ -15,12 +16,13 @@ class DocRegisterBloc extends Bloc<DocAuthEvent, DocAuthState> {
     emit(DocRegisterLoading());
     Response response;
     try {
-      response = await AuthRepo().doctorRegister(data: event.credentials);
+      response = await AuthRepo().userRegister(data: event.credentials);
       print(response);
       if (response.statusCode == 201) {
         emit(DocRegisterSuccess(id: response.data['id']));
       }
     } catch (e) {
+      print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -61,7 +63,6 @@ class DocAddressBloc extends Bloc<DocAddressEvent, DocAddressState> {
     try {
       response = await AuthRepo()
           .uploadAddress(id: event.doctorId, data: event.address);
-      print(response);
       if (response.statusCode == 201) {
         emit(DocAddressSuccess());
       }
@@ -97,6 +98,7 @@ class DocAddressBloc extends Bloc<DocAddressEvent, DocAddressState> {
 
 class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
   DocDetailsBloc() : super(DocDetailsInitial()) {
+    on<FetchSpecialitiesEvent>((event, emit) => fetchSpeciality(emit, event));
     on<AddDocDetailsEvent>((event, emit) => uploadAddress(emit, event));
   }
 
@@ -134,6 +136,51 @@ class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
         }
       } else {
         emit(DocDetailsFailure(
+            message: 'Connection timed out. Please try again later'));
+      }
+    }
+  }
+
+  fetchSpeciality(
+      Emitter<DocDetailsState> emit, FetchSpecialitiesEvent event) async {
+    emit(SpecialitiesLoading());
+    Response response;
+    try {
+      response = await AuthRepo().fetchSpecialities();
+      print(response);
+      if (response.statusCode == 200) {
+        emit(FetchSpecialitiesSuccess(
+          specialities: (response.data as List)
+              .map((e) => Specialities.fromMap(e))
+              .toList(),
+        ));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(FetchSpecialitiesFailure(
+                message: "Connection timed out. Please try again later"));
+          } else if (statusCode! >= 500 || statusCode >= 401) {
+            emit(FetchSpecialitiesFailure(
+                message: 'Something went wrong. Please try again later'));
+          } else {
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(FetchSpecialitiesFailure(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(FetchSpecialitiesFailure(
+                  message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(FetchSpecialitiesFailure(
+              message: 'Connection timed out. Please try again later'));
+        }
+      } else {
+        emit(FetchSpecialitiesFailure(
             message: 'Connection timed out. Please try again later'));
       }
     }

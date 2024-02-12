@@ -72,6 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
     Map<String, dynamic> data = {
       "name": name,
       "email": email,
+      "role": "USER",
       "password": password,
     };
     BlocProvider.of<UserRegisterBloc>(context)

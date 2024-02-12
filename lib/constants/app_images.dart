@@ -8,4 +8,10 @@ class AppImages{
   static const String doctor1 = 'assets/images/doc1_image.png';
   static const String doctor2 = 'assets/images/doc2_image.png';
   static const String user1 = 'assets/images/user1_image.png';
+  static const String medicalRecordImage = 'assets/images/medical_records.png';
+  static const String noSlotsImage = 'assets/images/no_slots_image.png';
+  static const String noPrescriptionImage = 'assets/images/no_prescription_image.png';
+  static const String esewaImage = 'assets/images/esewa_image.png';
+  static const String khaltiImage = 'assets/images/khalti_image.png';
+  static const String fonepayImage = 'assets/images/fonepay_image.png';
 }

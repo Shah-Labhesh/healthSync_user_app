@@ -1,41 +1,80 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/string_extension.dart';
+
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
+import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
+import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
+import 'package:user_mobile_app/features/appointment/screens/call_screen.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class AppointmentWidget extends StatelessWidget {
-  const AppointmentWidget({super.key});
+  AppointmentWidget({
+    Key? key,
+    required this.appointment,
+  }) : super(key: key);
+
+  final Appointment appointment;
+
+  Map<int, String> month = {
+    1: 'Jan',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Apr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Aug',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dec'
+  };
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      height: 150,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
           horizontal: PaddingManager.paddingMedium,
-          vertical: PaddingManager.paddingSmall),
+          vertical: PaddingManager.paddingMedium),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(10),
         color: const Color(0xff007BFF),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.asset(
-                  AppImages.doctor2,
-                  height: 65,
-                  width: 65,
-                  fit: BoxFit.cover,
-                ),
+                child: appointment.doctor!.avatar != null
+                    ? CachedNetworkImage(
+                        height: 65,
+                        width: 65,
+                        imageUrl: BASE_URL + appointment.doctor!.avatar!,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(Icons.error),
+                        ),
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        AppImages.defaultAvatar,
+                        fit: BoxFit.cover,
+                        height: 65,
+                        width: 65,
+                      ),
               ),
               const SizedBox(
                 width: PaddingManager.paddingMedium2,
@@ -44,7 +83,7 @@ class AppointmentWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Prof. Dr. Logan Mason",
+                    "Dr. ${appointment.doctor!.name}",
                     style: TextStyle(
                       fontSize: FontSizeManager.f16,
                       fontWeight: FontWeightManager.semiBold,
@@ -53,7 +92,7 @@ class AppointmentWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Dentist",
+                    appointment.doctor!.speciality ?? '-',
                     style: TextStyle(
                       fontSize: FontSizeManager.f14,
                       fontWeight: FontWeightManager.medium,
@@ -63,27 +102,59 @@ class AppointmentWidget extends StatelessWidget {
                   ),
                 ],
               ),
+              ZegoSendCallInvitationButton(
+                isVideoCall: true,
+                resourceID:
+                    "health_sync_zego", //You need to use the resourceID that you created in the subsequent steps. Please continue reading this document.
+                invitees: [
+                  ZegoUIKitUser(
+                    id: appointment.doctor!.id!,
+                    name: appointment.doctor!.name!,
+                  ),
+                  // ...
+                  // ZegoUIKitUser(
+                  //    id: targetUserID,
+                  //    name: targetUserName,
+                  // )
+                ],
+              ),
               const Spacer(),
-              Container(
-                height: 55,
-                width: 55,
-                decoration: BoxDecoration(
-                  color: blue900,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: const Center(
-                  child: ImageIcon(
-                    AssetImage(
-                      videoIcon,
+              GestureDetector(
+                onTap: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => CallScreen(
+                  //         callID: appointment.id!,
+                  //         userId: appointment.user!.id!,
+                  //         userName: appointment.user!.name!,
+                  //       ),
+                  //     ),
+                  //   );
+                },
+                child: Container(
+                  height: 55,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    color: blue900,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Center(
+                    child: ImageIcon(
+                      AssetImage(
+                        videoIcon,
+                      ),
+                      size: 28,
+                      color: gray50,
                     ),
-                    size: 28,
-                    color: gray50,
                   ),
                 ),
               ),
             ],
           ),
-          Spacer(),
+          const SizedBox(
+            height: PaddingManager.paddingMedium,
+          ),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
@@ -107,7 +178,7 @@ class AppointmentWidget extends StatelessWidget {
                   width: 12,
                 ),
                 Text(
-                  "June 12, 2023",
+                  appointment.slot!.slotDateTime!.splitDate(),
                   style: textTheme.bodyMedium!.copyWith(
                     fontSize: FontSizeManager.f16,
                     color: gray100,
@@ -127,7 +198,7 @@ class AppointmentWidget extends StatelessWidget {
                   width: WidthManager.w12,
                 ),
                 Text(
-                  "10:00 AM",
+                  appointment.slot!.slotDateTime!.splitTime(),
                   style: textTheme.bodyMedium!.copyWith(
                     fontSize: FontSizeManager.f16,
                     color: gray100,

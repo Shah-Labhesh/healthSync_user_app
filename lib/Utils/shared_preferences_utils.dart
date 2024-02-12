@@ -38,4 +38,34 @@ class SharedUtils{
     String role = prefs.getString('role') ?? "";
     return role;
   }
+
+
+  // authType
+  static Future<void> setAuthType(String authType) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('authType', authType);
+  }
+
+  // get authType from shared preferences
+  static Future<String> getAuthType() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authType = prefs.getString('authType') ?? "";
+    return authType;
+  }
+
+  static Future<void> addSearchHistory(String search) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> searchHistory = prefs.getStringList('searchHistory') ?? [];
+    if (searchHistory.contains(search)) {
+      searchHistory.remove(search);
+    }
+    searchHistory.insert(0, search);
+    await prefs.setStringList('searchHistory', searchHistory);
+  }
+
+  static Future<List<String>> getSearchHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> searchHistory = prefs.getStringList('searchHistory') ?? [];
+    return searchHistory;
+  }
 }

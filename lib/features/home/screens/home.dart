@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(),
     MyAppointmentScreen(),
     const MyChatRoomScreen(),
-    const MyFavoriteScreen(),
+    //  MyFavoriteScreen(),
     AccountScreen(),
   ];
   bool isLoggedIn = false;
@@ -56,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return false;
       },
       child: Scaffold(
+        
         extendBody: true,
         body: SafeArea(
           bottom: false,

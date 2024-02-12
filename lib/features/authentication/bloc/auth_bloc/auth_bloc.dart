@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:user_mobile_app/Utils/firebase.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/features/authentication/bloc/auth_bloc/auth_event.dart';
 import 'package:user_mobile_app/features/authentication/bloc/auth_bloc/auth_state.dart';
@@ -8,6 +12,7 @@ import 'package:user_mobile_app/features/authentication/data/repo/auth_repo.dart
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(AuthInitial()) {
     on<RequestLoginEvent>((event, emit) => login(emit, event));
+    on<RequestGoogleLoginEvent>((event, emit) => googleLogin(emit, event));
   }
 
   login(Emitter<LoginState> emit, RequestLoginEvent event) async {
@@ -17,9 +22,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       response = await AuthRepo().login(data: event.credentials);
 
       if (response.statusCode == 201) {
-          emit(LoginSucess(data: {'role' : response.data["role"]}));
+        final firebaseResponse = await AuthRepo().postFirebaseToken(
+            token: response.data["token"],
+            firebaseToken: await FirebaseService.getToken());
+        if (firebaseResponse.statusCode == 201) {
+          emit(LoginSucess(data: {'role': response.data["role"]}));
           SharedUtils.setToken(response.data["token"]);
           SharedUtils.setRole(response.data["role"]);
+          SharedUtils.setAuthType(response.data["authType"]);
+        } else {
+          emit(LoginFailed(
+              message: 'Something went wrong. Please try again later'));
+        }
       }
     } catch (e) {
       if (e is DioException) {
@@ -33,14 +47,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(LoginFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"][0].toLowerCase().contains('verify your email')) {
-              emit(UserNotVerified(data: {"email" : event.credentials["email"], "password" : event.credentials["password"]}));
+            if (e.response?.data["message"][0]
+                .toLowerCase()
+                .contains('verify your email')) {
+              emit(UserNotVerified(data: {
+                "email": event.credentials["email"],
+                "password": event.credentials["password"]
+              }));
               print("verify your email");
-            } 
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
+            }
+
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
               emit(LoginFailed(message: e.response?.data["message"][0]));
-            }else {
+            } else {
               emit(LoginFailed(message: e.response?.data["message"]));
             }
           }
@@ -48,14 +68,61 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           emit(LoginFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
+        emit(LoginFailed(
+            message: 'Connection timed out. Please try again later'));
+      }
+    }
+  }
+
+  void googleLogin(
+      Emitter<LoginState> emit, RequestGoogleLoginEvent event) async {
+    emit(AuthLoading());
+    Response response;
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) {
+      emit(LoginFailed(message: "Google Sign In Failed"));
+      return;
+    }
+    try {
+      response = await AuthRepo()
+          .googleLogin(name: googleUser.displayName!, email: googleUser.email);
+
+      if (response.statusCode == 201) {
+        emit(LoginSucess(data: {'role': response.data["role"]}));
+        SharedUtils.setToken(response.data["token"]);
+        SharedUtils.setRole(response.data["role"]);
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+
+          if (statusCode == 522) {
+            emit(LoginFailed(
+                message: "Connection timed out. Please try again later"));
+          } else if (statusCode! >= 500 || statusCode >= 401) {
+            emit(LoginFailed(
+                message: 'Something went wrong. Please try again later'));
+          } else {
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(LoginFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(LoginFailed(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(LoginFailed(
+              message: 'Connection timed out. Please try again later'));
+        }
+      } else {
         emit(LoginFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
 }
-
 
 class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
   UserRegisterBloc() : super(UserRegisterInitial()) {
@@ -69,7 +136,10 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
       response = await AuthRepo().userRegister(data: event.userInfo);
 
       if (response.statusCode == 201) {
-       emit(RegistrationCompleted(data: {"message":"Registration Successful. Please verify your email while logging in."}));
+        emit(RegistrationCompleted(data: {
+          "message":
+              "Registration Successful. Please verify your email while logging in."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -82,9 +152,8 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
             emit(RegistrationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
               emit(RegistrationFailed(message: e.response?.data["message"][0]));
             } else {
               emit(RegistrationFailed(message: e.response?.data["message"]));
@@ -94,30 +163,35 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
           emit(RegistrationFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(RegistrationFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
-
 }
 
-class EmailVerificationBloc extends Bloc<EmailVerificationEvent, EmailVerificationState> {
+class EmailVerificationBloc
+    extends Bloc<EmailVerificationEvent, EmailVerificationState> {
   EmailVerificationBloc() : super(EmailVerificationInitial()) {
     on<InitiateEmailVerificationEvent>((event, emit) => sentOtp(emit, event));
     on<ResendEmailVerificationEvent>((event, emit) => resendOtp(emit, event));
     on<VerifyEmailEvent>((event, emit) => verify(emit, event));
   }
 
-  sentOtp(Emitter<EmailVerificationState> emit, InitiateEmailVerificationEvent event) async {
+  sentOtp(Emitter<EmailVerificationState> emit,
+      InitiateEmailVerificationEvent event) async {
     emit(EmailVerificationLoading());
     Response response;
     try {
-      response = await AuthRepo().initiateEmailVerificaation(email: event.email);
+      response =
+          await AuthRepo().initiateEmailVerificaation(email: event.email);
 
       if (response.statusCode == 201) {
-       emit(EmailVerificationInitiated(data: {"message":"Email Verification Otp sent. Please check your email for the verification code."}));
+        emit(EmailVerificationInitiated(data: {
+          "message":
+              "Email Verification Otp sent. Please check your email for the verification code."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -130,33 +204,38 @@ class EmailVerificationBloc extends Bloc<EmailVerificationEvent, EmailVerificati
             emit(EmailVerificationInitiationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(EmailVerificationInitiationFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(EmailVerificationInitiationFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(EmailVerificationInitiationFailed(message: e.response?.data["message"]));
+              emit(EmailVerificationInitiationFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(EmailVerificationInitiationFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(EmailVerificationInitiationFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
 
-  resendOtp(Emitter<EmailVerificationState> emit, ResendEmailVerificationEvent event) async {
+  resendOtp(Emitter<EmailVerificationState> emit,
+      ResendEmailVerificationEvent event) async {
     emit(EmailVerificationLoading());
     Response response;
     try {
       response = await AuthRepo().resendEmailVerification(email: event.email);
 
       if (response.statusCode == 201) {
-       emit(EmailVerificationResent(data: {"message":"Email Verification Otp sent. Please check your email for the verification code."}));
+        emit(EmailVerificationResent(data: {
+          "message":
+              "Email Verification Otp sent. Please check your email for the verification code."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -169,19 +248,20 @@ class EmailVerificationBloc extends Bloc<EmailVerificationEvent, EmailVerificati
             emit(EmailVerificationResendFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(EmailVerificationResendFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(EmailVerificationResendFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(EmailVerificationResendFailed(message: e.response?.data["message"]));
+              emit(EmailVerificationResendFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(EmailVerificationResendFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(EmailVerificationResendFailed(
             message: 'Connection timed out. Please try again later'));
       }
@@ -195,7 +275,9 @@ class EmailVerificationBloc extends Bloc<EmailVerificationEvent, EmailVerificati
       response = await AuthRepo().verifyEmail(data: event.credentials);
 
       if (response.statusCode == 201) {
-       emit(EmailVerificationCompleted(data: {"message":"Email Verification Successful. Please login to continue."}));
+        emit(EmailVerificationCompleted(data: {
+          "message": "Email Verification Successful. Please login to continue."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -208,26 +290,26 @@ class EmailVerificationBloc extends Bloc<EmailVerificationEvent, EmailVerificati
             emit(EmailVerificationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(EmailVerificationFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(EmailVerificationFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(EmailVerificationFailed(message: e.response?.data["message"]));
+              emit(EmailVerificationFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(EmailVerificationFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(EmailVerificationFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
 }
-
 
 class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
   PasswordResetBloc() : super(PasswordResetInitial()) {
@@ -237,14 +319,18 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
     on<VerifyPasswordEvent>((event, emit) => verify(emit, event));
   }
 
-  sendOtp(Emitter<PasswordResetState> emit, RequestForgotPasswordEvent event) async {
+  sendOtp(Emitter<PasswordResetState> emit,
+      RequestForgotPasswordEvent event) async {
     emit(PasswordInitiateLoading());
     Response response;
     try {
       response = await AuthRepo().forgotPassword(email: event.email);
 
       if (response.statusCode == 201) {
-       emit(PasswordInitiated(data: {"message":"Email Verification Otp sent. Please check your email for the verification code."}));
+        emit(PasswordInitiated(data: {
+          "message":
+              "Email Verification Otp sent. Please check your email for the verification code."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -257,33 +343,38 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordInitiationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(PasswordInitiationFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(PasswordInitiationFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(PasswordInitiationFailed(message: e.response?.data["message"]));
+              emit(PasswordInitiationFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(PasswordInitiationFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(PasswordInitiationFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
 
-  resendOtp(Emitter<PasswordResetState> emit, ResendPasswordResetEvent event) async {
+  resendOtp(
+      Emitter<PasswordResetState> emit, ResendPasswordResetEvent event) async {
     emit(PasswordResendOtpLoading());
     Response response;
     try {
       response = await AuthRepo().resendPasswordReset(email: event.email);
 
       if (response.statusCode == 201) {
-       emit(PasswordResetOtpResent(data: {"message":"Email Verification Otp sent. Please check your email for the verification code."}));
+        emit(PasswordResetOtpResent(data: {
+          "message":
+              "Email Verification Otp sent. Please check your email for the verification code."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -296,19 +387,20 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordResetOtpResendFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(PasswordResetOtpResendFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(PasswordResetOtpResendFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(PasswordResetOtpResendFailed(message: e.response?.data["message"]));
+              emit(PasswordResetOtpResendFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(PasswordResetOtpResendFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(PasswordResetOtpResendFailed(
             message: 'Connection timed out. Please try again later'));
       }
@@ -322,7 +414,9 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
       response = await AuthRepo().resetPassword(data: event.credentials);
 
       if (response.statusCode == 201) {
-       emit(PasswordResetCompleted(data: {"message":"OTP verified successfully. Please enter your new password."}));
+        emit(PasswordResetCompleted(data: {
+          "message": "Password reset successful. Please login to continue."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -335,10 +429,10 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordResetFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(PasswordResetFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(
+                  PasswordResetFailed(message: e.response?.data["message"][0]));
             } else {
               emit(PasswordResetFailed(message: e.response?.data["message"]));
             }
@@ -347,12 +441,13 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
           emit(PasswordResetFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(PasswordResetFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
+
   verify(Emitter<PasswordResetState> emit, VerifyPasswordEvent event) async {
     emit(VerifyPasswordLoading());
     Response response;
@@ -360,7 +455,10 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
       response = await AuthRepo().verifyPassword(data: event.credentials);
 
       if (response.statusCode == 201) {
-       emit(PasswordVerified( data: {"message":"Password reset successful. Please login to continue."}));
+        emit(PasswordVerified(data: {
+          "message":
+              "OTP verified successfully. Please enter your new password."
+        }));
       }
     } catch (e) {
       if (e is DioException) {
@@ -373,25 +471,23 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordVerificationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-           
-           
-            if (e.response?.data["message"].runtimeType != e.response?.data["message"]) {
-              emit(PasswordVerificationFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType !=
+                e.response?.data["message"]) {
+              emit(PasswordVerificationFailed(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(PasswordVerificationFailed(message: e.response?.data["message"]));
+              emit(PasswordVerificationFailed(
+                  message: e.response?.data["message"]));
             }
           }
         } else {
           emit(PasswordVerificationFailed(
               message: 'Connection timed out. Please try again later'));
         }
-      }else{
+      } else {
         emit(PasswordVerificationFailed(
             message: 'Connection timed out. Please try again later'));
       }
     }
   }
 }
-
-
-

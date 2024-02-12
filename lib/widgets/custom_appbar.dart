@@ -7,6 +7,7 @@ class AppBarCustomWithSceenTitle extends StatelessWidget {
   const AppBarCustomWithSceenTitle({
     super.key,
     required this.title,
+    this.onPop,
     this.isBackButton = true,
     this.action = const SizedBox(),
   });
@@ -14,6 +15,7 @@ class AppBarCustomWithSceenTitle extends StatelessWidget {
   final String title;
   final bool? isBackButton;
   final Widget? action;
+  final Function()? onPop;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class AppBarCustomWithSceenTitle extends StatelessWidget {
       centerTitle: true,
       elevation: 0,
       leading: GestureDetector(
-        onTap: () {
+        onTap: onPop ?? () {
           Navigator.pop(context);
         },
         child: Visibility(
@@ -47,7 +49,7 @@ class AppBarCustomWithSceenTitle extends StatelessWidget {
       actions: [
         action!,
         const SizedBox(
-          width: WidthManager.w5,
+          width: WidthManager.w15,
         ),
       ],
     );

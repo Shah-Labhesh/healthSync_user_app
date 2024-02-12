@@ -1,4 +1,5 @@
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
+import 'package:user_mobile_app/features/authentication/data/model/Specialities.dart';
 
 abstract class DocAuthState {}
 
@@ -45,6 +46,20 @@ class DocDetailsFailure extends DocDetailsState {
   final String message;
 
   DocDetailsFailure({required this.message});
+}
+
+class SpecialitiesLoading extends DocDetailsState {}
+
+class FetchSpecialitiesSuccess extends DocDetailsState {
+  final List<Specialities> specialities;
+
+  FetchSpecialitiesSuccess({required this.specialities});
+}
+
+class FetchSpecialitiesFailure extends DocDetailsState {
+  final String message;
+
+  FetchSpecialitiesFailure({required this.message});
 }
 
 abstract class MoreDocDetailsState {}

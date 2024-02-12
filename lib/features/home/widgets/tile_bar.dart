@@ -21,7 +21,6 @@ class TileBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-
       padding: EdgeInsets.symmetric(vertical: padding ?? 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,

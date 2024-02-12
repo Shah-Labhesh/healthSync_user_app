@@ -63,9 +63,14 @@ class _SuggestionFieldState extends State<SuggestionField> {
           counterText: "",
           hintText: widget.title,
           hintStyle: const TextStyle(
-              color: gray500, fontSize: 14, fontWeight: FontWeight.w400),
+            color: gray500,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
+
+      
       itemBuilder: widget.itemBuilder,
       onSuggestionSelected: widget.onSuggestionSelected,
       errorBuilder: (context, error) {

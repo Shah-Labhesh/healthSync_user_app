@@ -10,7 +10,6 @@ class RegisterDoctorEvent extends DocAuthEvent {
   RegisterDoctorEvent({required this.credentials});
 }
 
-
 abstract class DocAddressEvent {}
 
 class AddAddressEvent extends DocAddressEvent {
@@ -35,6 +34,8 @@ class AddDocDetailsEvent extends DocDetailsEvent {
   });
 }
 
+class FetchSpecialitiesEvent extends DocDetailsEvent {}
+
 abstract class MoreDocDetailsEvent {}
 
 class AddMoreDocDetailsEvent extends MoreDocDetailsEvent {
@@ -46,6 +47,7 @@ class AddMoreDocDetailsEvent extends MoreDocDetailsEvent {
     required this.details,
   });
 }
+
 class GetDocQualificationEvent extends MoreDocDetailsEvent {
   final String doctorId;
 
@@ -53,6 +55,7 @@ class GetDocQualificationEvent extends MoreDocDetailsEvent {
     required this.doctorId,
   });
 }
+
 class AddDocQualificationEvent extends MoreDocDetailsEvent {
   final String doctorId;
   final FormData qualification;

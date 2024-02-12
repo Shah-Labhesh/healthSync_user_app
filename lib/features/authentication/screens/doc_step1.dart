@@ -43,6 +43,7 @@ class _DocStep1State extends State<DocStep1> {
     context.read<DocRegisterBloc>().add(RegisterDoctorEvent(credentials: {
           "name": name,
           "email": email,
+          "role": "DOCTOR",
           "password": password,
         }));
   }

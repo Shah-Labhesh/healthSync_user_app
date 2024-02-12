@@ -1,7 +1,9 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/routes.dart';
@@ -36,6 +38,17 @@ class _LoginPageState extends State<LoginPage> {
         RequestLoginEvent(credentials: {'email': email, 'password': password}));
   }
 
+  // firebase auth
+  firebaseAuth() async {
+    try {
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+      if (gUser == null) return null;
+
+      print(gUser.email);
+      print (gUser.displayName);
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -62,16 +75,11 @@ class _LoginPageState extends State<LoginPage> {
         }
         if (state is LoginSucess) {
           String? route = Routes.afterLoginRoutes[state.data['role']];
-          showDialog(
-            context: context,
-            useSafeArea: true,
-            builder: (context) {
-              return Utils.successDialog(
-                  context, "You have successfully logged in",
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, route!));
-            },
-          );
+          if (route != null) {
+            Utils.showSnackBar(context, 'You have successfully logged in',
+                isSuccess: true);
+            Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+          }
         }
         if (state is UserNotVerified) {
           Navigator.pushNamed(context, 'email_verification', arguments: {
@@ -269,24 +277,31 @@ class _LoginPageState extends State<LoginPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                color: gray100,
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.4),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                    offset: const Offset(
-                                        0, 0.5), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Image.asset(
-                                googleIcon,
+                            InkWell(
+                              onTap: () {
+                                context
+                                    .read<LoginBloc>()
+                                    .add(RequestGoogleLoginEvent());
+                              },
+                              child: Container(
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  color: gray100,
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.4),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: const Offset(
+                                          0, 0.5), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Image.asset(
+                                  googleIcon,
+                                ),
                               ),
                             ),
                             Container(

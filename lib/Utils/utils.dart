@@ -209,22 +209,19 @@ class Utils {
             ),
           ),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              primary: red600,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 20)),
-          onPressed:onPressed,
+        TextButton(
+          onPressed: onPressed,
           child: Text(
-            'Logout',
+            'Log Out',
             style: TextStyle(
-              color: gray50,
+              color: red600,
               fontSize: FontSizeManager.f14,
               fontWeight: FontWeightManager.regular,
               fontFamily: GoogleFonts.inter().fontFamily,
             ),
           ),
         ),
+       
       ],
     );
   }

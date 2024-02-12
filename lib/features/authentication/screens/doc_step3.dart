@@ -17,10 +17,10 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_bloc.dart';
 import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_event.dart';
 import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_state.dart';
+import 'package:user_mobile_app/features/authentication/data/model/Specialities.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
 import 'package:user_mobile_app/widgets/custom_textfield.dart';
 import 'package:http_parser/http_parser.dart';
-
 
 class DocStep3 extends StatefulWidget {
   const DocStep3({super.key});
@@ -32,14 +32,24 @@ class DocStep3 extends StatefulWidget {
 class _DocStep3State extends State<DocStep3> {
   final _formKey = GlobalKey<FormState>();
 
-  final _specialityController = TextEditingController();
   final _feeController = TextEditingController();
   final _experienceController = TextEditingController();
-  FocusNode? _specialityFocusNode;
   FocusNode? _feeFocusNode;
   FocusNode? _experienceFocusNode;
 
   File? image;
+
+  List<Specialities> specialities = [];
+  int? selectedIndex;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _feeFocusNode = FocusNode();
+    _experienceFocusNode = FocusNode();
+    context.read<DocDetailsBloc>().add(FetchSpecialitiesEvent());
+  }
 
   Widget showImageDialog(BuildContext context) {
     return SimpleDialog(
@@ -80,10 +90,17 @@ class _DocStep3State extends State<DocStep3> {
         if (state is DocDetailsFailure) {
           Utils.showSnackBar(context, state.message, isSuccess: false);
         }
+        if (state is FetchSpecialitiesSuccess) {
+          specialities = state.specialities;
+          setState(() {});
+        }
+        if (state is FetchSpecialitiesFailure) {
+          Utils.showSnackBar(context, state.message, isSuccess: false);
+        }
         if (state is DocDetailsSuccess) {
           Utils.showSnackBar(context, 'Details uploaded successfully.',
               isSuccess: true);
-          Navigator.pushNamed(context, 'doc_step4',arguments: args);
+          Navigator.pushNamed(context, 'doc_step4', arguments: args);
         }
       },
       builder: (context, state) {
@@ -217,18 +234,87 @@ class _DocStep3State extends State<DocStep3> {
                         const SizedBox(
                           height: HeightManager.h18,
                         ),
-                        CustomTextfield(
-                          label: "Speciality",
-                          hintText: "Dentist",
-                          controller: _specialityController,
-                          focusNode: _specialityFocusNode,
-                          textInputType: TextInputType.name,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter your speciality";
-                            }
-                            return null;
-                          },
+                        const SizedBox(
+                          height: HeightManager.h18,
+                        ),
+                        Text(
+                          "Specialities",
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.montserrat().fontFamily,
+                            fontSize: FontSizeManager.f16,
+                            fontWeight: FontWeightManager.semiBold,
+                            color: gray900,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h12,
+                        ),
+                        if (state is SpecialitiesLoading)
+                          Center(
+                            child: LoadingAnimationWidget.threeArchedCircle(
+                              color: blue900,
+                              size: 40,
+                            ),
+                          ),
+                        if (specialities.isNotEmpty)
+                          SizedBox(
+                            width: double.infinity,
+                            child: Wrap(
+                              // alignment: WrapAlignment.spaceBetween,
+                              runSpacing: 12,
+                              spacing: 19,
+                              children: List.generate(
+                                specialities.length,
+                                (index) => InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedIndex = index;
+                                      });
+                                      
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                        horizontal: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: selectedIndex != index
+                                            ? gray50
+                                            : blue900,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(5),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        specialities[index].name!,
+                                        style: TextStyle(
+                                          fontFamily: GoogleFonts.montserrat()
+                                              .fontFamily,
+                                          fontSize: FontSizeManager.f14,
+                                          fontWeight: FontWeightManager.medium,
+                                          color: selectedIndex == index
+                                              ? gray50
+                                              : gray800,
+                                        ),
+                                      ),
+                                    )),
+                              ),
+                            ),
+                          )
+                        else
+                          Center(
+                            child: Text(
+                              "No Specialities Found",
+                              style: TextStyle(
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
+                                fontSize: FontSizeManager.f14,
+                                fontWeight: FontWeightManager.regular,
+                                color: gray500,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(
+                          height: HeightManager.h18,
                         ),
                         CustomTextfield(
                           label: "Fee/Appointment",
@@ -273,6 +359,12 @@ class _DocStep3State extends State<DocStep3> {
                         CustomButtom(
                           title: "Next",
                           onPressed: () async {
+                            if (selectedIndex == null) {
+                              Utils.showSnackBar(
+                                  context, 'Please select speciality',
+                                  isSuccess: false);
+                              return;
+                            }
                             if (_formKey.currentState!.validate() &&
                                 image != null &&
                                 args != null) {
@@ -282,7 +374,7 @@ class _DocStep3State extends State<DocStep3> {
                                       doctorId: args,
                                       details: FormData.fromMap({
                                         'speciality':
-                                            _specialityController.text,
+                                            specialities[selectedIndex!].id!,
                                         'fee': _feeController.text,
                                         'experience':
                                             _experienceController.text,

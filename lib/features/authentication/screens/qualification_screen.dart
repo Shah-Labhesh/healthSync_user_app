@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -208,20 +209,6 @@ class _QualificationScreenState extends State<QualificationScreen> {
                         suffixPressed: () async {
                           DateTime? date = await showDatePicker(
                             context: context,
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData.light().copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary: blue900,
-                                    onPrimary: white,
-                                    surface: blue900,
-                                    onSurface: blue900,
-                                  ),
-                                  dialogBackgroundColor: white,
-                                ),
-                                child: child!,
-                              );
-                            },
                             initialDate: DateTime.now(),
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
@@ -326,12 +313,12 @@ class _QualificationScreenState extends State<QualificationScreen> {
                           width: double.infinity,
                           height: 240,
                           decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: _certificate != null
-                                    ? FileImage(_certificate!) as ImageProvider
-                                    : NetworkImage(AppUrls.getFiles(
-                                        path: args['qualification']['image'])),
-                                fit: BoxFit.cover),
+                            // image: DecorationImage(
+                            //     image: _certificate != null
+                            //         ? FileImage(_certificate!) as ImageProvider
+                            //         : NetworkImage(AppUrls.getFiles(
+                            //             path: args['qualification']['image'])),
+                            //     fit: BoxFit.cover),
                             border: Border.all(
                               color: gray200,
                               width: 2,
@@ -341,6 +328,9 @@ class _QualificationScreenState extends State<QualificationScreen> {
                               4,
                             ),
                           ),
+                          child: _certificate != null?
+                          Image.file(_certificate!, fit: BoxFit.cover,):
+                          CachedNetworkImage(imageUrl: BASE_URL + args['qualification']['image'], fit: BoxFit.cover,)
                         ),
                         const SizedBox(
                           height: 20,
