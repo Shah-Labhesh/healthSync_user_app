@@ -37,12 +37,8 @@ class _MyQualificationScreenState extends State<MyQualificationScreen> {
             child: AppBarCustomWithSceenTitle(title: 'My Qualification')),
         body: BlocConsumer<QualificationBloc, QualificationState>(
           listener: (context, state) {
-            // TODO: implement listener
             if (state is TokenExpired) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'login_screen', (route) => false);
-              Utils.showSnackBar(context, 'Token Expired Please Login Again',
-                  isSuccess: false);
+              Utils.handleTokenExpired(context);
             }
             if (state is QualificationSuccess) {
               qualifications = state.qualifications;
@@ -88,39 +84,46 @@ class _MyQualificationScreenState extends State<MyQualificationScreen> {
                           QualificationTile(
                             qualification: qualification,
                             onEditTap: () {
-                              Navigator.pushNamed(
-                                  context, 'auth_qualification_screen',
-                                  arguments: {
-                                    'qualification': {
-                                      'id': qualification.id,
-                                      'title': qualification.title,
-                                      'institute': qualification.institute,
-                                      'passOutYear': qualification.passOutYear,
-                                      'image': qualification.image,
-                                    },
-                                  }).then((value) {
-                                if (value != null) {
-                                  qualifications.removeWhere((element) =>
-                                      element.id == qualification.id);
-                                  qualifications.add(value as DocQualification);
-                                  setState(() {});
-                                }
-                              });
+                              if (Utils.checkInternetConnection(context)) {
+                                Navigator.pushNamed(
+                                    context, 'auth_qualification_screen',
+                                    arguments: {
+                                      'qualification': {
+                                        'id': qualification.id,
+                                        'title': qualification.title,
+                                        'institute': qualification.institute,
+                                        'passOutYear':
+                                            qualification.passOutYear,
+                                        'image': qualification.image,
+                                      },
+                                    }).then((value) {
+                                  if (value != null) {
+                                    qualifications.removeWhere((element) =>
+                                        element.id == qualification.id);
+                                    qualifications
+                                        .add(value as DocQualification);
+                                    setState(() {});
+                                  }
+                                });
+                              }
                             },
                             onDeleteTap: () {
-                              final bloc =
-                                  BlocProvider.of<QualificationBloc>(context);
-                              showDialog(
-                                context: context,
-                                builder: (context) => DeleteQualificationDialog(
-                                  id: qualification.id!,
-                                  onDeleteTap: () {
-                                    bloc.add(DeleteQualification(
-                                        id: qualification.id!));
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              );
+                              if (Utils.checkInternetConnection(context)) {
+                                final bloc =
+                                    BlocProvider.of<QualificationBloc>(context);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      DeleteQualificationDialog(
+                                    id: qualification.id!,
+                                    onDeleteTap: () {
+                                      bloc.add(DeleteQualification(
+                                          id: qualification.id!));
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                );
+                              }
                             },
                           ),
                     ],
@@ -140,8 +143,11 @@ class _MyQualificationScreenState extends State<MyQualificationScreen> {
               }
             });
           },
-          child: const Icon(Icons.add, color: white),
           backgroundColor: blue900,
+          child: const Icon(
+            Icons.add,
+            color: white,
+          ),
         ));
   }
 }

@@ -21,18 +21,26 @@ class AboutUsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.symmetric(
+              horizontal: PaddingManager.paddingMedium2,
+              vertical: PaddingManager.paddingMedium2),
           child: Column(
             children: [
-              Image.asset(APP_LOGO, height: 100, width: 100),
-              const SizedBox(height: 20),
+              Image.asset(
+                APP_LOGO,
+                height: HeightManager.h100,
+                width: HeightManager.h100,
+              ),
+              const SizedBox(
+                height: HeightManager.h20,
+              ),
               RichText(
                   text: TextSpan(
                 children: [
                   TextSpan(
                     text: 'Health',
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: FontSizeManager.f38,
                       fontWeight: FontWeightManager.regular,
                       fontFamily: GoogleFonts.rochester().fontFamily,
                       color: green800,
@@ -41,7 +49,7 @@ class AboutUsScreen extends StatelessWidget {
                   TextSpan(
                     text: 'Sync',
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: FontSizeManager.f38,
                       fontWeight: FontWeightManager.regular,
                       fontFamily: GoogleFonts.rochester().fontFamily,
                       color: blue800,
@@ -49,11 +57,13 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                 ],
               )),
-              const SizedBox(height: 20),
+              const SizedBox(
+                height: HeightManager.h20,
+              ),
               Text(
                 'Health Sync is a platform that connects patients with doctors and pharmacies. It is a one-stop solution for all your healthcare needs. We are a team of highly motivated individuals who are working towards making healthcare accessible to all.',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: FontSizeManager.f16,
                   fontFamily: GoogleFonts.lato().fontFamily,
                   color: gray700,
                   fontWeight: FontWeightManager.semiBold,
@@ -61,13 +71,15 @@ class AboutUsScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(
+                height: HeightManager.h20,
+              ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -75,66 +87,66 @@ class AboutUsScreen extends StatelessWidget {
             Text(
               'Version 1.0.0',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: FontSizeManager.f18,
                 fontWeight: FontWeightManager.medium,
                 color: gray600,
                 fontFamily: GoogleFonts.poppins().fontFamily,
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 36),
+            const SizedBox(height: HeightManager.h36),
             Text(
               'Developed by',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: FontSizeManager.f18,
                 fontWeight: FontWeightManager.medium,
                 color: red400,
                 fontFamily: GoogleFonts.poppins().fontFamily,
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: HeightManager.h5),
             Text(
               '- Mr. Shah Labhesh',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: FontSizeManager.f18,
                 fontWeight: FontWeightManager.bold,
                 color: gray800,
                 fontFamily: GoogleFonts.poppins().fontFamily,
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: HeightManager.h20),
             Text(
               'Get in touch with me',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: FontSizeManager.f14,
                 fontWeight: FontWeightManager.regular,
                 color: gray400,
                 fontFamily: GoogleFonts.poppins().fontFamily,
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: HeightManager.h8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   githubIcon,
-                  width: 40,
-                  height: 40,
+                  width: WidthManager.w40,
+                  height: HeightManager.h40,
                 ),
-                const SizedBox(width: 19),
+                const SizedBox(width: WidthManager.w19),
                 Image.asset(
                   instagramIcon,
-                  width: 40,
-                  height: 40,
+                  width: WidthManager.w40,
+                  height: HeightManager.h40,
                 ),
-                const SizedBox(width: 19),
+                const SizedBox(width: WidthManager.w19),
                 Image.asset(
                   linkedinIcon,
-                  width: 60,
-                  height: 15,
+                  width: WidthManager.w60,
+                  height: HeightManager.h15,
                 ),
               ],
             )

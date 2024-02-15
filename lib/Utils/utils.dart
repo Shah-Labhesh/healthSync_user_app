@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/network/bloc/network_bloc.dart';
 
 class Utils {
-  
- static showSnackBar(BuildContext context, dynamic message,
+  static showSnackBar(BuildContext context, dynamic message,
       {bool isSuccess = true, int durationForDisplay = 3}) {
     String formattedMessage = '';
     if (message is List<dynamic>) {
@@ -37,9 +38,22 @@ class Utils {
     );
   }
 
+  static handleTokenExpired(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(
+        context, 'login_screen', (route) => false);
+    showSnackBar(context, 'Token Expired Please Login Again', isSuccess: false);
+  }
 
-  static Widget successDialog(
-      BuildContext context,  String message,
+  static bool checkInternetConnection(BuildContext context) {
+    final bloc = BlocProvider.of<NetworkBloc>(context).state;
+    if (bloc is NetworkSuccess) {
+      return true;
+    }
+    showSnackBar(context, 'No Internet Connection', isSuccess: false);
+    return false;
+  }
+
+  static Widget successDialog(BuildContext context, String message,
       {Function()? onPressed}) {
     return SimpleDialog(
       shape: ShapeBorder.lerp(
@@ -105,8 +119,8 @@ class Utils {
       ],
     );
   }
-  static Widget errorDialog(
-      BuildContext context,  String message,
+
+  static Widget errorDialog(BuildContext context, String message,
       {Function()? onPressed}) {
     return SimpleDialog(
       shape: ShapeBorder.lerp(
@@ -173,7 +187,6 @@ class Utils {
     );
   }
 
-
   logoutDialog(BuildContext context, Function()? onPressed) {
     return AlertDialog(
       title: Text(
@@ -221,7 +234,6 @@ class Utils {
             ),
           ),
         ),
-       
       ],
     );
   }

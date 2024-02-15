@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
-import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 
 class CallScreen extends StatelessWidget {
@@ -38,13 +37,5 @@ class CallScreen extends StatelessWidget {
     );
   }
 
-  void onCallInit(){
-    ZegoUIKitPrebuiltCallInvitationService().init(
-    appID: 1498060823 /*input your AppID*/,
-    appSign: "1a5f7c2f4c255c95156d3f86b4cba674d29af22966031f4650024f82f92247c4" /*input your AppSign*/,
-    userID: userId,
-    userName: userName,
-    plugins: [ZegoUIKitSignalingPlugin()],
-  );
-  }
+  
 }

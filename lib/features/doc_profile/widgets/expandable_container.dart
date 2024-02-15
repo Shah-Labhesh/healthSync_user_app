@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class ExpandableContainer extends StatelessWidget {
   const ExpandableContainer({
@@ -23,14 +24,14 @@ class ExpandableContainer extends StatelessWidget {
           fadeCurve: Curves.easeInOutCubic,
           iconColor: gray50,
           iconPadding: EdgeInsets.only(
-            top: 12,
-            right: 10,
+            top: PaddingManager.p12,
+            right: PaddingManager.p10,
           ),
           iconSize: 30,
           iconPlacement: ExpandablePanelIconPlacement.right,
         ),
         header: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: PaddingManager.p10, vertical: PaddingManager.p10),
           child: Text(
             title,
             style: TextStyle(
@@ -41,7 +42,7 @@ class ExpandableContainer extends StatelessWidget {
             ),
           ),
         ),
-        collapsed: SizedBox(),
+        collapsed: const SizedBox(),
         expanded: child);
   }
 }

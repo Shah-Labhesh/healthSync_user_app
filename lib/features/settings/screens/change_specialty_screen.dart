@@ -27,7 +27,6 @@ class _ChangeSpecialtyScreenState extends State<ChangeSpecialtyScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<UpdateProfileBloc>().add(FetchSpecialitiesEvent());
   }
@@ -44,12 +43,8 @@ class _ChangeSpecialtyScreenState extends State<ChangeSpecialtyScreen> {
       ),
       body: BlocConsumer<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
-          // TODO: implement listener
           if (state is TokenExpired) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, 'login_screen', (route) => false);
-            Utils.showSnackBar(context, 'Token Expired Please Login Again',
-                isSuccess: false);
+            Utils.handleTokenExpired(context);
           }
 
           if (state is FetchSpecialitiesSuccess) {
@@ -116,8 +111,8 @@ class _ChangeSpecialtyScreenState extends State<ChangeSpecialtyScreen> {
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 10,
+                                    vertical: PaddingManager.p12,
+                                    horizontal: PaddingManager.p10,
                                   ),
                                   decoration: BoxDecoration(
                                     color: selectedIndex != index
@@ -167,12 +162,13 @@ class _ChangeSpecialtyScreenState extends State<ChangeSpecialtyScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 20,
+          horizontal: PaddingManager.paddingMedium2,
+          vertical: PaddingManager.paddingMedium2,
         ),
         child: CustomButtom(
             title: 'Update',
             onPressed: () {
+              if (Utils.checkInternetConnection(context) == false) return;
               if (selectedIndex != null) {
                 context.read<UpdateProfileBloc>().add(
                       UpdateSpecialitiesEvent(

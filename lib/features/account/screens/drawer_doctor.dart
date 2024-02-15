@@ -9,6 +9,7 @@ import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/account/widgets/tile_bar.dart';
 
@@ -26,12 +27,12 @@ class DoctorDrawer extends StatelessWidget {
         color: blue900,
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
-            horizontal: 30,
+            horizontal: PaddingManager.paddingLitteLarge,
           ),
           child: Column(
             children: [
               const SizedBox(
-                height: 80,
+                height: HeightManager.h80,
               ),
               Row(
                 children: [
@@ -54,14 +55,14 @@ class DoctorDrawer extends StatelessWidget {
                                 Icons.error,
                               ),
                             ),
-                            height: 50,
-                            width: 50,
+                            height: HeightManager.h50,
+                            width: WidthManager.w50,
                             fit: BoxFit.cover,
                           )
                         : Image.asset(
                             AppImages.defaultAvatar,
-                            height: 50,
-                            width: 50,
+                            height: HeightManager.h50,
+                            width: WidthManager.w50,
                             fit: BoxFit.cover,
                           ),
                   ),
@@ -81,7 +82,7 @@ class DoctorDrawer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 5,
+                        height: HeightManager.h5,
                       ),
                       SizedBox(
                         width: width * 0.6,
@@ -93,7 +94,7 @@ class DoctorDrawer extends StatelessWidget {
                               size: 16,
                             ),
                             const SizedBox(
-                              width: 5,
+                              width: WidthManager.w5,
                             ),
                             Flexible(
                               child: Text(
@@ -111,7 +112,7 @@ class DoctorDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   GestureDetector(
                     onTap: () {
                       Scaffold.of(context).openEndDrawer();
@@ -125,13 +126,13 @@ class DoctorDrawer extends StatelessWidget {
                 ],
               ),
               const SizedBox(
-                height: 40,
+                height: HeightManager.h40,
               ),
               TileBarWidget(
                 icon: dashBoardIcon,
                 title: 'Dashboard',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'doctor_home_screen');
                 },
@@ -140,7 +141,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: appointmentIcon,
                 title: 'My Appointments',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(
                       context, 'my_appointment_screen');
@@ -150,7 +151,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: recordIcon,
                 title: 'Medical Records',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(
                       context, 'medical_record_screen');
@@ -160,7 +161,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: paymentIcon,
                 title: 'Payments',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'payment_screen');
                 },
@@ -169,7 +170,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: prescriptionIcon,
                 title: 'Prescriptions',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(
                       context, 'prescription_screen');
@@ -179,7 +180,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: mySlotIcon,
                 title: 'My Slots',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'my_slots_screen');
                 },
@@ -188,7 +189,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: messageIcon,
                 title: 'Messages',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'chat_room_screen');
                 },
@@ -197,7 +198,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: policyIcon,
                 title: 'Privacy & Policy',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(
                       context, 'privacy_policy_screen');
@@ -207,7 +208,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: queryIcon,
                 title: 'Contact Support',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'contact_support');
                 },
@@ -216,7 +217,7 @@ class DoctorDrawer extends StatelessWidget {
                 icon: settingsIcon,
                 title: 'Settings',
                 color: gray50,
-                gap: 20,
+                gap: HeightManager.h20,
                 onPressed: () {
                   Navigator.pushNamed(context, 'settings_screen',
                       arguments: doctor);

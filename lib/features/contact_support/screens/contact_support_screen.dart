@@ -6,6 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/contact_support/bloc/contact_bloc/contact_bloc.dart';
 import 'package:user_mobile_app/features/contact_support/bloc/contact_bloc/contact_event.dart';
 import 'package:user_mobile_app/features/contact_support/bloc/contact_bloc/contact_state.dart';
@@ -25,16 +26,23 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
   final queriesController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  void perform() {
+    if (Utils.checkInternetConnection(context)) {
+      context.read<ContactBloc>().add(
+            ContactFormSubmitted(
+              email: emailController.text,
+              message: queriesController.text,
+            ),
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ContactBloc, ContactState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          Utils.showSnackBar(context, 'Token Expired Please login again',
-              isSuccess: false);
+          Utils.handleTokenExpired(context);
         }
         if (state is ContactSuccess) {
           Navigator.pop(context);
@@ -61,8 +69,8 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
             ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.paddingMedium2,
               ),
               child: Form(
                 key: _formKey,
@@ -108,19 +116,14 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
             ),
             bottomNavigationBar: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.paddingMedium2,
               ),
               child: CustomButtom(
                 title: 'Submit',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    context.read<ContactBloc>().add(
-                          ContactFormSubmitted(
-                            email: emailController.text,
-                            message: queriesController.text,
-                          ),
-                        );
+                    perform();
                   }
                 },
               ),

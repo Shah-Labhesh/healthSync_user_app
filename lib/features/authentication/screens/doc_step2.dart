@@ -28,7 +28,6 @@ class _DocStep2State extends State<DocStep2> {
     TextTheme textTheme = theme.textTheme;
     return BlocConsumer<DocAddressBloc, DocAddressState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is DocAddressSuccess) {
           Utils.showSnackBar(context, 'Address uploaded successfully.',
               isSuccess: true);
@@ -69,7 +68,7 @@ class _DocStep2State extends State<DocStep2> {
                             color: gray900,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         RichText(
                           text: TextSpan(
                             children: [
@@ -143,10 +142,25 @@ class _DocStep2State extends State<DocStep2> {
                     CustomButtom(
                         title: "Select Location",
                         onPressed: () {
-                          Navigator.pushNamed(context, 'map_screen')
-                              .then((value) => {if (value != null || args == null || args.isEmpty) {
-                                context.read<DocAddressBloc>().add(AddAddressEvent(doctorId: args!,  address: value as Map<String, dynamic>))
-                              }});
+                          if (args == null || args.isEmpty) {
+                            Utils.showSnackBar(context,
+                                'Please fill the previous steps first.',
+                                isSuccess: false);
+                            return;
+                          }
+                          if (Utils.checkInternetConnection(context)) {
+                            Navigator.pushNamed(context, 'map_screen')
+                                .then((value) => {
+                                      if (value != null || args.isEmpty)
+                                        {
+                                          context.read<DocAddressBloc>().add(
+                                              AddAddressEvent(
+                                                  doctorId: args,
+                                                  address: value
+                                                      as Map<String, dynamic>))
+                                        }
+                                    });
+                          }
                         }),
                     const SizedBox(
                       height: HeightManager.h50,

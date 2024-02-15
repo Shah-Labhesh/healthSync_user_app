@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class ImagePreviewScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class ImagePreviewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(73.0),
+        preferredSize: const Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: title,
           isBackButton: true,

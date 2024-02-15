@@ -5,16 +5,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/bloc/book_appointment_bloc/book_appointment_bloc.dart';
 import 'package:user_mobile_app/features/appointment/bloc/book_appointment_bloc/book_appointment_event.dart';
 import 'package:user_mobile_app/features/appointment/bloc/book_appointment_bloc/book_appointment_state.dart';
 import 'package:user_mobile_app/features/appointment/data/model/book_appointment.dart';
+import 'package:user_mobile_app/features/appointment/widgets/appointment_type_widget.dart';
+import 'package:user_mobile_app/features/appointment/widgets/date_slot_widget.dart';
+import 'package:user_mobile_app/features/appointment/widgets/slot_time_widget.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
 import 'package:user_mobile_app/features/slots/data/model/slot.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -31,34 +34,29 @@ class BookAppointmentScreen extends StatefulWidget {
 List<Slots> slots = [];
 
 class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
-  // void _selectSlot(int index) {
-  //   setState(() {
-  //     slots.forEach((element) => element.isSelected = false);
-  //     slots[index].isSelected = true;
-  //   });
-  // }
+  
 
   String giveSelectedDate() {
     String date = '';
-    dates.forEach((element) {
+    for (var element in dates) {
       if (element == selectedDate) {
         date = element;
       }
-    });
+    }
     return date;
   }
 
-  void mapSlotsAccordingToDate() {
-    groupedAppointments.forEach((date, slots) {
-      print('Date: $date');
-      if (!dates.contains(date)) {
-        dates.add(date);
-      }
-      slots.forEach((slot) {
-        print('  Slot: ${slot.slotDateTime!}');
-      });
-    });
-  }
+  // void mapSlotsAccordingToDate() {
+  //   groupedAppointments.forEach((date, slots) {
+  //     print('Date: $date');
+  //     if (!dates.contains(date)) {
+  //       dates.add(date);
+  //     }
+  //     for (var slot in slots) {
+  //       print('  Slot: ${slot.slotDateTime!}');
+  //     }
+  //   });
+  // }
 
   int countOfAvailableSlots(List<Slots> slots) {
     int count = 0;
@@ -110,12 +108,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as User;
     return BlocConsumer<BookAppointmentBloc, BookAppointmentState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          Utils.showSnackBar(context, 'Token Expired please login again',
-              isSuccess: false);
+          Utils.handleTokenExpired(context);
         }
       },
       builder: (context, state) {
@@ -128,7 +122,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         if (state is FetchSlotsSuccess) {
           slots = state.slots;
           groupedAppointments = groupByDate(slots);
-          mapSlotsAccordingToDate();
+          // mapSlotsAccordingToDate();
           dates.sort((a, b) => a.compareTo(b));
         }
         return LoadingOverlay(
@@ -143,7 +137,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
             ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -153,7 +147,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       doctor: args,
                       onNavigate: () {},
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: HeightManager.h20),
                     if (state is FetchSlotsFailure)
                       Center(
                         child: Text(
@@ -181,7 +175,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                             for (String date in dates) ...[
                               InkWell(
                                 onTap: () {
-                                  // _selectSlot(slots.indexOf(slot));
                                   setState(() {
                                     selectedDate = date;
                                   });
@@ -202,13 +195,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                       : 0,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: WidthManager.w10),
                             ],
-                            const SizedBox(width: 10),
+                            const SizedBox(width: WidthManager.w10),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: HeightManager.h20),
                       if (selectedDate == null)
                         const Center(
                           child: Text(
@@ -228,9 +221,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: HeightManager.h20),
                         SingleChildScrollView(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           child: Row(children: [
                             for (Slots slot
@@ -258,7 +251,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                         ),
                       ],
                     ],
-                    const SizedBox(height: 20),
+                    const SizedBox(height: HeightManager.h20),
                     Text(
                       'Appointment Type',
                       style: TextStyle(
@@ -269,9 +262,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: HeightManager.h20),
                     SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
@@ -287,23 +280,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                 isSelected: type == selectedAppointmentTypes,
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: WidthManager.w10),
                           ]
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: HeightManager.h20),
                     CustomTextfield(
                       label: 'Note',
                       hintText: 'Enter your note here',
                       minLines: 5,
                       controller: _noteController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your note';
-                        }
-                        return null;
-                      },
                       maxLines: 8,
                     ),
                     CustomButtom(
@@ -331,17 +318,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                             );
                             Navigator.pushNamed(context, 'book_summary',
                                 arguments: appointment);
-                            // context
-                            //     .read<BookAppointmentBloc>()
-                            //     .add(BookAppointment(
-                            //       appointmentData: {
-                            //         'doctorId': args.id,
-                            //         'appointmentType': appointmentTypeMap[
-                            //             selectedAppointmentTypes],
-                            //         'slotId': seletedSlot.slotId,
-                            //         'notes': _noteController.text,
-                            //       },
-                            //     ));
+                            
                           }
                         }),
                   ],
@@ -351,144 +328,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class AppointmentTypeWidget extends StatelessWidget {
-  const AppointmentTypeWidget({
-    super.key,
-    required this.title,
-    required this.isSelected,
-  });
-
-  final String title;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: isSelected ? blue800 : white,
-        border: Border.all(
-          color: isSelected ? blue800 : gray300,
-        ),
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: FontSizeManager.f16,
-          fontWeight: FontWeightManager.semiBold,
-          color: isSelected ? gray50 : blue800,
-          fontFamily: GoogleFonts.rubik().fontFamily,
-        ),
-      ),
-    );
-  }
-}
-
-class SlotTimeWidget extends StatelessWidget {
-  const SlotTimeWidget({
-    super.key,
-    required this.slot,
-    required this.isSelected,
-  });
-
-  final Slots slot;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: slot.isBooked!
-              ? gray300
-              : isSelected
-                  ? blue800
-                  : gray300,
-        ),
-        color: slot.isBooked!
-            ? gray100
-            : isSelected
-                ? blue800
-                : white,
-      ),
-      child: Text(
-        slot.slotDateTime!.splitTime().toUpperCase(),
-        style: TextStyle(
-          fontSize: FontSizeManager.f16,
-          fontWeight: FontWeightManager.semiBold,
-          color: slot.isBooked!
-              ? blue800
-              : isSelected
-                  ? white
-                  : blue800,
-          fontFamily: GoogleFonts.rubik().fontFamily,
-        ),
-      ),
-    );
-  }
-}
-
-class DateSlotWidget extends StatelessWidget {
-  const DateSlotWidget({
-    Key? key,
-    required this.maintextColor,
-    required this.subtextColor,
-    required this.borderColor,
-    required this.backgroundColor,
-    required this.date,
-    required this.slots,
-  }) : super(key: key);
-
-  final Color maintextColor;
-  final Color subtextColor;
-  final Color borderColor;
-  final Color backgroundColor;
-  final String date;
-  final int slots;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border.all(
-          color: borderColor,
-        ),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Column(
-        children: [
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: FontSizeManager.f16,
-              fontWeight: FontWeightManager.semiBold,
-              color: maintextColor,
-              fontFamily: GoogleFonts.rubik().fontFamily,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${slots > 0 ? slots : 'No'} slots available',
-            style: TextStyle(
-              fontSize: FontSizeManager.f14,
-              fontWeight: FontWeightManager.light,
-              color: subtextColor,
-              fontFamily: GoogleFonts.rubik().fontFamily,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

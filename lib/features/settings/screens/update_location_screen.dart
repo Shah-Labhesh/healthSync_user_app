@@ -66,8 +66,8 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
       newLatlng = LatLng(locations[0].latitude, locations[0].longitude);
       _markers.clear();
     } on Exception catch (e) {
-      // TODO
-      print(e);
+      print(e.toString());
+      Utils.showSnackBar(context, 'Location not found', isSuccess: false);
     }
   }
 
@@ -81,7 +81,6 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCurrentLocation();
   }
@@ -121,9 +120,10 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
         return Future.value(false);
       },
       child: Scaffold(
-        appBar: PreferredSize(preferredSize: Size.fromHeight(
-          HeightManager.h73,
-        ), child: AppBarCustomWithSceenTitle(title: 'Update Location')),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(HeightManager.h73),
+          child: AppBarCustomWithSceenTitle(title: 'Update Location'),
+        ),
         body: Stack(
           children: [
             GoogleMap(
@@ -154,9 +154,9 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
               alignment: Alignment.topCenter,
               child: Container(
                 margin: const EdgeInsets.only(
-                  top: 20,
-                  left: 20,
-                  right: 20,
+                  top: PaddingManager.paddingMedium2,
+                  left: PaddingManager.paddingMedium2,
+                  right: PaddingManager.paddingMedium2,
                 ),
                 child: SuggestionField(
                   title: 'Search Location',
@@ -181,12 +181,18 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 margin: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 20,
+                  vertical: PaddingManager.paddingMedium2,
+                  horizontal: PaddingManager.paddingMedium2,
                 ),
                 child: CustomButtom(
                   title: 'Update',
                   onPressed: () async {
+                    if (selectedLatlng == null) {
+                      Utils.showSnackBar(context, 'Please select a location',
+                          isSuccess: false);
+                      return;
+                    }
+                    if (Utils.checkInternetConnection(context) == false) return;
                     if (selectedLatlng != null) {
                       Navigator.pop(context, {
                         'latitude': selectedLatlng!.latitude,

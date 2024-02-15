@@ -37,14 +37,17 @@ class MyAppointmentBloc extends Bloc<MyAppointmentEvent, MyAppointmentState> {
               emit(MyAppointmentLoadFailed(message: e.response?.data["message"]));
             }
           } else {
-            emit(MyAppointmentLoadFailed(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(MyAppointmentLoadFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(MyAppointmentLoadFailed(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(MyAppointmentLoadFailed(
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e);
         emit(MyAppointmentLoadFailed(
             message: 'Connection timed out. Please try again later'));
       }

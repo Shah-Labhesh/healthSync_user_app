@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:user_mobile_app/features/account/screens/account_screen.dart';
 import 'package:user_mobile_app/features/appointment/screens/appointment_list_screen.dart';
 import 'package:user_mobile_app/features/chats/screens/chat_room_screen.dart';
-import 'package:user_mobile_app/features/favorite/screens/favorite_screen.dart';
 import 'package:user_mobile_app/features/home/screens/home_content.dart';
 import 'package:user_mobile_app/widgets/bottom_navbar.dart';
 
@@ -25,11 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   static final List<Widget> _widgetOptions = <Widget>[
-    HomeContent(),
-    MyAppointmentScreen(),
+    const HomeContent(),
+    const MyAppointmentScreen(),
     const MyChatRoomScreen(),
-    //  MyFavoriteScreen(),
-    AccountScreen(),
+    const AccountScreen(),
   ];
   bool isLoggedIn = false;
 

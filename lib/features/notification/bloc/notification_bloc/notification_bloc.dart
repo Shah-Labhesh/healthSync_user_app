@@ -33,7 +33,11 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(NotificationError(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(NotificationError(message: e.response?.data["message"][0]));
+            } else {
+              emit(NotificationError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(NotificationError(message: e.response?.data["message"][0]));
@@ -72,7 +76,11 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(CountError(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(CountError(message: e.response?.data["message"][0]));
+            } else {
+              emit(CountError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(CountError(message: e.response?.data["message"][0]));
@@ -111,7 +119,11 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(MarkReadFailed(message: e.response?.data["message"][0]));
+             if (e.response?.data["message"].runtimeType != String) {
+              emit(MarkReadFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(MarkReadFailed(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(MarkReadFailed(message: e.response?.data["message"][0]));

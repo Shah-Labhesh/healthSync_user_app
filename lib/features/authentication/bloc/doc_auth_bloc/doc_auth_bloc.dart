@@ -17,12 +17,13 @@ class DocRegisterBloc extends Bloc<DocAuthEvent, DocAuthState> {
     Response response;
     try {
       response = await AuthRepo().userRegister(data: event.credentials);
-      print(response);
       if (response.statusCode == 201) {
         emit(DocRegisterSuccess(id: response.data['id']));
+      } else {
+        emit(DocRegisterFailure(
+            message: 'Something went wrong. Please try again later'));
       }
     } catch (e) {
-      print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -34,7 +35,7 @@ class DocRegisterBloc extends Bloc<DocAuthEvent, DocAuthState> {
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(DocRegisterFailure(message: e.response?.data["message"][0]));
             } else {
               emit(DocRegisterFailure(message: e.response?.data["message"]));
@@ -66,6 +67,9 @@ class DocAddressBloc extends Bloc<DocAddressEvent, DocAddressState> {
       if (response.statusCode == 201) {
         emit(DocAddressSuccess());
       }
+      else{
+        emit(DocAddressFailure(message: 'Something went wrong. Please try again later'));
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
@@ -78,7 +82,7 @@ class DocAddressBloc extends Bloc<DocAddressEvent, DocAddressState> {
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(DocAddressFailure(message: e.response?.data["message"][0]));
             } else {
               emit(DocAddressFailure(message: e.response?.data["message"]));
@@ -108,9 +112,11 @@ class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
     try {
       response = await AuthRepo()
           .uploadDetails(id: event.doctorId, data: event.details);
-      print(response);
       if (response.statusCode == 201) {
         emit(DocDetailsSuccess());
+      }
+      else {
+        emit(DocDetailsFailure(message: 'Something went wrong. Please try again later'));
       }
     } catch (e) {
       if (e is DioException) {
@@ -124,7 +130,7 @@ class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(DocDetailsFailure(message: e.response?.data["message"][0]));
             } else {
               emit(DocDetailsFailure(message: e.response?.data["message"]));
@@ -147,13 +153,14 @@ class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
     Response response;
     try {
       response = await AuthRepo().fetchSpecialities();
-      print(response);
       if (response.statusCode == 200) {
         emit(FetchSpecialitiesSuccess(
           specialities: (response.data as List)
               .map((e) => Specialities.fromMap(e))
               .toList(),
         ));
+      } else{
+        emit(FetchSpecialitiesFailure(message: 'Something went wrong. Please try again later'));
       }
     } catch (e) {
       if (e is DioException) {
@@ -167,7 +174,7 @@ class DocDetailsBloc extends Bloc<DocDetailsEvent, DocDetailsState> {
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(FetchSpecialitiesFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -211,10 +218,12 @@ class MoreDocDetailsBloc
       if (response.statusCode == 201) {
         emit(MoreDocDetailsSuccess());
       }
+      else{
+        emit(MoreDocDetailsFailure(message: 'Something went wrong. Please try again later'));
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
-          print(e.response!.data);
           final statusCode = e.response!.statusCode;
           if (statusCode == 522) {
             emit(MoreDocDetailsFailure(
@@ -224,7 +233,7 @@ class MoreDocDetailsBloc
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(MoreDocDetailsFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -247,20 +256,17 @@ class MoreDocDetailsBloc
     emit(MoreDocDetailsLoading());
     Response response;
     try {
-      print('try');
-
       response = await AuthRepo()
           .addQualification(id: event.doctorId, data: event.qualification);
       if (response.statusCode == 201) {
-        print(response.data["id"]);
         emit(AddDocQualificationSuccess(qualificationId: response.data["id"]));
       }
+      else{
+        emit(AddDocQualificationFailure(message: 'Something went wrong. Please try again later'));
+      }
     } catch (e) {
-      print(e.toString());
-
       if (e is DioException) {
         if (e.response != null) {
-          print(e.response!.data);
           final statusCode = e.response!.statusCode;
           if (statusCode == 522) {
             emit(AddDocQualificationFailure(
@@ -270,7 +276,7 @@ class MoreDocDetailsBloc
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(AddDocQualificationFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -300,11 +306,12 @@ class MoreDocDetailsBloc
           qualificationId: event.qualificationId);
       if (response.statusCode == 200) {
         emit(EditDocQualificationSuccess());
+      }else{
+        emit(EditDocQualificationFailure(message: 'Something went wrong. Please try again later'));
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
-          print(e.response!.data);
           final statusCode = e.response!.statusCode;
           if (statusCode == 522) {
             emit(EditDocQualificationFailure(
@@ -314,7 +321,7 @@ class MoreDocDetailsBloc
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(EditDocQualificationFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -343,10 +350,12 @@ class MoreDocDetailsBloc
       if (response.statusCode == 200) {
         emit(DeleteDocQualificationSuccess());
       }
+      else{
+        emit(DeleteDocQualificationFailure(message: 'Something went wrong. Please try again later'));
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
-          print(e.response!.data);
           final statusCode = e.response!.statusCode;
           if (statusCode == 522) {
             emit(DeleteDocQualificationFailure(
@@ -356,7 +365,7 @@ class MoreDocDetailsBloc
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(DeleteDocQualificationFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -390,10 +399,12 @@ class MoreDocDetailsBloc
           ),
         );
       }
+      else{
+        emit(GetDocQualificationFailure(message: 'Something went wrong. Please try again later'));
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
-          print(e.response!.data);
           final statusCode = e.response!.statusCode;
           if (statusCode == 522) {
             emit(GetDocQualificationFailure(
@@ -403,7 +414,7 @@ class MoreDocDetailsBloc
                 message: 'Something went wrong. Please try again later'));
           } else {
             if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+                String) {
               emit(GetDocQualificationFailure(
                   message: e.response?.data["message"][0]));
             } else {
@@ -416,7 +427,6 @@ class MoreDocDetailsBloc
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e.toString());
         emit(GetDocQualificationFailure(
             message: 'Connection timed out. Please try again later'));
       }

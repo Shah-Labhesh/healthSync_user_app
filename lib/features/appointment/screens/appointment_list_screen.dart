@@ -13,6 +13,7 @@ import 'package:user_mobile_app/features/appointment/bloc/my_appointment_bloc/my
 import 'package:user_mobile_app/features/appointment/bloc/my_appointment_bloc/my_appointment_state.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
 import 'package:user_mobile_app/features/appointment/widgets/appointment_container.dart';
+import 'package:user_mobile_app/features/appointment/widgets/no_appointment_widget.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/widgets/appbar.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -34,7 +35,6 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initializeRole();
   }
@@ -44,12 +44,18 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
     setState(() {});
   }
 
+  void fetchData() {
+    if (Utils.checkInternetConnection(context)) {
+      context.read<MyAppointmentBloc>().add(FetchMyAppointmentEvent());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
         await Future.delayed(const Duration(seconds: 1));
-        context.read<MyAppointmentBloc>().add(FetchMyAppointmentEvent());
+        fetchData();
       },
       child: Scaffold(
         appBar: doctor
@@ -60,13 +66,8 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
             : null,
         body: BlocConsumer<MyAppointmentBloc, MyAppointmentState>(
           listener: (context, state) {
-            // TODO: implement listener
             if (state is TokenExpired) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'login_screen', (route) => false);
-
-              Utils.showSnackBar(context, 'Token Expired Please Login Again',
-                  isSuccess: false);
+              Utils.handleTokenExpired(context);
             }
           },
           builder: (context, state) {
@@ -95,7 +96,7 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
             return SafeArea(
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: PaddingManager.paddingMedium2,
                   vertical: PaddingManager.paddingSmall,
                 ),
@@ -104,14 +105,14 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
                     if (!doctor) ...[
                       BlocProvider(
                         create: (context) => NotificationBloc(),
-                        child: CustomAppBar(
+                        child: const CustomAppBar(
                           title: 'My Appointments',
                           notification: true,
                           isBackButton: false,
                         ),
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: HeightManager.h20,
                       ),
                     ],
                     DefaultTabController(
@@ -127,7 +128,6 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
                           letterSpacing: 0.5,
                         ),
                         onTap: (value) {
-                          print(value);
                           setState(() {
                             _selectedIndex = value;
                           });
@@ -146,17 +146,23 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
                       height: 20,
                     ),
                     if (_selectedIndex == 0)
-                      for (Appointment appointment in upcomingAppointments)
-                        AppointmentTile(
-                          doctor: doctor,
-                          appointment: appointment,
-                        )
+                      if (upcomingAppointments.isEmpty)
+                        const NoAppointmentWidget()
+                      else
+                        for (Appointment appointment in upcomingAppointments)
+                          AppointmentTile(
+                            doctor: doctor,
+                            appointment: appointment,
+                          )
                     else if (_selectedIndex == 1)
-                      for (Appointment appointment in completedAppointments)
-                        AppointmentTile(
-                          doctor: doctor,
-                          appointment: appointment,
-                        )
+                      if (completedAppointments.isEmpty)
+                        const NoAppointmentWidget()
+                      else
+                        for (Appointment appointment in completedAppointments)
+                          AppointmentTile(
+                            doctor: doctor,
+                            appointment: appointment,
+                          )
                   ],
                 ),
               ),

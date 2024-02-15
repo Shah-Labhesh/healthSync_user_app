@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_string.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(70),
+        preferredSize: Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: 'Privacy Policy',
           isBackButton: true,
@@ -25,8 +26,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 8,
+          horizontal: PaddingManager.paddingMedium2,
+          vertical: PaddingManager.p8,
         ),
         child: Column(
           children: [
@@ -40,7 +41,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: HeightManager.h20,
             ),
             Text(
               AppStrings.privacyPolicyParagraph2,
@@ -52,7 +53,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: HeightManager.h20,
             ),
             Text(
               AppStrings.privacyPolicyParagraph3,
@@ -64,7 +65,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: HeightManager.h20,
             ),
             Text(
               AppStrings.privacyPolicyParagraph4,
@@ -76,7 +77,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: HeightManager.h20,
             ),
           ],
         ),

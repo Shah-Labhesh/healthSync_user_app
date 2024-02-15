@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class TileWithIcon extends StatelessWidget {
   const TileWithIcon({
@@ -25,11 +26,11 @@ class TileWithIcon extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 12,
+              horizontal: PaddingManager.p10,
+              vertical: PaddingManager.p12,
             ),
-            height: 50,
-            width: 50,
+            height: HeightManager.h50,
+            width: HeightManager.h50,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
@@ -41,7 +42,7 @@ class TileWithIcon extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            width: 6,
+            width: WidthManager.w6,
           ),
           Text(
             text,

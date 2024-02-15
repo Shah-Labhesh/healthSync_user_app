@@ -35,7 +35,11 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(PatientListError(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(PatientListError(message: e.response?.data["message"][0]));
+            } else {
+              emit(PatientListError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(PatientListError(message: e.response?.data["message"][0]));
@@ -76,7 +80,11 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(PrescriptionError(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(PrescriptionError(message: e.response?.data["message"][0]));
+            } else {
+              emit(PrescriptionError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(PrescriptionError(message: e.response?.data["message"][0]));
@@ -115,7 +123,11 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(PrescriptionUploadError(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(PrescriptionUploadError(message: e.response?.data["message"][0]));
+            } else {
+              emit(PrescriptionUploadError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(PrescriptionUploadError(message: e.response?.data["message"][0]));

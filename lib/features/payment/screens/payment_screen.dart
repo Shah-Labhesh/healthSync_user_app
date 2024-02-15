@@ -5,6 +5,9 @@ import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
+import 'package:user_mobile_app/features/payment/widgets/sort_container.dart';
+import 'package:user_mobile_app/features/payment/widgets/transaction_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class PaymentsScreen extends StatefulWidget {
@@ -53,8 +56,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
+            horizontal: PaddingManager.paddingMedium2,
+            vertical: PaddingManager.paddingMedium2,
           ),
           child: Column(
             children: [
@@ -73,7 +76,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: HeightManager.h10),
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -84,7 +87,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const SizedBox(
-                      width: 24,
+                      width: WidthManager.w24,
                     ),
                     Text(
                       'NRs. ${showAmount ? '1000.00' : '****'}',
@@ -109,7 +112,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: HeightManager.h50),
               if (edit) ...[
                 Form(
                   key: _formKey,
@@ -123,8 +126,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         color: gray500,
                       ),
                       contentPadding: EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 5,
+                        horizontal: PaddingManager.p6,
+                        vertical: PaddingManager.p5,
                       ),
                     ),
                     controller: mobileController,
@@ -145,9 +148,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         setState(() {
                           edit = false;
                         });
-                      }
-                      if (value.isNotEmpty) {
-                        print("object");
                       }
                     },
                     onTapOutside: (event) {
@@ -179,7 +179,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: WidthManager.w10),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -194,7 +194,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     )
                   ],
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: HeightManager.h5),
                 const Divider(
                   color: gray400,
                   thickness: 1,
@@ -216,7 +216,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: HeightManager.h20),
               const TransactionTile(
                 id: '123456',
                 date: '12th May 2021',
@@ -234,132 +234,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class TransactionTile extends StatelessWidget {
-  const TransactionTile({
-    super.key,
-    required this.id,
-    required this.date,
-    required this.amount,
-  });
-
-  final String id;
-  final String date;
-  final String amount;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 12,
-      ),
-      decoration: BoxDecoration(
-          color: gray50,
-          borderRadius: BorderRadius.circular(6),
-          boxShadow: [
-            BoxShadow(
-              color: black.withOpacity(0.08),
-              blurRadius: 20,
-            ),
-          ]),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                    text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Appointment ID',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f18,
-                        fontWeight: FontWeightManager.semiBold,
-                        color: gray800,
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '#$id',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f18,
-                        fontWeight: FontWeightManager.regular,
-                        color: gray400,
-                        fontFamily: GoogleFonts.montserrat().fontFamily,
-                      ),
-                    ),
-                  ],
-                )),
-                const SizedBox(height: 5),
-                Text(
-                  date,
-                  style: TextStyle(
-                    fontSize: FontSizeManager.f12,
-                    fontWeight: FontWeightManager.medium,
-                    color: gray500,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            'NRs. $amount',
-            style: TextStyle(
-              fontSize: FontSizeManager.f18,
-              fontWeight: FontWeightManager.semiBold,
-              color: gray600,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SortContainer extends StatelessWidget {
-  const SortContainer({
-    super.key,
-    required this.title,
-    required this.isSelected,
-  });
-
-  final String title;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 12, right: 8),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: gray200, width: 1.5),
-        color: isSelected ? gray100 : white,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: FontSizeManager.f14,
-          fontWeight: FontWeightManager.semiBold,
-          color: gray800,
-          fontFamily: GoogleFonts.poppins().fontFamily,
-          letterSpacing: 0.5,
         ),
       ),
     );

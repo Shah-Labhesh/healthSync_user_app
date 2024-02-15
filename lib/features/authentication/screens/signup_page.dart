@@ -23,20 +23,14 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+
   final _formKey = GlobalKey<FormState>();
-
   final _nameController = TextEditingController();
-
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
-
   final _confirmPasswordController = TextEditingController();
-
   bool hidePassword = true;
-
   bool hideConfirmPassword = true;
-
   bool isMatch = true;
 
   checkPassword() {
@@ -56,6 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+@override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -65,10 +60,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void submit() {
-    print("dsds");
     String name = _nameController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
+    if (Utils.checkInternetConnection(context)){
+
     Map<String, dynamic> data = {
       "name": name,
       "email": email,
@@ -77,6 +73,7 @@ class _SignUpPageState extends State<SignUpPage> {
     };
     BlocProvider.of<UserRegisterBloc>(context)
         .add(UserRegisterEvent(userInfo: data));
+    }
   }
 
   clearAllText() {
@@ -91,7 +88,6 @@ class _SignUpPageState extends State<SignUpPage> {
     double w = MediaQuery.of(context).size.width;
     return BlocConsumer<UserRegisterBloc, UserRegisterState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is RegistrationCompleted) {
           showDialog(
             context: context,
@@ -300,7 +296,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           title: 'Register',
                           onPressed: () {
                             if (_formKey.currentState!.validate() && isMatch) {
-                            print("object");
                               submit();
                             }
                           },
@@ -343,7 +338,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           children: [
                             Container(
                               width: w * 0.23,
-                              height: 2,
+                              height: HeightManager.h2,
                               color: gray300,
                             ),
                             Text(
@@ -356,7 +351,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             Container(
                               width: w * 0.23,
-                              height: 2,
+                              height: HeightManager.h2,
                               color: gray300,
                             ),
                           ],
@@ -365,11 +360,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           height: HeightManager.h18,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              height: 90,
-                              width: 90,
+                              height: HeightManager.h90,
+                              width: WidthManager.w90,
                               decoration: BoxDecoration(
                                 color: gray100,
                                 borderRadius: BorderRadius.circular(5),
@@ -389,19 +384,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                 googleIcon,
                               ),
                             ),
-                            Container(
-                              height: 105,
-                              width: 105,
-                              decoration: BoxDecoration(
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    twitterIcon,
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            )
+                            // Container(
+                            //   height: HeightManager.h105,
+                            //   width: WidthManager.w105,
+                            //   decoration: BoxDecoration(
+                            //     image: const DecorationImage(
+                            //       image: AssetImage(
+                            //         twitterIcon,
+                            //       ),
+                            //       fit: BoxFit.cover,
+                            //     ),
+                            //     borderRadius: BorderRadius.circular(5),
+                            //   ),
+                            // )
                           ],
                         ),
                         const SizedBox(

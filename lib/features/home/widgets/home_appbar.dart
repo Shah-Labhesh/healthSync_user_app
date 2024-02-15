@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_event.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_state.dart';
@@ -27,7 +28,7 @@ class HomeAppBar extends StatefulWidget {
 }
 
 class _HomeAppBarState extends State<HomeAppBar> {
-  String Greeting() {
+  String greeting() {
     var hour = DateTime.now().hour;
     if (hour < 12) {
       return 'Good Morning';
@@ -40,7 +41,6 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<NotificationBloc>().add(FetchUnreadNotificationCount());
   }
@@ -64,7 +64,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                 ),
               ),
               const SizedBox(
-                width: 10,
+                width: WidthManager.w10,
               ),
             ],
             Column(
@@ -82,7 +82,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  Greeting(),
+                  greeting(),
                   style: textTheme.labelSmall!.copyWith(
                     fontSize: FontSizeManager.f14,
                     fontWeight: FontWeightManager.semiBold,
@@ -92,7 +92,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                 )
               ],
             ),
-            Spacer(),
+            const Spacer(),
             InkWell(
               onTap: () {
                 Navigator.pushNamed(context, 'notification_screen');
@@ -102,8 +102,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
                 child: Stack(
                   children: [
                     Container(
-                      height: 50,
-                      width: 50,
+                      height: HeightManager.h50,
+                      width: WidthManager.w50,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -129,8 +129,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
                         right: 12,
                         top: 10,
                         child: Container(
-                          height: 12,
-                          width: 12,
+                          height: HeightManager.h12,
+                          width: WidthManager.w12,
                           decoration: const BoxDecoration(
                             color: blue900,
                             shape: BoxShape.circle,
@@ -138,18 +138,6 @@ class _HomeAppBarState extends State<HomeAppBar> {
                         ),
                       ),
                     ],
-                    // Positioned(
-                    //   right: 12,
-                    //   top: 10,
-                    //   child: Container(
-                    //     height: 12,
-                    //     width: 12,
-                    //     decoration: const BoxDecoration(
-                    //       color: blue900,
-                    //       shape: BoxShape.circle,
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

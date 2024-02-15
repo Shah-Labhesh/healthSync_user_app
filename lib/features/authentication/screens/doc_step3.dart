@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -44,7 +46,6 @@ class _DocStep3State extends State<DocStep3> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _feeFocusNode = FocusNode();
     _experienceFocusNode = FocusNode();
@@ -86,7 +87,6 @@ class _DocStep3State extends State<DocStep3> {
     TextTheme textTheme = theme.textTheme;
     return BlocConsumer<DocDetailsBloc, DocDetailsState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is DocDetailsFailure) {
           Utils.showSnackBar(context, state.message, isSuccess: false);
         }
@@ -135,7 +135,7 @@ class _DocStep3State extends State<DocStep3> {
                                 color: gray900,
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             RichText(
                               text: TextSpan(
                                 children: [
@@ -188,8 +188,8 @@ class _DocStep3State extends State<DocStep3> {
                           children: [
                             image != null
                                 ? Container(
-                                    height: 120,
-                                    width: 120,
+                                    height: HeightManager.h120,
+                                    width: WidthManager.w120,
                                     decoration: BoxDecoration(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(60),
@@ -201,8 +201,8 @@ class _DocStep3State extends State<DocStep3> {
                                     ),
                                   )
                                 : Container(
-                                    height: 120,
-                                    width: 120,
+                                    height: HeightManager.h120,
+                                    width: WidthManager.w120,
                                     decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(60),
@@ -225,8 +225,8 @@ class _DocStep3State extends State<DocStep3> {
                               },
                               child: Image.asset(
                                 pickImageIcon,
-                                height: 45,
-                                width: 45,
+                                height: HeightManager.h45,
+                                width: WidthManager.w45,
                               ),
                             ),
                           ],
@@ -249,14 +249,36 @@ class _DocStep3State extends State<DocStep3> {
                         const SizedBox(
                           height: HeightManager.h12,
                         ),
-                        if (state is SpecialitiesLoading)
+                        if (state is FetchSpecialitiesFailure)
+                          InkWell(
+                            onTap: () {
+                              if (Utils.checkInternetConnection(context)) {
+                                context
+                                    .read<DocDetailsBloc>()
+                                    .add(FetchSpecialitiesEvent());
+                              }
+                            },
+                            child: Center(
+                              child: Text(
+                                state.message,
+                                style: TextStyle(
+                                  fontFamily:
+                                      GoogleFonts.montserrat().fontFamily,
+                                  fontSize: FontSizeManager.f14,
+                                  fontWeight: FontWeightManager.regular,
+                                  color: gray500,
+                                ),
+                              ),
+                            ),
+                          )
+                        else if (state is SpecialitiesLoading)
                           Center(
                             child: LoadingAnimationWidget.threeArchedCircle(
                               color: blue900,
                               size: 40,
                             ),
-                          ),
-                        if (specialities.isNotEmpty)
+                          )
+                        else if (specialities.isNotEmpty)
                           SizedBox(
                             width: double.infinity,
                             child: Wrap(
@@ -270,7 +292,6 @@ class _DocStep3State extends State<DocStep3> {
                                       setState(() {
                                         selectedIndex = index;
                                       });
-                                      
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
@@ -281,7 +302,7 @@ class _DocStep3State extends State<DocStep3> {
                                         color: selectedIndex != index
                                             ? gray50
                                             : blue900,
-                                        borderRadius: BorderRadius.all(
+                                        borderRadius: const BorderRadius.all(
                                           Radius.circular(5),
                                         ),
                                       ),
@@ -368,24 +389,31 @@ class _DocStep3State extends State<DocStep3> {
                             if (_formKey.currentState!.validate() &&
                                 image != null &&
                                 args != null) {
-                              context
-                                  .read<DocDetailsBloc>()
-                                  .add(AddDocDetailsEvent(
-                                      doctorId: args,
-                                      details: FormData.fromMap({
-                                        'speciality':
-                                            specialities[selectedIndex!].id!,
-                                        'fee': _feeController.text,
-                                        'experience':
-                                            _experienceController.text,
-                                        'image': await MultipartFile.fromFile(
-                                          image!.path,
-                                          filename: 'image.jpg',
-                                          contentType:
-                                              MediaType('image', 'jpg'),
+                              if (Utils.checkInternetConnection(context)) {
+                                context.read<DocDetailsBloc>().add(
+                                      AddDocDetailsEvent(
+                                        doctorId: args,
+                                        details: FormData.fromMap(
+                                          {
+                                            'speciality':
+                                                specialities[selectedIndex!]
+                                                    .id!,
+                                            'fee': _feeController.text.trim(),
+                                            'experience': _experienceController
+                                                .text
+                                                .trim(),
+                                            'image':
+                                                await MultipartFile.fromFile(
+                                              image!.path,
+                                              filename: 'image.jpg',
+                                              contentType:
+                                                  MediaType('image', 'jpg'),
+                                            ),
+                                          },
                                         ),
-                                      })));
-                              // Navigator.pushReplacementNamed(context, 'doc_step4');
+                                      ),
+                                    );
+                              }
                             } else {
                               Utils.showSnackBar(
                                   context, 'Please fill all the details',

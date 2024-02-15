@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,8 +11,6 @@ import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
-import 'package:user_mobile_app/features/appointment/screens/call_screen.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class AppointmentWidget extends StatelessWidget {
   AppointmentWidget({
@@ -58,8 +56,8 @@ class AppointmentWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 child: appointment.doctor!.avatar != null
                     ? CachedNetworkImage(
-                        height: 65,
-                        width: 65,
+                        height: HeightManager.h65,
+                        width: WidthManager.w65,
                         imageUrl: BASE_URL + appointment.doctor!.avatar!,
                         placeholder: (context, url) => const Center(
                           child: CircularProgressIndicator(),
@@ -72,8 +70,8 @@ class AppointmentWidget extends StatelessWidget {
                     : Image.asset(
                         AppImages.defaultAvatar,
                         fit: BoxFit.cover,
-                        height: 65,
-                        width: 65,
+                        height: HeightManager.h65,
+                        width: WidthManager.w65,
                       ),
               ),
               const SizedBox(
@@ -102,22 +100,6 @@ class AppointmentWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              ZegoSendCallInvitationButton(
-                isVideoCall: true,
-                resourceID:
-                    "health_sync_zego", //You need to use the resourceID that you created in the subsequent steps. Please continue reading this document.
-                invitees: [
-                  ZegoUIKitUser(
-                    id: appointment.doctor!.id!,
-                    name: appointment.doctor!.name!,
-                  ),
-                  // ...
-                  // ZegoUIKitUser(
-                  //    id: targetUserID,
-                  //    name: targetUserName,
-                  // )
-                ],
-              ),
               const Spacer(),
               GestureDetector(
                 onTap: () {
@@ -133,8 +115,8 @@ class AppointmentWidget extends StatelessWidget {
                   //   );
                 },
                 child: Container(
-                  height: 55,
-                  width: 55,
+                  height: HeightManager.h55,
+                  width: WidthManager.w55,
                   decoration: BoxDecoration(
                     color: blue900,
                     borderRadius: BorderRadius.circular(100),
@@ -159,7 +141,7 @@ class AppointmentWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
               horizontal: PaddingManager.paddingMedium2,
-              vertical: 12,
+              vertical: PaddingManager.p12,
             ),
             decoration: BoxDecoration(
               color: blue900,
@@ -175,7 +157,7 @@ class AppointmentWidget extends StatelessWidget {
                   color: gray100,
                 ),
                 const SizedBox(
-                  width: 12,
+                  width: WidthManager.w12,
                 ),
                 Text(
                   appointment.slot!.slotDateTime!.splitDate(),

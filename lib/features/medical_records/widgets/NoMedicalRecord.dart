@@ -1,8 +1,11 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class NoMedicalRecordWidget extends StatelessWidget {
   const NoMedicalRecordWidget({super.key});
@@ -19,10 +22,10 @@ class NoMedicalRecordWidget extends StatelessWidget {
           children: [
             Image.asset(
               AppImages.medicalRecordImage,
-              height: 200,
-              width: 200,
+              height: HeightManager.h200,
+              width: WidthManager.w200,
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: HeightManager.h50),
             Text(
               'No Medical Records',
               style: TextStyle(
@@ -32,7 +35,7 @@ class NoMedicalRecordWidget extends StatelessWidget {
                 color: gray800,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: HeightManager.h20),
             Text(
               'A detailed health history helps a doctor diagnose you btter.',
               style: TextStyle(

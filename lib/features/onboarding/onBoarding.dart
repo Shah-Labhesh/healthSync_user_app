@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
@@ -66,55 +68,59 @@ class Layout1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Gap(
-          PaddingManager.paddingExtraLarge,
-        ),
-        Flexible(
-          flex: 10,
-          fit: FlexFit.tight,
-          child: Image.asset(
-            image,
-            width: width,
-            height: height,
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: Column(
+        children: [
+          const Gap(
+            PaddingManager.paddingExtraLarge,
           ),
-        ),
-        Flexible(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: FittedBox(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: textTheme.displayLarge!.copyWith(
-                  fontSize: FontSizeManager.f26,
-                  fontWeight: FontWeightManager.semiBold,
+          Flexible(
+            flex: 10,
+            fit: FlexFit.tight,
+            child: Image.asset(
+              image,
+              width: width,
+              height: height,
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(PaddingManager.p10),
+              child: FittedBox(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: textTheme.displayLarge!.copyWith(
+                    fontSize: FontSizeManager.f26,
+                    fontWeight: FontWeightManager.semiBold,
+                  ),
+                  maxLines: 2,
                 ),
-                maxLines: 2,
               ),
             ),
           ),
-        ),
-        Flexible(
-          flex: 6,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: PaddingManager.paddingLarge,
-            ),
-            child: Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: textTheme.displaySmall,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
+          Flexible(
+            flex: 6,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: PaddingManager.paddingLarge,
+              ),
+              child: Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: textTheme.displaySmall,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 3,
+              ),
             ),
           ),
-        ),
-
-        
-      ],
+      
+          
+        ],
+      ),
     );
   }
 }
@@ -153,7 +159,7 @@ class Layout2 extends StatelessWidget {
                 Flexible(
                   flex: 1,
                   child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(PaddingManager.p10),
                     child: Text(
                       title,
                       textAlign: TextAlign.center,

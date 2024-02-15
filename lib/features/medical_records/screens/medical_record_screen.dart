@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +6,8 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
-import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_bloc.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_event.dart';
@@ -17,6 +15,7 @@ import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record
 import 'package:user_mobile_app/features/medical_records/data/model/medical_record.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/record_tile.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/NoMedicalRecord.dart';
+import 'package:user_mobile_app/features/medical_records/widgets/share_dialog.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 import 'package:user_mobile_app/widgets/custom_popup_item.dart';
 
@@ -34,12 +33,15 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   String sort = 'ALL';
 
   void shareRecord(String? id) {
-    context
-        .read<RecordBloc>()
-        .add(ShareRecord(recordId: selectedRecord!.id!, doctorId: id!));
+    if (Utils.checkInternetConnection(context)){
+      context
+          .read<RecordBloc>()
+          .add(ShareRecord(recordId: selectedRecord!.id!, doctorId: id!));
+    }
   }
 
   MedicalRecord? selectedRecord;
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +49,9 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   }
 
   void fetchData() {
-    context.read<RecordBloc>().add(FetchRecords(sort: sort));
+    if (Utils.checkInternetConnection(context)) {
+      context.read<RecordBloc>().add(FetchRecords(sort: sort));
+    }
   }
 
   @override
@@ -58,7 +62,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
       },
       child: Scaffold(
         appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(70),
+          preferredSize: Size.fromHeight(HeightManager.h73),
           child: AppBarCustomWithSceenTitle(
             title: 'Medical Records',
             isBackButton: true,
@@ -67,10 +71,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         body: BlocConsumer<RecordBloc, RecordState>(
           listener: (context, state) {
             if (state is TokenExpired) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'login_screen', (route) => false);
-              Utils.showSnackBar(context, 'Session expired. Please login again',
-                  isSuccess: false);
+             Utils.handleTokenExpired(context);
             }
 
             if (state is DoctorListFetched) {
@@ -79,19 +80,9 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               showDialog(
                   context: context,
                   builder: (context) {
-                    return SimpleDialog(
-                      title: const Text('Select Doctor'),
-                      children: [
-                        for (User doctor in doctors)
-                          ListTile(
-                            title: Text(doctor.name!),
-                            onTap: () {
-                              shareRecord(doctor.id);
-                              Navigator.pop(context);
-                            },
-                          ),
-                      ],
-                    );
+                    return ShareDialog(doctors: doctors);
+                  }).then((value) => {
+                    if (value != null) {shareRecord((value as User).id!)}
                   });
             }
 
@@ -149,8 +140,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                 child: Text(
                   state.message,
                   style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 16,
+                    color: red700,
+                    fontSize: FontSizeManager.f16,
                   ),
                 ),
               );
@@ -160,7 +151,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             }
 
             if (state is ShareRecordLoaded) {
-             sharedRecords = state.records;
+              sharedRecords = state.records;
             }
 
             return LoadingOverlay(
@@ -173,17 +164,17 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 20),
+                    padding: const EdgeInsets.only(left: PaddingManager.paddingMedium2),
                     child: Row(
                       children: [
                         Container(
                           margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
+                            horizontal: PaddingManager.p8,
+                            vertical: PaddingManager.p8,
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
+                            vertical: PaddingManager.p8,
+                            horizontal: PaddingManager.p12,
                           ),
                           decoration: BoxDecoration(
                             color: white,
@@ -212,12 +203,12 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
+                              horizontal: PaddingManager.p8,
+                              vertical: PaddingManager.p8,
                             ),
                             padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 12,
+                              vertical: PaddingManager.p8,
+                              horizontal: PaddingManager.p12,
                             ),
                             decoration: BoxDecoration(
                               color: white,
@@ -239,7 +230,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                 ),
                                 if (sort == 'SHARED') ...[
                                   const SizedBox(
-                                    width: 6,
+                                    width: WidthManager.w6,
                                   ),
                                   const Icon(
                                     CupertinoIcons.xmark_circle_fill,
@@ -262,40 +253,24 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         popupMenuItems: PopupMenuItem(
                           child: Column(
                             children: [
-                                CustomPopupItem(
-                                  title: 'Save',
-                                  icon: CupertinoIcons.arrow_down_doc_fill,
-                                  onTap: () async {
-                                    final picker = FilePicker.platform;
-                                    try {
-                                      await picker.getDirectoryPath().then(
-                                          (value) => Dio().download(
-                                              BASE_URL + record.record!,
-                                              value));
-                                    } catch (e) {
-                                      print(' error in downloading file $e');
-                                    }
-                                  },
-                                ),
-                                CustomPopupItem(
-                                  title: 'Share',
-                                  icon: Icons.share_rounded,
-                                  onTap: () {
-                                    selectedRecord = record;
-                                    context
-                                        .read<RecordBloc>()
-                                        .add(FetchDoctorList());
-                                  },
-                                ),
-                                const CustomPopupItem(
-                                  title: 'Edit',
-                                  icon: CupertinoIcons.pencil,
-                                ),
-                                const CustomPopupItem(
-                                  title: 'Delete',
-                                  icon: Icons.delete,
-                                )
-                              
+                              CustomPopupItem(
+                                title: 'Share',
+                                icon: Icons.share_rounded,
+                                onTap: () {
+                                  selectedRecord = record;
+                                  context
+                                      .read<RecordBloc>()
+                                      .add(FetchDoctorList());
+                                },
+                              ),
+                              const CustomPopupItem(
+                                title: 'Edit',
+                                icon: CupertinoIcons.pencil,
+                              ),
+                              const CustomPopupItem(
+                                title: 'Delete',
+                                icon: Icons.delete,
+                              )
                             ],
                           ),
                         ),
@@ -307,28 +282,13 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         popupMenuItems: PopupMenuItem(
                           child: Column(
                             children: [
-                              CustomPopupItem(
-                                title: 'Save',
-                                icon: CupertinoIcons.arrow_down_doc_fill,
-                                onTap: () async {
-                                  final picker = FilePicker.platform;
-                                  try {
-                                    await picker.getDirectoryPath().then(
-                                        (value) => Dio().download(
-                                            BASE_URL + record.medicalRecords!.record!,
-                                            value));
-                                  } catch (e) {
-                                    print(' error in downloading file $e');
-                                  }
-                                },
-                              ),
+                              
                               CustomPopupItem(
                                 title: 'Revoke',
                                 icon: Icons.backspace_rounded,
                                 onTap: () {
-                                  context
-                                      .read<RecordBloc>()
-                                      .add(RevokeSharedRecord(recordId: record.id!));
+                                  context.read<RecordBloc>().add(
+                                      RevokeSharedRecord(recordId: record.id!));
                                 },
                               ),
                             ],
@@ -342,12 +302,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            if (Utils.checkInternetConnection(context)){
             Navigator.pushNamed(context, 'upload_record_screen').then((value) {
               if (value != null) {
                 records.add(value as MedicalRecord);
                 setState(() {});
               }
             });
+            }
           },
           backgroundColor: blue900,
           child: const Icon(

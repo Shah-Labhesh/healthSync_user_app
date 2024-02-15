@@ -7,6 +7,7 @@ import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class RatingBarWidget extends StatelessWidget {
   const RatingBarWidget({
@@ -25,19 +26,19 @@ class RatingBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: HeightManager.h10),
           Row(
             children: [
               ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: userAvatar != null
                       ? CachedNetworkImage(
-                          height: 40,
-                          width: 40,
+                          height: HeightManager.h40,
+                          width: HeightManager.h40,
                           imageUrl: BASE_URL + userAvatar!,
                           progressIndicatorBuilder: (context, url, progress) {
                             return Center(
@@ -55,12 +56,12 @@ class RatingBarWidget extends StatelessWidget {
                           fit: BoxFit.cover,
                         )
                       : Image.asset(
-                          height: 40,
-                          width: 40,
+                          height: HeightManager.h40,
+                          width: HeightManager.h40,
                           AppImages.defaultAvatar,
                           fit: BoxFit.cover,
                         )),
-              const SizedBox(width: 10),
+              const SizedBox(width: WidthManager.w10),
               Text(
                 userName,
                 style: TextStyle(
@@ -72,7 +73,7 @@ class RatingBarWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: HeightManager.h10),
           RatingBar(
             initialRating: rating,
             direction: Axis.horizontal,
@@ -93,10 +94,9 @@ class RatingBarWidget extends StatelessWidget {
             ),
             itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
             onRatingUpdate: (rating) {
-              print(rating);
             },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: HeightManager.h10),
           if (review != null)
             Text(
               review ?? '',

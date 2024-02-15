@@ -8,7 +8,7 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/onboarding/onBoarding.dart';
 
 class OnBoardingScreen extends StatefulWidget {
-  OnBoardingScreen({super.key});
+  const OnBoardingScreen({super.key});
 
   @override
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();
@@ -66,10 +66,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               children: [
                 for (int i = 0; i < 3; i++)
                   Padding(
-                    padding: const EdgeInsets.all(2.0),
+                    padding: const EdgeInsets.all(PaddingManager.p2),
                     child: Container(
-                      width: 10,
-                      height: 10,
+                      width: WidthManager.w10,
+                      height: HeightManager.h10,
                       decoration: BoxDecoration(
                         color: (currentPage == i) ? blue900 : gray300,
                         shape: BoxShape.circle,
@@ -124,8 +124,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             );
                     },
                     child: Container(
-                      width: 45,
-                      height: 45,
+                      width: WidthManager.w45,
+                      height: HeightManager.h45,
                       padding: const EdgeInsetsDirectional.all(
                           PaddingManager.padding),
                       decoration: BoxDecoration(

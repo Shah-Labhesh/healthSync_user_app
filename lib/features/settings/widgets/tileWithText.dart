@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class TileWithText extends StatelessWidget {
   const TileWithText({
@@ -25,8 +26,8 @@ class TileWithText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 12,
+        horizontal: PaddingManager.p10,
+        vertical: PaddingManager.p12,
       ),
       child: Column(
         children: [
@@ -41,7 +42,7 @@ class TileWithText extends StatelessWidget {
                   fontWeight: FontWeightManager.light,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               if (isSwitch == false) ...[
                 Text(
                   value!,
@@ -53,7 +54,7 @@ class TileWithText extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  width: 5,
+                  width: WidthManager.w5,
                 ),
                 const Icon(
                   Icons.edit,
@@ -64,14 +65,14 @@ class TileWithText extends StatelessWidget {
               CupertinoSwitch(
                 value: notification ?? false,
                 onChanged: onChanged,
-                activeColor: Color(0xffFDBC0A),
+                activeColor: const Color(0xffFDBC0A),
               ),
             ],
           ),
           const SizedBox(
-            height: 10,
+            height: HeightManager.h10,
           ),
-          Divider(
+          const Divider(
             color: gray200,
             thickness: 1,
           ),

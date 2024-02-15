@@ -40,12 +40,18 @@ class _DocStep1State extends State<DocStep1> {
     String name = _nameController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    context.read<DocRegisterBloc>().add(RegisterDoctorEvent(credentials: {
-          "name": name,
-          "email": email,
-          "role": "DOCTOR",
-          "password": password,
-        }));
+    if (Utils.checkInternetConnection(context)) {
+      context.read<DocRegisterBloc>().add(
+            RegisterDoctorEvent(
+              credentials: {
+                "name": name,
+                "email": email,
+                "role": "DOCTOR",
+                "password": password,
+              },
+            ),
+          );
+    }
   }
 
   checkPassword() {
@@ -71,14 +77,14 @@ class _DocStep1State extends State<DocStep1> {
     TextTheme textTheme = theme.textTheme;
     return BlocConsumer<DocRegisterBloc, DocAuthState>(
       listener: (context, state) {
-        print(state);
         if (state is DocRegisterFailure) {
           Utils.showSnackBar(context, state.message, isSuccess: false);
         }
         if (state is DocRegisterSuccess) {
           Utils.showSnackBar(context, 'Doctor Registered Successfully',
               isSuccess: true);
-          Navigator.pushReplacementNamed(context, 'doc_step2',arguments: state.id);
+          Navigator.pushReplacementNamed(context, 'doc_step2',
+              arguments: state.id);
         }
       },
       builder: (context, state) {
@@ -115,7 +121,7 @@ class _DocStep1State extends State<DocStep1> {
                               color: gray900,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           RichText(
                             text: TextSpan(
                               children: [
@@ -270,7 +276,7 @@ class _DocStep1State extends State<DocStep1> {
                       ),
                       if (!isMatch) ...[
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(left: PaddingManager.p8),
                           child: Text(
                             'Password does not match',
                             style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class NoSlotsWidget extends StatelessWidget {
   const NoSlotsWidget({super.key});
@@ -19,10 +20,10 @@ class NoSlotsWidget extends StatelessWidget {
           children: [
             Image.asset(
               AppImages.noSlotsImage,
-              height: 200,
-              width: 200,
+              height: HeightManager.h200,
+              width: WidthManager.w200,
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: HeightManager.h50),
             Text(
               'No Slots Found',
               style: TextStyle(
@@ -32,7 +33,7 @@ class NoSlotsWidget extends StatelessWidget {
                 color: gray800,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: HeightManager.h20),
             Text(
               'You can create a slot by clicking on the button below.',
               style: TextStyle(

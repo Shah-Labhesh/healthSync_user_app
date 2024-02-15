@@ -1,8 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +19,6 @@ import 'package:user_mobile_app/features/authentication/data/model/Qualification
 import 'package:user_mobile_app/widgets/custom_outlined_button.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
 import 'package:user_mobile_app/widgets/custom_textfield.dart';
-// import 'package:http_parser/http_parser.dart';
 
 formatDate(String dateTime) {
   DateTime date = DateTime.parse(dateTime);
@@ -97,7 +93,6 @@ class _DocStep4State extends State<DocStep4> {
 
     return BlocConsumer<MoreDocDetailsBloc, MoreDocDetailsState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is MoreDocDetailsSuccess) {
           Utils.showSnackBar(context, 'Details uploaded successfully.',
               isSuccess: true);
@@ -399,7 +394,7 @@ class _DocStep4State extends State<DocStep4> {
                                                       color: blue900,
                                                     ),
                                                     const SizedBox(
-                                                      width: 5,
+                                                      width: WidthManager.w5,
                                                     ),
                                                     Text(
                                                       'Edit',
@@ -454,39 +449,6 @@ class _DocStep4State extends State<DocStep4> {
                                                   );
                                                 },
                                               ),
-                                              // Container(
-                                              //   alignment: Alignment.center,
-                                              //   padding:
-                                              //       const EdgeInsets.symmetric(
-                                              //     horizontal: WidthManager.w16,
-                                              //     vertical: HeightManager.h16,
-                                              //   ),
-                                              //   decoration: BoxDecoration(
-                                              //     border: Border.all(
-                                              //       color: blue900,
-                                              //       width: 2,
-                                              //     ),
-                                              //     borderRadius:
-                                              //         BorderRadius.circular(5),
-                                              //   ),
-                                              //   child: Text(
-                                              //     qualification.image != null
-                                              //         ? "Change Photo"
-                                              //         : "Upload Photo",
-                                              //     style: TextStyle(
-                                              //       fontFamily:
-                                              //           GoogleFonts.inter()
-                                              //               .fontFamily,
-                                              //       fontSize:
-                                              //           FontSizeManager.f16,
-                                              //       fontWeight:
-                                              //           FontWeightManager
-                                              //               .semiBold,
-                                              //       color: blue900,
-                                              //       letterSpacing: 0.5,
-                                              //     ),
-                                              //   ),
-                                              // )
                                             ],
                                           )
                                         ],

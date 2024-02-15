@@ -35,7 +35,11 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(DocProfileError(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(DocProfileError(message: e.response?.data["message"][0]));
+            } else {
+              emit(DocProfileError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(DocProfileError(message: e.response?.data["message"][0]));
@@ -79,7 +83,12 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(DocQualificationError(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(DocQualificationError(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(DocQualificationError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(DocQualificationError(
@@ -122,7 +131,11 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(DocRatingsError(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(DocRatingsError(message: e.response?.data["message"][0]));
+            } else {
+              emit(DocRatingsError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(DocRatingsError(message: e.response?.data["message"][0]));
@@ -163,7 +176,12 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(FavouriteToggleError(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(FavouriteToggleError(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(FavouriteToggleError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(FavouriteToggleError(

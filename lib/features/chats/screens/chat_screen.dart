@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
+import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/chats/data/model/chat_mesaage.dart';
 import 'package:user_mobile_app/features/chats/widgets/chat_bubble.dart';
 import 'package:user_mobile_app/features/chats/widgets/image_bubble.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
-import 'package:user_mobile_app/widgets/custom_textfield.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -31,14 +31,14 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
+        preferredSize: const Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: 'Chat',
           isBackButton: true,
           action: PopupMenuButton(
             itemBuilder: (context) {
               return [
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Delete'),
                 ),
               ];
@@ -51,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
         controller: _scrollController,
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: HeightManager.h20),
             for (ChatMessage chat in ChatMessageModelData.chatMessages) ...[
               ChatBubble(
                 isMe: chat.isMe,
@@ -59,33 +59,28 @@ class _ChatScreenState extends State<ChatScreen> {
                 time: chat.time,
               ),
             ],
-            ImageBubble(
+            const ImageBubble(
               image: AppImages.doctor2,
               time: '10:00 AM',
               isMe: false,
             ),
-            ImageBubble(
-              image: AppImages.doctor2,
-              time: '10:00 AM',
-              isMe: true,
-            )
           ],
         ),
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
+          left: PaddingManager.paddingMedium,
+          right: PaddingManager.paddingMedium,
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 10,
+            vertical: PaddingManager.p10,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.attach_file,
                 color: gray800,
               ),
@@ -127,14 +122,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 17,
+                                vertical: PaddingManager.p10,
+                                horizontal: PaddingManager.paddingMedium,
                               ),
                               filled: isFocusCustom,
                               fillColor: gray200,
                               hintStyle: TextStyle(
                                 color: gray800,
-                                fontSize: 14,
+                                fontSize: FontSizeManager.f14,
                                 fontWeight: FontWeight.w400,
                                 fontFamily: GoogleFonts.poppins().fontFamily,
                               ),
@@ -176,12 +171,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
                 child: Container(
                   height: HeightManager.h50,
-                  width: 50,
+                  width: WidthManager.w50,
                   decoration: BoxDecoration(
                     color: blue900,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.send,
                     color: gray200,
                   ),

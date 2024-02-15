@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -117,8 +119,6 @@ class _QualificationScreenState extends State<QualificationScreen> {
     }
     return BlocConsumer<MoreDocDetailsBloc, MoreDocDetailsState>(
       listener: (context, state) {
-        // TODO: implement listener
-        print(state);
         if (state is AddDocQualificationSuccess) {
           Navigator.pop(context, true);
         }
@@ -148,7 +148,7 @@ class _QualificationScreenState extends State<QualificationScreen> {
               color: blue900, size: 60),
           child: Scaffold(
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(HeightManager.h73),
               child: AppBarCustomWithSceenTitle(
                 title: args == null || args['qualification'] == null
                     ? 'Add Qualification'
@@ -157,8 +157,8 @@ class _QualificationScreenState extends State<QualificationScreen> {
             ),
             body: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.paddingMedium2,
               ),
               child: SingleChildScrollView(
                 child: Form(
@@ -166,7 +166,7 @@ class _QualificationScreenState extends State<QualificationScreen> {
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 20,
+                        height: HeightManager.h20,
                       ),
                       CustomTextfield(
                         label: 'Title',
@@ -282,7 +282,7 @@ class _QualificationScreenState extends State<QualificationScreen> {
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: blue900,
-                                          width: 2,
+                                          width: WidthManager.w2,
                                         ),
                                         borderRadius: BorderRadius.circular(5),
                                       ),
@@ -309,31 +309,31 @@ class _QualificationScreenState extends State<QualificationScreen> {
                         )
                       else ...[
                         Container(
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: 240,
-                          decoration: BoxDecoration(
-                            // image: DecorationImage(
-                            //     image: _certificate != null
-                            //         ? FileImage(_certificate!) as ImageProvider
-                            //         : NetworkImage(AppUrls.getFiles(
-                            //             path: args['qualification']['image'])),
-                            //     fit: BoxFit.cover),
-                            border: Border.all(
-                              color: gray200,
-                              width: 2,
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            height: HeightManager.h240,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: gray200,
+                                width: WidthManager.w2,
+                              ),
+                              color: gray100,
+                              borderRadius: BorderRadius.circular(
+                                4,
+                              ),
                             ),
-                            color: gray100,
-                            borderRadius: BorderRadius.circular(
-                              4,
-                            ),
-                          ),
-                          child: _certificate != null?
-                          Image.file(_certificate!, fit: BoxFit.cover,):
-                          CachedNetworkImage(imageUrl: BASE_URL + args['qualification']['image'], fit: BoxFit.cover,)
-                        ),
+                            child: _certificate != null
+                                ? Image.file(
+                                    _certificate!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: BASE_URL +
+                                        args['qualification']['image'],
+                                    fit: BoxFit.cover,
+                                  )),
                         const SizedBox(
-                          height: 20,
+                          height: HeightManager.h20,
                         ),
                         CustomOutlineButtom(
                           title: 'Change Photo',
@@ -348,7 +348,7 @@ class _QualificationScreenState extends State<QualificationScreen> {
                         ),
                       ],
                       const SizedBox(
-                        height: 20,
+                        height: HeightManager.h20,
                       ),
                       CustomButtom(
                         title: args == null || args['qualification'] == null
@@ -378,26 +378,29 @@ class _QualificationScreenState extends State<QualificationScreen> {
                           }
 
                           if (_formKey.currentState!.validate()) {
-                            context.read<MoreDocDetailsBloc>().add(
-                                  AddDocQualificationEvent(
-                                    doctorId: args!['doctorId'],
-                                    qualification: FormData.fromMap(
-                                      {
-                                        'title': _titleController.text,
-                                        'institute': _instituteController.text,
-                                        'passOutYear':
-                                            passed!.toIso8601String(),
-                                        'certificate':
-                                            await MultipartFile.fromFile(
-                                          _certificate!.path,
-                                          filename: 'image.jpg',
-                                          contentType:
-                                              MediaType('image', 'jpg'),
-                                        ),
-                                      },
+                            if (Utils.checkInternetConnection(context)) {
+                              context.read<MoreDocDetailsBloc>().add(
+                                    AddDocQualificationEvent(
+                                      doctorId: args!['doctorId'],
+                                      qualification: FormData.fromMap(
+                                        {
+                                          'title': _titleController.text,
+                                          'institute':
+                                              _instituteController.text,
+                                          'passOutYear':
+                                              passed!.toIso8601String(),
+                                          'certificate':
+                                              await MultipartFile.fromFile(
+                                            _certificate!.path,
+                                            filename: 'image.jpg',
+                                            contentType:
+                                                MediaType('image', 'jpg'),
+                                          ),
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                            }
                           }
                         },
                       ),

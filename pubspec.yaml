@@ -67,6 +67,8 @@ dependencies:
   firebase_messaging: ^14.7.15
   zego_uikit_prebuilt_call: ^4.2.1
   zego_uikit_signaling_plugin: ^2.7.4
+  pdf: ^3.10.7
+  connectivity_plus: ^5.0.2
   
 dev_dependencies:
   flutter_test:

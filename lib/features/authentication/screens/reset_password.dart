@@ -45,11 +45,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   _performResetPassword(String? email, String? otp) {
+    if (Utils.checkInternetConnection(context)){
+
     context.read<PasswordResetBloc>().add(ResetPasswordEvent(credentials: {
           "email": email,
           "otp": otp,
           "password": _passwordController.text.trim(),
         }));
+    }
   }
 
   @override
@@ -58,7 +61,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return BlocConsumer<PasswordResetBloc, PasswordResetState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is PasswordResetCompleted) {
           Navigator.pushNamedAndRemoveUntil(
               context, 'login_screen', (route) => false);
@@ -92,7 +94,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             body: SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
                 child: Form(
                   key: _formKey,
                   child: SingleChildScrollView(
@@ -102,7 +104,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
-                          height: 10,
+                          height: HeightManager.h10,
                         ),
                         Text(
                           "Set the new password for your account so you can login and access all the features.",
@@ -115,7 +117,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         const SizedBox(
-                          height: 40,
+                          height: HeightManager.h40,
                         ),
                         CustomTextfield(
                           label: '',
@@ -209,7 +211,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           )
                         ],
                         const SizedBox(
-                          height: 20,
+                          height: HeightManager.h20,
                         ),
                       ],
                     ),
@@ -218,7 +220,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
             ),
             bottomNavigationBar: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
               child: CustomButtom(
                 title: 'Reset Password',
                 onPressed: () {

@@ -1,9 +1,10 @@
-import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:user_mobile_app/main.dart';
 
 class FirebaseService {
-  static void requestPermission() async {
+  static Future<String> requestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     
 
@@ -19,12 +20,14 @@ class FirebaseService {
     print(settings.authorizationStatus);
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-      getToken();
+      return getToken();
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
       print('User granted provisional permission');
+      return getToken();
     } else {
       print('User declined or has not accepted permission');
+      return '';
     }
   }
 
@@ -94,6 +97,29 @@ class FirebaseService {
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
       }
+    });
+  }
+
+  void handleMessage(RemoteMessage? message) {
+    if (message == null) {
+      return;
+    }
+
+    navigatorKey.currentState?.pushNamed('home_screen', arguments: 3);
+  }
+
+  Future initialize(BuildContext context) async {
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      // notificationCountBloc.fetchNotificationCount();
+      // NotificationBloc notificationBloc =
+      //     BlocProvider.of<NotificationBloc>(context);
+      // notificationBloc.add(ResetNotification());
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Got a message whilst in the background!');
+      handleMessage(message);
     });
   }
 }

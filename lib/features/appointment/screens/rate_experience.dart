@@ -5,6 +5,7 @@ import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
 
 class RateExperienceScreen extends StatefulWidget {
@@ -26,13 +27,13 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
+            horizontal: PaddingManager.paddingMedium2,
+            vertical: PaddingManager.paddingMedium2,
           ),
           child: Column(
             children: [
               const SizedBox(
-                height: 20,
+                height: HeightManager.h20,
               ),
               Center(
                 child: Text(
@@ -47,19 +48,19 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                 ),
               ),
               const SizedBox(
-                height: 40,
+                height: HeightManager.h40,
               ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image.asset(
                   AppImages.doctor1,
-                  height: 140,
-                  width: 140,
+                  height: HeightManager.h140,
+                  width: WidthManager.w140,
                   fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: HeightManager.h20,
               ),
               Text(
                 'Dr. John Doe',
@@ -71,7 +72,7 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                 ),
               ),
               const SizedBox(
-                height: 35,
+                height: HeightManager.h35,
               ),
               RatingBar(
                 initialRating: rating,
@@ -91,7 +92,7 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                     color: Colors.amber,
                   ),
                 ),
-                itemPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+                itemPadding: const EdgeInsets.symmetric(horizontal: PaddingManager.p10),
                 onRatingUpdate: (rating) {
                   setState(() {
                     this.rating = rating;
@@ -99,7 +100,7 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                 },
               ),
               const SizedBox(
-                height: 45,
+                height: HeightManager.h45,
               ),
               TextField(
                 decoration: InputDecoration(
@@ -143,7 +144,7 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                 controller: reviewController,
               ),
               const SizedBox(
-                height: 30,
+                height: HeightManager.h30,
               ),
               Center(
                 child: Text(
@@ -159,7 +160,7 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: HeightManager.h30,
               ),
               CustomButtom(
                 title: 'Continue',

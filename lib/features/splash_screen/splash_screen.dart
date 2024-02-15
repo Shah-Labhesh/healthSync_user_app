@@ -1,5 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:user_mobile_app/Utils/firebase.dart';
 import 'package:user_mobile_app/Utils/routes.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
@@ -14,10 +15,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     changeScreen();
-    FirebaseService.requestPermission();
   }
 
   changeScreen() async {
@@ -31,8 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
       if (token.isNotEmpty) {
         String role = await SharedUtils.getRole();
         Navigator.pushReplacementNamed(context, Routes.afterLoginRoutes[role]!);
-      } else
-      Navigator.pushReplacementNamed(context, 'login_screen');
+      } else {
+        Navigator.pushReplacementNamed(context, 'login_screen');
+      }
     }
   }
 

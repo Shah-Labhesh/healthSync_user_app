@@ -53,20 +53,22 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
             if (e.response?.data["message"].runtimeType != String) {
-              print(e.response);
               emit(UserHomeLoadFailed(message: e.response?.data["message"][0]));
             } else {
               emit(UserHomeLoadFailed(message: e.response?.data["message"]));
             }
           } else {
-            emit(UserHomeLoadFailed(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(UserHomeLoadFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(UserHomeLoadFailed(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(UserHomeLoadFailed(
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e);
         emit(UserHomeLoadFailed(
             message: 'Connection timed out. Please try again later'));
       }
@@ -94,7 +96,12 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(ToggleFavouriteFailed(message: e.response?.data["message"]));
+             if (e.response?.data["message"].runtimeType != String) {
+              emit(ToggleFavouriteFailed(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(ToggleFavouriteFailed(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(ToggleFavouriteFailed(
@@ -108,7 +115,6 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e);
         emit(ToggleFavouriteFailed(
             message: 'Connection timed out. Please try again later'));
       }

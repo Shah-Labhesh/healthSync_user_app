@@ -14,4 +14,9 @@ class AppImages{
   static const String esewaImage = 'assets/images/esewa_image.png';
   static const String khaltiImage = 'assets/images/khalti_image.png';
   static const String fonepayImage = 'assets/images/fonepay_image.png';
+  static const String noAppointmentImage = 'assets/images/no_appointment_image.png';
+  static const String noDoctorImage = 'assets/images/no_doctor_image.png';
+  static const String noMessageImage = 'assets/images/no_message_image.png';
+  static const String noPaymentImage = 'assets/images/no_payment_image.png';
+  static const String noNotificationImage = 'assets/images/no_notification_image.png';
 }

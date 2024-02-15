@@ -40,7 +40,13 @@ class UpdateProfileBloc extends Bloc<UpdateProfileEvent, UpdateProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(UpdateProfileFailed(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(UpdateProfileFailed(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(UpdateProfileFailed(
+                  message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(UpdateProfileFailed(
@@ -81,7 +87,13 @@ class UpdateProfileBloc extends Bloc<UpdateProfileEvent, UpdateProfileState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(ChangePasswordFailed(message: e.response?.data["message"][0]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ChangePasswordFailed(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(ChangePasswordFailed(
+                  message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(ChangePasswordFailed(
@@ -201,7 +213,6 @@ class UpdateProfileBloc extends Bloc<UpdateProfileEvent, UpdateProfileState> {
     emit(UpdatingAddress());
     try {
       Response response = await SettingRepo().updateCurrentUser(event.data);
-      print(response);
       if (response.statusCode == 200) {
         emit(UpdateAddressSuccess());
       } else {

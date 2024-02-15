@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -8,8 +6,6 @@ import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
 import 'package:user_mobile_app/features/preview_screen/image_preview.dart';
-import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_bloc.dart';
-import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_event.dart';
 
 class QualificationTile extends StatelessWidget {
   const QualificationTile({
@@ -27,7 +23,7 @@ class QualificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: PaddingManager.paddingMedium2),
       padding: const EdgeInsets.symmetric(
         horizontal: WidthManager.w20,
         vertical: HeightManager.h10,
@@ -69,7 +65,7 @@ class QualificationTile extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: HeightManager.h6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -94,7 +90,7 @@ class QualificationTile extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: HeightManager.h8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -138,7 +134,11 @@ class QualificationTile extends StatelessWidget {
                       width: 1.5,
                     ),
                   ),
-                  child: Icon(Icons.edit, color: gray600, size: 20),
+                  child: const Icon(
+                    Icons.edit,
+                    color: gray600,
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),
@@ -157,7 +157,11 @@ class QualificationTile extends StatelessWidget {
                       width: 1.5,
                     ),
                   ),
-                  child: Icon(Icons.delete, color: red600, size: 20),
+                  child: const Icon(
+                    Icons.delete,
+                    color: red600,
+                    size: 20,
+                  ),
                 ),
               )
             ],

@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
-import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 
@@ -35,8 +34,8 @@ class ChatRoomTileWidget extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              height: 65,
-              width: 65,
+              height: HeightManager.h65,
+              width: WidthManager.w65,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
@@ -105,7 +104,7 @@ class ChatRoomTileWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Text(
               time,
               style: TextStyle(

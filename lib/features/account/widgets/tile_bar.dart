@@ -41,7 +41,7 @@ class TileBarWidget extends StatelessWidget {
               color: color ?? blue900,
             ),
             const SizedBox(
-              width: 22,
+              width: WidthManager.w22,
             ),
             Text(
               title,

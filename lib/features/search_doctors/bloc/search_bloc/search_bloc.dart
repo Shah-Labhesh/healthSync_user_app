@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
@@ -32,7 +30,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         emit(SearchFailure(message: response.data['message']));
       }
     } catch (e) {
-      print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -48,7 +45,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
               emit(SearchFailure(message: e.response?.data["message"]));
             }
           } else {
-            emit(SearchFailure(message: e.response?.data["message"]));
+             if (e.response?.data["message"].runtimeType != String) {
+              emit(SearchFailure(message: e.response?.data["message"][0]));
+            } else {
+              emit(SearchFailure(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(SearchFailure(
@@ -87,12 +88,19 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
               emit(SpecialityFailure(message: e.response?.data["message"]));
             }
           } else {
-            emit(SpecialityFailure(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(SpecialityFailure(message: e.response?.data["message"][0]));
+            } else {
+              emit(SpecialityFailure(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(SpecialityFailure(
               message: 'Something went wrong. Please try again later'));
         }
+      }else {
+        emit(SpecialityFailure(
+            message: 'Something went wrong. Please try again later'));
       }
     }
   }
@@ -122,12 +130,19 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
               emit(ToogleFavoriteFailure(message: e.response?.data["message"]));
             }
           } else {
-            emit(ToogleFavoriteFailure(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ToogleFavoriteFailure(message: e.response?.data["message"][0]));
+            } else {
+              emit(ToogleFavoriteFailure(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(ToogleFavoriteFailure(
               message: 'Something went wrong. Please try again later'));
         }
+      }else{
+        emit(ToogleFavoriteFailure(
+            message: 'Something went wrong. Please try again later'));
       }
     }
   }

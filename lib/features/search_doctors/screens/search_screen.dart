@@ -2,21 +2,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/authentication/data/model/specialities.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
+import 'package:user_mobile_app/features/home/widgets/no_doctor_widget.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_event.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_state.dart';
 import 'package:user_mobile_app/features/search_doctors/data/model/search_param.dart';
+import 'package:user_mobile_app/features/search_doctors/widgets/filter_container.dart';
 import 'package:user_mobile_app/widgets/appbar.dart';
 import 'package:user_mobile_app/widgets/custom_textfield.dart';
 
@@ -43,14 +45,16 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
   bool? popular;
 
   void fetchData() {
-    BlocProvider.of<SearchBloc>(context).add(SearchDoctors(
-      feeFrom: priceFrom,
-      feeTo: priceTo,
-      feeType: selectedPriceType,
-      popular: popular,
-      speciality: speciality,
-      text: _searchText,
-    ));
+    if (Utils.checkInternetConnection(context)) {
+      BlocProvider.of<SearchBloc>(context).add(SearchDoctors(
+        feeFrom: priceFrom,
+        feeTo: priceTo,
+        feeType: selectedPriceType,
+        popular: popular,
+        speciality: speciality,
+        text: _searchText,
+      ));
+    }
   }
 
   bool checkFilter() {
@@ -109,12 +113,8 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
     }
     return BlocConsumer<SearchBloc, SearchState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          Utils.showSnackBar(context, 'Token Expired Please Login Again',
-              isSuccess: false);
+          Utils.handleTokenExpired(context);
         }
 
         if (state is SearchSuccess) {
@@ -146,19 +146,21 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
         return Scaffold(
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: PaddingManager.paddingMedium2,
+                  vertical: PaddingManager.p10),
               child: Column(
                 children: [
                   BlocProvider(
                     create: (context) => NotificationBloc(),
-                    child: CustomAppBar(
+                    child: const CustomAppBar(
                       title: 'Find Doctor',
                       isBackButton: true,
                       notification: true,
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -168,25 +170,27 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                         GestureDetector(
                           onTap: clearFilter,
                           child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              margin: const EdgeInsets.only(
-                                right: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: gray200, width: 1.5),
-                                color: checkFilter() ? gray100 : white,
-                              ),
-                              child: const ImageIcon(
-                                AssetImage(funnelIcon),
-                                color: gray800,
-                                size: 18,
-                              )),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: PaddingManager.p12,
+                                vertical: PaddingManager.p10),
+                            margin: const EdgeInsets.only(
+                              right: PaddingManager.p8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: gray200, width: 1.5),
+                              color: checkFilter() ? gray100 : white,
+                            ),
+                            child: const ImageIcon(
+                              AssetImage(funnelIcon),
+                              color: gray800,
+                              size: 18,
+                            ),
+                          ),
                         ),
                         PopupMenuButton(
-                          constraints: BoxConstraints(
-                            maxHeight: 200,
+                          constraints: const BoxConstraints(
+                            maxHeight: HeightManager.h200,
                           ),
                           itemBuilder: (context) {
                             context.read<SearchBloc>().add(GetSpecialities());
@@ -195,8 +199,8 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                             }
                             return specialities
                                 .map((e) => PopupMenuItem(
-                                      child: Text(e.name!),
                                       value: e.id,
+                                      child: Text(e.name!),
                                       onTap: () {
                                         setState(() {
                                           speciality = e.id;
@@ -224,8 +228,8 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                           itemBuilder: (context) {
                             return priceType
                                 .map((e) => PopupMenuItem(
-                                      child: Text(e.removeUnderScore()),
                                       value: e,
+                                      child: Text(e.removeUnderScore()),
                                       onTap: () {
                                         if (e == 'RANGE') {
                                           showDialog(
@@ -237,8 +241,12 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                     contentPadding:
                                                         const EdgeInsets
                                                             .symmetric(
-                                                            horizontal: 16,
-                                                            vertical: 12),
+                                                            horizontal:
+                                                                PaddingManager
+                                                                    .paddingMedium,
+                                                            vertical:
+                                                                PaddingManager
+                                                                    .p12),
                                                     children: [
                                                       const Row(
                                                         mainAxisAlignment:
@@ -276,7 +284,8 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                         ],
                                                       ),
                                                       const SizedBox(
-                                                        height: 12,
+                                                        height:
+                                                            HeightManager.h12,
                                                       ),
                                                       Row(
                                                         mainAxisAlignment:
@@ -289,7 +298,9 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                                 : '0',
                                                             style:
                                                                 const TextStyle(
-                                                              fontSize: 12,
+                                                              fontSize:
+                                                                  FontSizeManager
+                                                                      .f12,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w500,
@@ -301,7 +312,9 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                                 : '10000',
                                                             style:
                                                                 const TextStyle(
-                                                              fontSize: 12,
+                                                              fontSize:
+                                                                  FontSizeManager
+                                                                      .f12,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w500,
@@ -313,28 +326,35 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                         min: 0,
                                                         max: 10000,
                                                         values: RangeValues(
-                                                            priceFrom != null
-                                                                ? double.parse(
-                                                                    priceFrom!)
-                                                                : 0.0,
-                                                            priceTo != null
-                                                                ? double.parse(
-                                                                    priceTo!)
-                                                                : 10000.0),
+                                                          priceFrom != null
+                                                              ? double.parse(
+                                                                  priceFrom!,
+                                                                )
+                                                              : 0.0,
+                                                          priceTo != null
+                                                              ? double.parse(
+                                                                  priceTo!,
+                                                                )
+                                                              : 10000.0,
+                                                        ),
                                                         onChanged: (value) {
-                                                          setState(() {
-                                                            priceFrom = value
-                                                                .start
-                                                                .toStringAsFixed(
-                                                                    0);
-                                                            priceTo = value.end
-                                                                .toStringAsFixed(
-                                                                    0);
-                                                          });
+                                                          setState(
+                                                            () {
+                                                              priceFrom = value
+                                                                  .start
+                                                                  .toStringAsFixed(
+                                                                      0);
+                                                              priceTo = value
+                                                                  .end
+                                                                  .toStringAsFixed(
+                                                                      0);
+                                                            },
+                                                          );
                                                         },
                                                       ),
                                                       const SizedBox(
-                                                        height: 12,
+                                                        height:
+                                                            HeightManager.h12,
                                                       ),
                                                       Row(
                                                         mainAxisAlignment:
@@ -342,46 +362,47 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                                                                 .end,
                                                         children: [
                                                           TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                              child: const Text(
-                                                                'Cancel',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      FontSizeManager
-                                                                          .f14,
-                                                                  fontWeight:
-                                                                      FontWeightManager
-                                                                          .medium,
-                                                                  color: red600,
-                                                                ),
-                                                              )),
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: const Text(
+                                                              'Cancel',
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    FontSizeManager
+                                                                        .f14,
+                                                                fontWeight:
+                                                                    FontWeightManager
+                                                                        .medium,
+                                                                color: red600,
+                                                              ),
+                                                            ),
+                                                          ),
                                                           TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                    context, {
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                context,
+                                                                {
                                                                   "min":
                                                                       priceFrom,
                                                                   "max": priceTo
-                                                                });
-                                                              },
-                                                              child: const Text(
-                                                                'Apply',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color:
-                                                                      green600,
-                                                                  fontSize:
-                                                                      FontSizeManager
-                                                                          .f14,
-                                                                  fontWeight:
-                                                                      FontWeightManager
-                                                                          .medium,
-                                                                ),
-                                                              )),
+                                                                },
+                                                              );
+                                                            },
+                                                            child: const Text(
+                                                              'Apply',
+                                                              style: TextStyle(
+                                                                color: green600,
+                                                                fontSize:
+                                                                    FontSizeManager
+                                                                        .f14,
+                                                                fontWeight:
+                                                                    FontWeightManager
+                                                                        .medium,
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ],
                                                       )
                                                     ],
@@ -476,7 +497,7 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: HeightManager.h30,
                   ),
                   CustomTextfield(
                     label: '',
@@ -506,13 +527,12 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                     onChanged: (p0) {
                       setState(() {
                         _searchText = p0;
-                        print(_searchText);
                       });
                       fetchData();
                     },
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   if (state is SearchLoading)
                     const Center(
@@ -523,17 +543,17 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                       child: Text(state.message),
                     )
                   else if (doctors.isEmpty)
-                    const Center(
-                      child: Text('No Doctor Found'),
-                    )
+                    const NoDoctorWidget()
                   else
                     for (User doctor in doctors)
                       DoctorTile(
                         doctor: doctor,
                         onPressed: () {
-                          context.read<SearchBloc>().add(ToogleFavorite(
-                                id: doctor.id!,
-                              ));
+                          context.read<SearchBloc>().add(
+                                ToogleFavorite(
+                                  id: doctor.id!,
+                                ),
+                              );
                         },
                       ),
                 ],
@@ -542,73 +562,6 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class FilterContainer extends StatelessWidget {
-  const FilterContainer({
-    Key? key,
-    required this.title,
-    required this.dropDown,
-    required this.isSelected,
-    this.onCancelPressed,
-  }) : super(key: key);
-
-  final String title;
-  final bool dropDown;
-  final bool isSelected;
-  final Function()? onCancelPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      margin: const EdgeInsets.only(
-        right: 8,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: isSelected ? gray100 : white,
-        border: Border.all(color: gray200, width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: FontSizeManager.f14,
-              fontWeight: FontWeightManager.semiBold,
-              color: gray800,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              letterSpacing: 0.5,
-            ),
-          ),
-          if (dropDown) ...[
-            const SizedBox(
-              width: 5,
-            ),
-            const Icon(
-              Icons.arrow_drop_down,
-              color: gray800,
-              size: 22,
-            ),
-          ],
-          if (isSelected) ...[
-            const SizedBox(
-              width: 5,
-            ),
-            InkWell(
-              onTap: onCancelPressed,
-              child: const Icon(
-                Icons.cancel,
-                color: gray800,
-                size: 22,
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

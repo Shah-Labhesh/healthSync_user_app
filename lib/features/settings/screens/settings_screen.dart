@@ -10,6 +10,7 @@ import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_bloc.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_event.dart';
@@ -68,18 +69,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as User?;
     return BlocConsumer<UpdateProfileBloc, UpdateProfileState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            'login_screen',
-            (route) => false,
-          );
-          Utils.showSnackBar(
-            context,
-           'Token Expired. Please login again',
-           isSuccess: false,
-          );
+          Utils.handleTokenExpired(context);
         }
 
         if (state is ChangeNotificationStatusSuccess) {
@@ -122,11 +113,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Profile updated successfully',
             isSuccess: true,
           );
-           context.read<DocHomeBloc>().add(GetDocHome());
-            Navigator.pushReplacementNamed(
-              context,
-              'doctor_home_screen',
-            );
+          context.read<DocHomeBloc>().add(GetDocHome());
+          Navigator.pushReplacementNamed(
+            context,
+            'doctor_home_screen',
+          );
         }
 
         if (state is UpdateAddressFailed) {
@@ -140,10 +131,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context, state) {
         return LoadingOverlay(
           isLoading: state is UpdatingAddress || state is UpdateFeeLoading,
-          progressIndicator: LoadingAnimationWidget.threeArchedCircle(color: blue900, size: 60),
+          progressIndicator: LoadingAnimationWidget.threeArchedCircle(
+              color: blue900, size: 60),
           child: Scaffold(
             appBar: const PreferredSize(
-              preferredSize: Size.fromHeight(70),
+              preferredSize: Size.fromHeight(HeightManager.h73),
               child: AppBarCustomWithSceenTitle(
                 title: 'Settings',
                 isBackButton: true,
@@ -151,8 +143,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             body: SingleChildScrollView(
               padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: 20,
-                vertical: 8,
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.p8,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   Text(
                     'More Options',
@@ -249,16 +241,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'update_address',
                         ).then((value) {
                           if (value != null) {
-                            print(value as Map<String, dynamic>);
                             context.read<UpdateProfileBloc>().add(
                                   UpdateAddressEvent(
                                     data: value as Map<String, dynamic>,
                                   ),
                                 );
                           }
-                        
                         });
-                      
                       },
                       child: TileWithText(
                         text: 'Address',
@@ -279,8 +268,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color: gray500,
                             ),
                             contentPadding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 5,
+                              horizontal: PaddingManager.p6,
+                              vertical: PaddingManager.p5,
                             ),
                           ),
                           controller: feeController,
@@ -288,7 +277,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter fee';
                             }
-          
+
                             if (int.tryParse(value) == null) {
                               return 'Please enter valid fee';
                             }
@@ -301,9 +290,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       data: {'fee': int.parse(value)},
                                     ),
                                   );
-                             
                             }
-                           
                           },
                           onTapOutside: (event) {
                             setState(() {

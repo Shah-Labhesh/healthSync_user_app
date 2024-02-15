@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
-import 'package:user_mobile_app/constants/app_images.dart';
+import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class ImageBubble extends StatelessWidget {
   const ImageBubble({
@@ -23,7 +24,7 @@ class ImageBubble extends StatelessWidget {
       mainAxisAlignment: isMe? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(PaddingManager.p8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -41,12 +42,12 @@ class ImageBubble extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 5),
-              Text(
+              const SizedBox(height: HeightManager.h5),
+              const Text(
                 '10:00 AM',
                 style: TextStyle(
                   color: Colors.grey,
-                  fontSize: 12,
+                  fontSize: FontSizeManager.f12,
                 ),
               ),
             ],

@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
@@ -7,7 +9,6 @@ import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_bl
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_event.dart';
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_state.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
-import 'package:user_mobile_app/widgets/appbar.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class MyFavoriteScreen extends StatelessWidget {
@@ -19,21 +20,8 @@ class MyFavoriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<FavoriteBloc, FavoriteState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                "Token Expired Please login again",
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.handleTokenExpired(context);
         }
         if (state is ToggleFavouriteSuccess) {
           for (User doctor in doctors) {
@@ -77,7 +65,10 @@ class MyFavoriteScreen extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            context.read<FavoriteBloc>().add(FetchFavoriteEvent());
+            if (Utils.checkInternetConnection(context)){
+              context.read<FavoriteBloc>().add(FetchFavoriteEvent());
+            }
+            await Future.delayed(const Duration(seconds: 1));
           },
           child: Scaffold(
             appBar: const PreferredSize(
@@ -96,14 +87,6 @@ class MyFavoriteScreen extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    // const CustomAppBar(
-                    //   title: 'Favorite',
-                    //   isBackButton: false,
-                    //   notification: true,
-                    // ),
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
                     for (User doctor in doctors)
                       DoctorTile(
                         doctor: doctor,

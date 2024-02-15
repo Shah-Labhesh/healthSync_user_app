@@ -22,18 +22,20 @@ class ForgotPasswordScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _performResetPassword(BuildContext context) {
-    context.read<PasswordResetBloc>().add(
+    if (Utils.checkInternetConnection(context)){
+     context.read<PasswordResetBloc>().add(
           RequestForgotPasswordEvent(
             email: _emailController.text.trim(),
           ),
         );
+    }
+    
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<PasswordResetBloc, PasswordResetState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is PasswordInitiated) {
           Navigator.pushNamed(context, 'otp_verification',
               arguments: _emailController.text.trim());
@@ -66,7 +68,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             body: SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
                 child: Form(
                   key: _formKey,
                   child: SingleChildScrollView(
@@ -76,7 +78,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
-                          height: 10,
+                          height: HeightManager.h10,
                         ),
                         Text(
                           "Enter your email for the verification proccesss, we will send 4 digits code to your email.",
@@ -89,7 +91,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(
-                          height: 40,
+                          height: HeightManager.h40,
                         ),
                         CustomTextfield(
                           label: '',
@@ -107,7 +109,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                           hintText: 'Email',
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: HeightManager.h20,
                         ),
                       ],
                     ),
@@ -116,9 +118,9 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
             ),
             bottomNavigationBar: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+              padding: const EdgeInsets.symmetric(
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.paddingMedium2,
               ),
               child: CustomButtom(
                 title: 'Send OTP',

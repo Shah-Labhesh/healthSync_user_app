@@ -11,7 +11,6 @@ import 'package:user_mobile_app/features/prescriptions/data/model/prescription.d
 import 'package:user_mobile_app/features/prescriptions/widgets/no_prescription_widget.dart';
 import 'package:user_mobile_app/features/prescriptions/widgets/prescription_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
-import 'package:user_mobile_app/widgets/custom_popup_item.dart';
 
 class PrescriptionScreen extends StatefulWidget {
   const PrescriptionScreen({super.key});
@@ -25,7 +24,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initializeRole();
   }
@@ -49,12 +47,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       ),
       body: BlocConsumer<PrescriptionBloc, PrescriptionState>(
         listener: (context, state) {
-          // TODO: implement listener
           if (state is TokenExpired) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, 'login_screen', (route) => false);
-            Utils.showSnackBar(context, 'Token Expired Please login again',
-                isSuccess: false);
+            Utils.handleTokenExpired(context);
           }
         },
         builder: (context, state) {
@@ -76,7 +70,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
           }
           return RefreshIndicator(
             onRefresh: () {
+              if (Utils.checkInternetConnection(context)){
               context.read<PrescriptionBloc>().add(FetchPrescriptionsEvent());
+              }
               return Future.delayed(const Duration(seconds: 1));
             },
             child: SafeArea(
@@ -85,33 +81,39 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                 child: Column(
                   children: [
                     if (prescriptions.isEmpty)
-                      NoPrescriptionWidget()
+                      const NoPrescriptionWidget()
                     else
                       for (Prescription prescription in prescriptions) ...[
                         PrescriptionTile(
                           isDoctor: doctor,
                           prescription: prescription,
-                          popupMenuItems: PopupMenuItem(
-                            child: Column(
-                              children: [
-                                CustomPopupItem(
-                                  title: 'Save',
-                                  icon: CupertinoIcons.arrow_down_doc_fill,
-                                  onTap: () async {
-                                    // final picker = FilePicker.platform;
-                                    // try {
-                                    //   await picker.getDirectoryPath().then(
-                                    //       (value) => Dio().download(
-                                    //           BASE_URL + record.record!,
-                                    //           value));
-                                    // } catch (e) {
-                                    //   print(' error in downloading file $e');
-                                    // }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
+                          // popupMenuItems: PopupMenuItem(
+                          //   child: Column(
+                          //     children: [
+                          //       CustomPopupItem(
+                          //         title: 'Save',
+                          //         icon: CupertinoIcons.arrow_down_doc_fill,
+                          //         onTap: () async {
+                          //           try {
+                          //           String path = await PdfApi()
+                          //               .getApplicationDocumentsDirectoryPath();
+                          //           print(path);
+                          //             Dio().download(
+                          //                     BASE_URL + prescription.prescription!,
+                          //                     path);
+                          //           } catch (e) {
+                          //             print(' error in downloading file $e');
+                          //           }
+                          //           if (prescription.recordType == 'TEXT') {
+                          //             final pdf = await PdfInvoiceApi.generate(
+                          //                 prescription);
+                                          
+                          //           }
+                          //         },
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                         ),
                       ]
                   ],

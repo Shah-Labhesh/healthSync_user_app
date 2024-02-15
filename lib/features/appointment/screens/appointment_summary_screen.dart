@@ -21,9 +21,10 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
 
   bool isFirstBuild = true;
 
-  String selectedPaymentType = 'ESEWA_WALLET';
+  String selectedPaymentType = 'KHALTI_WALLET';
   List<String> time=['5','10','15','20','25','30','35','40','45','50','55','60'];
   String selectedTime='30';
+
   @override
   Widget build(BuildContext context) {
     final args =
@@ -47,9 +48,9 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
               Container(
                 width: double.infinity,
                 margin:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: PaddingManager.p12, horizontal: PaddingManager.paddingMedium2),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p12),
                 decoration: BoxDecoration(
                   color: white,
                   borderRadius: BorderRadius.circular(4),
@@ -76,48 +77,47 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                     const SizedBox(
                       height: 10,
                     ),
-                    PaymentOptionWidget(
-                      image: AppImages.esewaImage,
-                      title: 'eSewa Wallet',
-                      value: selectedPaymentType == 'ESEWA_WALLET',
-                      onTapped: () {
-                        print('value');
-                        setState(() {
-                          selectedPaymentType = 'ESEWA_WALLET';
-                        });
-                      },
-                    ),
+                    // PaymentOptionWidget(
+                    //   image: AppImages.esewaImage,
+                    //   title: 'eSewa Wallet',
+                    //   value: selectedPaymentType == 'ESEWA_WALLET',
+                    //   onTapped: () {
+                    //     print('value');
+                    //     setState(() {
+                    //       selectedPaymentType = 'ESEWA_WALLET';
+                    //     });
+                    //   },
+                    // ),
                     PaymentOptionWidget(
                       image: AppImages.khaltiImage,
                       title: 'Khalti Wallet',
                       value: selectedPaymentType == 'KHALTI_WALLET',
                       onTapped: () {
-                        print('value');
                         setState(() {
                           selectedPaymentType = 'KHALTI_WALLET';
                         });
                       },
                     ),
-                    PaymentOptionWidget(
-                      image: AppImages.fonepayImage,
-                      title: 'Fonepay',
-                      value: selectedPaymentType == 'FONEPAY',
-                      onTapped: () {
-                        print('value');
-                        setState(() {
-                          selectedPaymentType = 'FONEPAY';
-                        });
-                      },
-                    ),
+                    // PaymentOptionWidget(
+                    //   image: AppImages.fonepayImage,
+                    //   title: 'Fonepay',
+                    //   value: selectedPaymentType == 'FONEPAY',
+                    //   onTapped: () {
+                    //     print('value');
+                    //     setState(() {
+                    //       selectedPaymentType = 'FONEPAY';
+                    //     });
+                    //   },
+                    // ),
                   ],
                 ),
               ),
               Container(
                 width: double.infinity,
                 margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p12),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p12),
                 decoration: BoxDecoration(
                   color: white,
                   borderRadius: BorderRadius.circular(4),
@@ -142,7 +142,7 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                       ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: HeightManager.h10,
                     ),
                     RowTextWidget(
                       title: 'Doctor',
@@ -161,7 +161,7 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                       value: bookAppointmentModel!.notes!,
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: HeightManager.h10,
                     ),
                     // reminder before
                     Row(
@@ -197,8 +197,8 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 6,
-                              horizontal: 12,
+                              vertical: PaddingManager.p6,
+                              horizontal: PaddingManager.p12,
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -221,7 +221,7 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 4,
+                                  width: WidthManager.w4,
                                 ),
                                 const Icon(
                                   Icons.arrow_drop_down,
@@ -242,8 +242,8 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 20,
+          vertical: PaddingManager.paddingMedium2,
+          horizontal: PaddingManager.paddingMedium2,
         ),
         decoration: BoxDecoration(
           color: white,
@@ -269,7 +269,7 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
               ),
             ),
             const SizedBox(
-              height: 6,
+              height: HeightManager.h6,
             ),
             const Divider(
               color: gray300,
@@ -368,7 +368,6 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
               bookAppointmentModel!.platformCost = 50;
               bookAppointmentModel!.totalFee = bookAppointmentModel!.appointmentFee! + 50;
               Map<String,dynamic> value = bookAppointmentModel!.toMap();
-              print(value);
             }),
           ],
         ),

@@ -41,14 +41,17 @@ class BookAppointmentBloc
               emit(FetchSlotsFailure(message: e.response?.data["message"]));
             }
           } else {
-            emit(FetchSlotsFailure(message: e.response?.data["message"]));
+           if (e.response?.data["message"].runtimeType != String) {
+              emit(FetchSlotsFailure(message: e.response?.data["message"][0]));
+            } else {
+              emit(FetchSlotsFailure(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(FetchSlotsFailure(
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e);
         emit(FetchSlotsFailure(
             message: 'Connection timed out. Please try again later'));
       }
@@ -81,14 +84,17 @@ class BookAppointmentBloc
               emit(BookAppointmentFailure(message: e.response?.data["message"]));
             }
           } else {
-            emit(BookAppointmentFailure(message: e.response?.data["message"]));
+             if (e.response?.data["message"].runtimeType != String) {
+              emit(BookAppointmentFailure(message: e.response?.data["message"][0]));
+            } else {
+              emit(BookAppointmentFailure(message: e.response?.data["message"]));
+            }
           }
         } else {
           emit(BookAppointmentFailure(
               message: 'Connection timed out. Please try again later'));
         }
       } else {
-        print(e);
         emit(BookAppointmentFailure(
             message: 'Connection timed out. Please try again later'));
       }

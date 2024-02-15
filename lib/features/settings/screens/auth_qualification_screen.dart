@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,9 +17,6 @@ import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
-import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_bloc.dart';
-import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_event.dart';
-import 'package:user_mobile_app/features/authentication/bloc/doc_auth_bloc/doc_auth_state.dart';
 import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_bloc.dart';
 import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_event.dart';
 import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_state.dart';
@@ -94,10 +93,10 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
   Map<String, dynamic> prepareData() {
     Map<String, dynamic> data = {};
     if (_titleController.text.isNotEmpty) {
-      data['qualification'] = _titleController.text;
+      data['qualification'] = _titleController.text.trim();
     }
     if (_instituteController.text.isNotEmpty) {
-      data['institute'] = _instituteController.text;
+      data['institute'] = _instituteController.text.trim();
     }
     if (passed != null) {
       data['passOutYear'] = passed!.toIso8601String();
@@ -121,8 +120,6 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
     }
     return BlocConsumer<QualificationBloc, QualificationState>(
       listener: (context, state) {
-        // TODO: implement listener
-        print(state);
         if (state is QualificationAdded) {
           Navigator.pop(context, state.qualification);
         }
@@ -136,10 +133,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
           Utils.showSnackBar(context, state.message, isSuccess: false);
         }
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          Utils.showSnackBar(context, 'Token Expired Please Login Again',
-              isSuccess: false);
+          Utils.handleTokenExpired(context);
         }
       },
       builder: (context, state) {
@@ -151,7 +145,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
               color: blue900, size: 60),
           child: Scaffold(
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(HeightManager.h73),
               child: AppBarCustomWithSceenTitle(
                 title: args == null || args['qualification'] == null
                     ? 'Add Qualification'
@@ -160,8 +154,8 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
             ),
             body: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
+                horizontal: PaddingManager.paddingMedium2,
+                vertical: PaddingManager.paddingMedium2,
               ),
               child: SingleChildScrollView(
                 child: Form(
@@ -169,7 +163,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 20,
+                        height: HeightManager.h20,
                       ),
                       CustomTextfield(
                         label: 'Title',
@@ -285,7 +279,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: blue900,
-                                          width: 2,
+                                          width: WidthManager.w2,
                                         ),
                                         borderRadius: BorderRadius.circular(5),
                                       ),
@@ -314,17 +308,12 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                         Container(
                             alignment: Alignment.center,
                             width: double.infinity,
-                            height: 240,
+                            height: HeightManager.h240,
                             decoration: BoxDecoration(
-                              // image: DecorationImage(
-                              //     image: _certificate != null
-                              //         ? FileImage(_certificate!) as ImageProvider
-                              //         : NetworkImage(AppUrls.getFiles(
-                              //             path: args['qualification']['image'])),
-                              //     fit: BoxFit.cover),
+                             
                               border: Border.all(
                                 color: gray200,
-                                width: 2,
+                                width: WidthManager.w2,
                               ),
                               color: gray100,
                               borderRadius: BorderRadius.circular(
@@ -342,7 +331,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                                     fit: BoxFit.cover,
                                   )),
                         const SizedBox(
-                          height: 20,
+                          height: HeightManager.h20,
                         ),
                         CustomOutlineButtom(
                           title: 'Change Photo',
@@ -357,7 +346,7 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                         ),
                       ],
                       const SizedBox(
-                        height: 20,
+                        height: HeightManager.h20,
                       ),
                       CustomButtom(
                         title: args == null || args['qualification'] == null
@@ -373,7 +362,10 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                             );
                             return;
                           }
-                          if (args != null) {
+                          if (Utils.checkInternetConnection(context) == false){
+                            return;
+                          }
+                          if (args != null ) {
                             context.read<QualificationBloc>().add(
                                   UpdateQualification(
                                     id: args['qualification']['id'],
@@ -384,8 +376,8 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                             context.read<QualificationBloc>().add(
                                   AddQualification(
                                     body: {
-                                      'title': _titleController.text,
-                                      'institute': _instituteController.text,
+                                      'title': _titleController.text.trim(),
+                                      'institute': _instituteController.text.trim(),
                                       'passOutYear': passed!.toIso8601String(),
                                       'certificate':
                                           await MultipartFile.fromFile(

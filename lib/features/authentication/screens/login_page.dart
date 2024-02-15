@@ -1,9 +1,7 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/routes.dart';
@@ -19,7 +17,7 @@ import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
 import 'package:user_mobile_app/widgets/custom_textfield.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -34,19 +32,11 @@ class _LoginPageState extends State<LoginPage> {
   _performLogin() {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    context.read<LoginBloc>().add(
+    if (Utils.checkInternetConnection(context)) {
+      context.read<LoginBloc>().add(
         RequestLoginEvent(credentials: {'email': email, 'password': password}));
-  }
-
-  // firebase auth
-  firebaseAuth() async {
-    try {
-      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-      if (gUser == null) return null;
-
-      print(gUser.email);
-      print (gUser.displayName);
-    } catch (e) {}
+    }
+    
   }
 
   @override
@@ -252,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Container(
                               width: w * 0.23,
-                              height: 2,
+                              height: HeightManager.h2,
                               color: gray300,
                             ),
                             Text(
@@ -266,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             Container(
                               width: w * 0.23,
-                              height: 2,
+                              height: HeightManager.h2,
                               color: gray300,
                             ),
                           ],
@@ -275,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: HeightManager.h18,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             InkWell(
                               onTap: () {
@@ -284,8 +274,8 @@ class _LoginPageState extends State<LoginPage> {
                                     .add(RequestGoogleLoginEvent());
                               },
                               child: Container(
-                                height: 90,
-                                width: 90,
+                                height: HeightManager.h90,
+                                width: WidthManager.w90,
                                 decoration: BoxDecoration(
                                   color: gray100,
                                   borderRadius: BorderRadius.circular(5),
@@ -304,19 +294,19 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            Container(
-                              height: 105,
-                              width: 105,
-                              decoration: BoxDecoration(
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    twitterIcon,
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            )
+                            // Container(
+                            //   height: HeightManager.h105,
+                            //   width: WidthManager.w105,
+                            //   decoration: BoxDecoration(
+                            //     image: const DecorationImage(
+                            //       image: AssetImage(
+                            //         twitterIcon,
+                            //       ),
+                            //       fit: BoxFit.cover,
+                            //     ),
+                            //     borderRadius: BorderRadius.circular(5),
+                            //   ),
+                            // )
                           ],
                         )
                       ],

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/medical_records/data/model/medical_record.dart';
 import 'package:user_mobile_app/features/preview_screen/image_preview.dart';
 import 'package:user_mobile_app/features/preview_screen/pdf_preview.dart';
@@ -33,18 +34,18 @@ class RecordTile extends StatelessWidget {
           ),
         ],
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
+        horizontal: PaddingManager.p12,
+        vertical: PaddingManager.p8,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
+              horizontal: PaddingManager.p12,
+              vertical: PaddingManager.p8,
             ),
             decoration: BoxDecoration(
               color: blue600,
@@ -66,7 +67,7 @@ class RecordTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 2,
+                  height: HeightManager.h2,
                 ),
                 Text(
                   records.updatedAt != null
@@ -83,7 +84,7 @@ class RecordTile extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            width: 12,
+            width: WidthManager.w12,
           ),
           Expanded(
             child: Column(
@@ -102,7 +103,7 @@ class RecordTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: HeightManager.h4,
                 ),
                 RichText(
                     text: TextSpan(

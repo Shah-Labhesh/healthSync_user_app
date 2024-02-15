@@ -57,11 +57,11 @@ class AppointmentTile extends StatelessWidget {
                   child: appointment.user!.avatar != null
                       ? CachedNetworkImage(
                           imageUrl: BASE_URL + appointment.user!.avatar!,
-                          height: 80,
-                          width: 80,
+                          height: HeightManager.h80,
+                          width: WidthManager.w80,
                           fit: BoxFit.cover,
                           errorWidget: (context, url, error) {
-                            return Icon(
+                            return const Icon(
                               Icons.error,
                               color: red600,
                               size: 22,
@@ -76,8 +76,8 @@ class AppointmentTile extends StatelessWidget {
                         )
                       : Image.asset(
                           AppImages.defaultAvatar,
-                          height: 80,
-                          width: 80,
+                          height: HeightManager.h80,
+                          width: WidthManager.w80,
                           fit: BoxFit.cover,
                         ),
                 )
@@ -87,11 +87,11 @@ class AppointmentTile extends StatelessWidget {
                   child: appointment.doctor!.avatar != null
                       ? CachedNetworkImage(
                           imageUrl: BASE_URL + appointment.doctor!.avatar!,
-                          height: 80,
-                          width: 80,
+                          height: HeightManager.h80,
+                          width: WidthManager.w80,
                           fit: BoxFit.cover,
                           errorWidget: (context, url, error) {
-                            return Icon(
+                            return const Icon(
                               Icons.error,
                               color: red600,
                               size: 22,
@@ -106,8 +106,8 @@ class AppointmentTile extends StatelessWidget {
                         )
                       : Image.asset(
                           AppImages.defaultAvatar,
-                          height: 80,
-                          width: 80,
+                          height: HeightManager.h80,
+                          width: WidthManager.w80,
                           fit: BoxFit.cover,
                         ),
                 ),
@@ -140,14 +140,14 @@ class AppointmentTile extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(
-                    height: 4,
+                    height: HeightManager.h4,
                   ),
                 ],
               ),
             ],
           ),
           const SizedBox(
-            height: 16,
+            height: HeightManager.h16,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,7 +158,7 @@ class AppointmentTile extends StatelessWidget {
                 size: FontSizeManager.f22,
               ),
               const SizedBox(
-                width: 5,
+                width: HeightManager.h5,
               ),
               Text(
                 appointment.slot!.slotDateTime!.splitDate(),
@@ -169,14 +169,14 @@ class AppointmentTile extends StatelessWidget {
                   color: green800,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               const ImageIcon(
                 AssetImage(clockIcon),
                 color: green700,
                 size: FontSizeManager.f22,
               ),
               const SizedBox(
-                width: 5,
+                width: HeightManager.h5,
               ),
               Text(
                 appointment.slot!.slotDateTime!.splitTime(),
@@ -190,7 +190,7 @@ class AppointmentTile extends StatelessWidget {
             ],
           ),
           const SizedBox(
-            height: 16,
+            height: HeightManager.h16,
           ),
           Row(
             children: [
@@ -260,7 +260,7 @@ class AppointmentTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(width: 6),
+              const SizedBox(width: HeightManager.h6),
               if (checkTime(appointment.slot!.slotDateTime!))
                 Expanded(
                   child: Container(

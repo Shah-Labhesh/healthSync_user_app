@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -5,7 +7,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -22,6 +23,7 @@ import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_bloc.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_event.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_state.dart';
+import 'package:user_mobile_app/features/medical_records/widgets/icon_text_widget.dart';
 import 'package:user_mobile_app/features/preview_screen/pdf_preview.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 import 'Package:http_parser/http_parser.dart';
@@ -100,20 +102,15 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
   }
 
   File? recordPdf;
-
   File? recordImage;
-
   String selectedRecordType = 'PDF';
-
   String date = '';
-
   User? selectedUser;
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<RecordBloc, RecordState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is UploadRecordSuccess) {
           Utils.showSnackBar(context, 'Record uploaded successfully');
           Navigator.pop(context, state.record);
@@ -139,10 +136,7 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
         }
 
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          Utils.showSnackBar(context, 'Session expired. Please login again',
-              isSuccess: false);
+          Utils.handleTokenExpired(context);
         }
       },
       builder: (context, state) {
@@ -204,7 +198,7 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: WidthManager.w20,
                                   vertical: HeightManager.h20,
                                 ),
@@ -291,7 +285,7 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                                         color: blue700,
                                       ),
                                       const SizedBox(
-                                        height: 8,
+                                        height: HeightManager.h8,
                                       ),
                                       Text(
                                         '${recordImage != null ? 'Change' : 'Upload'} Record',
@@ -339,47 +333,47 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (doctor)...[
+                  if (doctor) ...[
                     Text(
-                    'Record for',
-                    style: TextStyle(
-                      fontSize: FontSizeManager.f18,
-                      fontWeight: FontWeightManager.medium,
-                      color: gray900,
-                      fontFamily: GoogleFonts.rubik().fontFamily,
+                      'Record for',
+                      style: TextStyle(
+                        fontSize: FontSizeManager.f18,
+                        fontWeight: FontWeightManager.medium,
+                        color: gray900,
+                        fontFamily: GoogleFonts.rubik().fontFamily,
+                      ),
                     ),
-                  ),
-                  DropdownButton<User>(
-                    hint: const Text('Select Patient'),
-                    style: TextStyle(
-                      fontSize: FontSizeManager.f18,
-                      fontWeight: FontWeightManager.semiBold,
-                      color: gray700,
-                      fontFamily: GoogleFonts.rubik().fontFamily,
+                    DropdownButton<User>(
+                      hint: const Text('Select Patient'),
+                      style: TextStyle(
+                        fontSize: FontSizeManager.f18,
+                        fontWeight: FontWeightManager.semiBold,
+                        color: gray700,
+                        fontFamily: GoogleFonts.rubik().fontFamily,
+                      ),
+                      value: selectedUser,
+                      dropdownColor: white,
+                      underline: const SizedBox(),
+                      isExpanded: true,
+                      items: users
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.name!),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedUser = value;
+                        });
+                      },
                     ),
-                    value: selectedUser,
-                    dropdownColor: white,
-                    underline: const SizedBox(),
-                    isExpanded: true,
-                    items: users
-                        .map((e) => DropdownMenuItem(
-                              child: Text(e.name!),
-                              value: e,
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedUser = value;
-                      });
-                    },
-                  ),
-                  const Divider(
-                    color: gray200,
-                    thickness: 1.5,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                    const Divider(
+                      color: gray200,
+                      thickness: 1.5,
+                    ),
+                    const SizedBox(
+                      height: HeightManager.h20,
+                    ),
                   ],
                   Text(
                     'Type of Record',
@@ -419,7 +413,7 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                     thickness: 1.5,
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   InkWell(
                     onTap: () => showDatePicker(
@@ -449,7 +443,7 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 10,
+                                  height: HeightManager.h10,
                                 ),
                                 Text(
                                   date.splitDate(),
@@ -469,14 +463,14 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                         ]),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   const Divider(
                     color: gray200,
                     thickness: 1.5,
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: HeightManager.h20,
                   ),
                   CustomButtom(
                       title: 'Upload',
@@ -500,41 +494,38 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                               isSuccess: false);
                           return;
                         }
-                       
-                          // upload record
-                          if ( doctor && selectedUser == null) {
-                            Utils.showSnackBar(
-                                context, 'Please select a patient',
-                                isSuccess: false);
-                            return;
-                          }
-                       
-                          // upload record
-                          if (date.isNotEmpty) {
-                            record['recordCreatedDate'] = date;
-                          }
-                          if (recordImage != null) {
-                            record['record'] = selectedRecordType == 'PDF'
-                                ? await MultipartFile.fromFile(recordPdf!.path,
-                                    filename: recordPdf!.path.split('/').last,
-                                    contentType:
-                                        MediaType('application', 'pdf'))
-                                : await MultipartFile.fromFile(
-                                    recordImage!.path,
-                                    filename: recordImage!.path.split('/').last,
-                                    contentType: MediaType('image', 'jpg'));
-                          }
-                          record['recordType'] =
-                              selectedRecordType.toUpperCase();
-                          if (doctor && selectedUser != null) {
-                            context.read<RecordBloc>().add(UploadRecordByDoctor(
-                                patientId: selectedUser!.id!, record: record));
-                            return;
-                          }
+
+                        // upload record
+                        if (doctor && selectedUser == null) {
+                          Utils.showSnackBar(context, 'Please select a patient',
+                              isSuccess: false);
+                          return;
+                        }
+
+                        // upload record
+                        if (date.isNotEmpty) {
+                          record['recordCreatedDate'] = date;
+                        }
+                        if (recordImage != null) {
+                          record['record'] = selectedRecordType == 'PDF'
+                              ? await MultipartFile.fromFile(recordPdf!.path,
+                                  filename: recordPdf!.path.split('/').last,
+                                  contentType: MediaType('application', 'pdf'))
+                              : await MultipartFile.fromFile(recordImage!.path,
+                                  filename: recordImage!.path.split('/').last,
+                                  contentType: MediaType('image', 'jpg'));
+                        }
+                        record['recordType'] = selectedRecordType.toUpperCase();
+                        if (doctor && selectedUser != null) {
+                          context.read<RecordBloc>().add(UploadRecordByDoctor(
+                              patientId: selectedUser!.id!, record: record));
+                          return;
+                        }
+                        if (Utils.checkInternetConnection(context)) {
                           context
                               .read<RecordBloc>()
                               .add(UploadRecordEvent(record: record));
-                        
+                        }
                       }),
                 ],
               ),
@@ -542,52 +533,6 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class IconWithText extends StatelessWidget {
-  const IconWithText({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.iconSize,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String icon;
-  final String title;
-  final double iconSize;
-  final Color color;
-  final Function() onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ImageIcon(AssetImage(icon), size: iconSize, color: color),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: FontSizeManager.f16,
-                fontWeight: FontWeightManager.semiBold,
-                color: color,
-                fontFamily: GoogleFonts.rubik().fontFamily,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

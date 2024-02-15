@@ -23,7 +23,6 @@ class QualificationBloc extends Bloc<QualificationEvent, QualificationState> {
         emit(QualificationFailure(message: response.data['message']));
       }
     } catch (e) {
-      print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;

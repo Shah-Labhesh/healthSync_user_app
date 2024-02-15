@@ -6,6 +6,7 @@ import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 
 class PatientTileWidget extends StatelessWidget {
@@ -19,15 +20,15 @@ class PatientTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: PaddingManager.p14),
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
       decoration: BoxDecoration(
         color: gray50,
         borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: black.withOpacity(0.08),
             blurRadius: 20,
             blurStyle: BlurStyle.outer,
           ),
@@ -53,18 +54,18 @@ class PatientTileWidget extends StatelessWidget {
                       ),
                     ),
                     fit: BoxFit.cover,
-                    height: 45,
-                    width: 45,
+                    height: HeightManager.h45,
+                    width: WidthManager.w45,
                   )
                 : Image.asset(
                     AppImages.defaultAvatar,
                     fit: BoxFit.cover,
-                    height: 45,
-                    width: 45,
+                    height: HeightManager.h45,
+                    width: WidthManager.w45,
                   ),
           ),
           const SizedBox(
-            width: 10,
+            width: WidthManager.w10,
           ),
           Text(
             '${patient.name}',

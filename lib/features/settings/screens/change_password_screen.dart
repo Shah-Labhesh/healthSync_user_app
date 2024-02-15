@@ -33,7 +33,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool isMatch = true;
 
   checkPassword() {
-    print('check..');
     if (_newPasswordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       setState(() {
@@ -54,21 +53,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<UpdateProfileBloc, UpdateProfileState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                "Token Expired Please login again",
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.handleTokenExpired(context);
         }
 
         if (state is ChangePasswordSuccess) {
@@ -96,13 +82,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           isLoading: state is ChangePasswordLoading,
           child: Scaffold(
             appBar: const PreferredSize(
-                preferredSize: Size.fromHeight(HeightManager.h73),
-                child: AppBarCustomWithSceenTitle(
-                  title: 'Change Password',
-                  isBackButton: true,
-                )),
+              preferredSize: Size.fromHeight(HeightManager.h73),
+              child: AppBarCustomWithSceenTitle(
+                title: 'Change Password',
+                isBackButton: true,
+              ),
+            ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -111,7 +98,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                      height: 10,
+                      height: HeightManager.h10,
                     ),
                     CustomTextfield(
                       label: '',
@@ -214,7 +201,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     if (!isMatch) ...[
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+                        padding: const EdgeInsets.only(left: PaddingManager.p8),
                         child: Text(
                           'Password does not match',
                           style: TextStyle(
@@ -239,7 +226,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               child: CustomButtom(
                 title: 'Change Password',
                 onPressed: () {
-                  if (_formKey.currentState!.validate() && isMatch) {
+                  if (_formKey.currentState!.validate() && isMatch && Utils.checkInternetConnection(context)) {
                     context.read<UpdateProfileBloc>().add(
                           ChangePassword(
                             data: {

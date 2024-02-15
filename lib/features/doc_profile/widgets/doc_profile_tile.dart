@@ -5,6 +5,7 @@ import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
 
@@ -20,7 +21,7 @@ class DocProfileTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 20, top: 20, bottom: 50),
+      padding: const EdgeInsets.only(left: PaddingManager.paddingMedium2, top: PaddingManager.paddingMedium2, bottom: PaddingManager.p50),
       decoration: const BoxDecoration(
         color: gray50,
         borderRadius: BorderRadius.only(
@@ -31,8 +32,8 @@ class DocProfileTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 170,
-            width: 160,
+            height: HeightManager.h170,
+            width: WidthManager.w160,
             child: doctor.avatar != null
                 ? CachedNetworkImage(
                     imageUrl: BASE_URL + doctor.avatar!,
@@ -56,10 +57,10 @@ class DocProfileTile extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: WidthManager.w20),
           SizedBox(
-            width: 190,
-            height: 170,
+            width: WidthManager.w190,
+            height: HeightManager.h170,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -73,7 +74,7 @@ class DocProfileTile extends StatelessWidget {
                       fontFamily: GoogleFonts.inter().fontFamily),
                       overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: HeightManager.h6),
                 Text(
                   doctor.speciality ?? '-',
                   style: TextStyle(
@@ -83,7 +84,7 @@ class DocProfileTile extends StatelessWidget {
                     fontFamily: GoogleFonts.montserrat().fontFamily,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: HeightManager.h12),
                 Text(
                   'NRs. ${doctor.fee}',
                   style: TextStyle(

@@ -1,11 +1,25 @@
 
 class PaddingManager {
+  static const double p2 = 2.0;
+  static const double p4 = 4.0;
+  static const double p5 = 5.0;
+  static const double p6 = 6.0;
+  static const double p7 = 7.0;
+  static const double p8 = 8.0;
+  static const double p9 = 9.0;
+  static const double p10 = 10.0;
+  static const double p12 = 12.0;
+  static const double p13 = 13.0;
+  static const double p14 = 14.0;
   static const double padding = 16.0;
   static const double paddingSmall = 8.0;
   static const double paddingMedium = 16.0;
   static const double paddingMedium2= 20.0;
+  static const double p18 = 18.0;
   static const double paddingLarge = 24.0;
+  static const double paddingLitteLarge = 30.0;
   static const double paddingExtraLarge = 32.0;
+  static const double p50 = 50.0;
 }
 
 class MarginManager {
@@ -19,8 +33,10 @@ class MarginManager {
 class HeightManager {
   static const double bottomNavBarHeight = 73.0;
   static const double h2 = 2.0;
+  static const double h3 = 3.0;
   static const double h4 = 4.0;
   static const double h5 = 5.0;
+  static const double h6 = 6.0;
   static const double h757 = 7.57;
   static const double h8 = 8.0;
   static const double h9 = 9.0;
@@ -28,6 +44,7 @@ class HeightManager {
   static const double h12 = 12.0;
   static const double h13 = 13.0;
   static const double h14 = 14.0;
+  static const double h15 = 15.0;
   static const double h16 = 16.0;
   static const double h17 = 17.0;
   static const double h18 = 18.0;
@@ -48,10 +65,14 @@ class HeightManager {
   static const double h36 = 36.00;
   static const double h37 = 37.00;
   static const double h40 = 40.00;
+  static const double h45 = 45.00;
+  static const double h48 = 48.00;
   static const double h50 = 50.00;
+  static const double h55 = 55.00;
   static const double h56 = 56.00;
   static const double h60 = 60.00;
   static const double h64 = 64.00;
+  static const double h65 = 65.00;
   static const double h73 = 73.00;
   static const double h74 = 74.00;
   static const double h77 = 77.00;
@@ -59,12 +80,22 @@ class HeightManager {
   static const double h85 = 85.00;
   static const double h90 = 90.00;
   static const double h100 = 100.00;
+  static const double h105 = 105.00;
+  static const double h110 = 110.00;
   static const double h120 = 120.00;
+  static const double h130 = 130.00;
+  static const double h140 = 140.00;
   static const double h150 = 150.00;
   static const double h160 = 160.00;
+  static const double h170 = 170.00;
   static const double h174 = 174.00;
+  static const double h180 = 180.00;
   static const double h190 = 190.00;
   static const double h200 = 200.00;
+  static const double h210 = 210.00;
+  static const double h220 = 220.00;
+  static const double h230 = 230.00;
+  static const double h240 = 240.00;
   static const double h250 = 250.00;
   static const double h266 = 266.00;
   static const double h300 = 300.00;
@@ -76,6 +107,7 @@ class WidthManager {
   static const double w5 = 5.0;
   static const double w6 = 6.0;
   static const double w7 = 7.0;
+  static const double w8 = 8.0;
   static const double w9 = 9.0;
   static const double w10 = 10.0;
   static const double w11 = 11.0;
@@ -84,8 +116,12 @@ class WidthManager {
   static const double w14 = 14.0;
   static const double w15 = 15.0;
   static const double w16 = 16.0;
+  static const double w17 = 17.0;
+  static const double w18 = 18.0;
+  static const double w19 = 19.0;
   static const double w20 = 20.0;
   static const double w21 = 21.0;
+  static const double w22 = 22.0;
   static const double w24 = 24.0;
   static const double w25 = 25.0;
   static const double w28 = 28.0;
@@ -96,11 +132,30 @@ class WidthManager {
   static const double w39 = 39.0;
   static const double w40 = 40.0;
   static const double w45 = 45;
+  static const double w48 = 48;
+  static const double w50 = 50;
+  static const double w55 = 55;
   static const double w60 = 60;
+  static const double w65 = 65;
+  static const double w70 = 70;
+  static const double w80 = 80;
+  static const double w90 = 90;
   static const double w100 = 100.00;
+  static const double w105 = 105.00;
+  static const double w110 = 110.00;
   static const double w120 = 120.00;
   static const double w130 = 130.00;
+  static const double w140 = 140.00;
   static const double w150 = 150.00;
+  static const double w160 = 160.00;
+  static const double w170 = 170.00;
+  static const double w180 = 180.00;
+  static const double w190 = 190.00;
+  static const double w200 = 200.00;
+  static const double w210 = 210.00;
+  static const double w220 = 220.00;
+  static const double w230 = 230.00;
+  static const double w240 = 240.00;
   static const double w242 = 242.00;
   static const double w250 = 250.00;
   static const double w300 = 300.00;

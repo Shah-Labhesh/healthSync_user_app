@@ -12,16 +12,14 @@ class SlotRepo {
       data: data,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
     return response;
   }
-
 
   Future<Response> getMySlots({required String sort}) async {
     final token = await SharedUtils.getToken();
     Response response = await dio.get(
       AppUrls.getMySlots,
-      queryParameters: {'sort':sort},
+      queryParameters: {'sort': sort},
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
     return response;
@@ -35,7 +33,6 @@ class SlotRepo {
       data: data,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
 
     return response;
   }

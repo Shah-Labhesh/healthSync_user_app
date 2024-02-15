@@ -116,21 +116,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
     return BlocConsumer<UpdateProfileBloc, UpdateProfileState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                "Token Expired Please login again",
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.handleTokenExpired(context);
         }
         if (state is UpdateProfileSuccess) {
           if (doctor) {
@@ -167,6 +154,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             },
           );
         }
+
+        if (state is EmailVerificationState) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, 'login_screen', (route) => false);
+
+          Utils.showSnackBar(context,
+              'Profile Updated Successfully. Please verify your email to login',
+              isSuccess: true);
+        }
       },
       builder: (context, state) {
         return LoadingOverlay(
@@ -198,8 +194,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         children: [
                           image != null
                               ? Container(
-                                  height: 120,
-                                  width: 120,
+                                  height: HeightManager.h120,
+                                  width: WidthManager.w120,
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.all(
                                       Radius.circular(60),
@@ -215,25 +211,25 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(100),
                                       ),
-                                    child: CachedNetworkImage(
-                                        imageUrl:
-                                            BASE_URL + args.avatar!,
+                                      child: CachedNetworkImage(
+                                        imageUrl: BASE_URL + args.avatar!,
                                         progressIndicatorBuilder: (context, url,
                                                 downloadProgress) =>
                                             CircularProgressIndicator(
-                                                value: downloadProgress.progress),
+                                                value:
+                                                    downloadProgress.progress),
                                         errorWidget: (context, url, error) =>
                                             const Center(
                                           child: Icon(Icons.error),
                                         ),
-                                        height: 120,
-                                        width: 120,
+                                        height: HeightManager.h120,
+                                        width: WidthManager.w120,
                                         fit: BoxFit.cover,
                                       ),
-                                  )
+                                    )
                                   : Container(
-                                      height: 120,
-                                      width: 120,
+                                      height: HeightManager.h120,
+                                      width: WidthManager.w120,
                                       decoration: const BoxDecoration(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(60),
@@ -255,8 +251,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             },
                             child: Image.asset(
                               pickImageIcon,
-                              height: 45,
-                              width: 45,
+                              height: HeightManager.h45,
+                              width: WidthManager.w45,
                             ),
                           ),
                         ],
@@ -268,8 +264,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         label: 'Name',
                         hintText: 'Enter your name',
                         controller: _nameController,
-                        suffixIcon:
-                            const Icon(Icons.person_outline, color: gray400),
+                        suffixIcon: const Icon(
+                          Icons.person_outline,
+                          color: gray400,
+                        ),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Name cannot be empty';
@@ -285,8 +283,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           label: 'Email',
                           hintText: 'Enter your email',
                           controller: _emailController,
-                          suffixIcon:
-                              const Icon(Icons.email_outlined, color: gray400),
+                          suffixIcon: const Icon(
+                            Icons.email_outlined,
+                            color: gray400,
+                          ),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Email cannot be empty';
@@ -302,8 +302,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           label: 'Khalti Id',
                           hintText: 'Enter your khalti id',
                           controller: _khaltiIdController,
-                          suffixIcon: const Icon(Icons.payment_outlined,
-                              color: gray400),
+                          suffixIcon: const Icon(
+                            Icons.payment_outlined,
+                            color: gray400,
+                          ),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Khalti Id cannot be empty';
@@ -323,8 +325,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           controller: _experienceController,
                           minLines: 4,
                           maxLines: 4,
-                          suffixIcon:
-                              const Icon(Icons.work_outline, color: gray400),
+                          suffixIcon: const Icon(
+                            Icons.work_outline,
+                            color: gray400,
+                          ),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Experience cannot be empty';
@@ -371,11 +375,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           filename: 'image.jpg',
                           contentType: MediaType('image', 'jpg'));
                     }
-                    context.read<UpdateProfileBloc>().add(
-                          UpdateProfile(
-                            data: data,
-                          ),
-                        );
+                    if (Utils.checkInternetConnection(context)) {
+                      context.read<UpdateProfileBloc>().add(
+                            UpdateProfile(
+                              data: data,
+                            ),
+                          );
+                    }
                   }
                 },
               ),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -24,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (response.statusCode == 201) {
         final firebaseResponse = await AuthRepo().postFirebaseToken(
             token: response.data["token"],
-            firebaseToken: await FirebaseService.getToken());
+            firebaseToken: await FirebaseService.requestPermission());
         if (firebaseResponse.statusCode == 201) {
           emit(LoginSucess(data: {'role': response.data["role"]}));
           SharedUtils.setToken(response.data["token"]);
@@ -39,7 +37,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
-          print(e.response!.data);
           if (statusCode == 522) {
             emit(LoginFailed(
                 message: "Connection timed out. Please try again later"));
@@ -54,11 +51,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                 "email": event.credentials["email"],
                 "password": event.credentials["password"]
               }));
-              print("verify your email");
             }
 
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(LoginFailed(message: e.response?.data["message"][0]));
             } else {
               emit(LoginFailed(message: e.response?.data["message"]));
@@ -89,9 +84,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           .googleLogin(name: googleUser.displayName!, email: googleUser.email);
 
       if (response.statusCode == 201) {
-        emit(LoginSucess(data: {'role': response.data["role"]}));
-        SharedUtils.setToken(response.data["token"]);
-        SharedUtils.setRole(response.data["role"]);
+        final firebaseResponse = await AuthRepo().postFirebaseToken(
+            token: response.data["token"],
+            firebaseToken: await FirebaseService.requestPermission());
+        if (firebaseResponse.statusCode == 201) {
+          emit(LoginSucess(data: {'role': response.data["role"]}));
+          SharedUtils.setToken(response.data["token"]);
+          SharedUtils.setRole(response.data["role"]);
+        } else {
+          emit(LoginFailed(
+              message: 'Something went wrong. Please try again later'));
+        }
       }
     } catch (e) {
       if (e is DioException) {
@@ -105,8 +108,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(LoginFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(LoginFailed(message: e.response?.data["message"][0]));
             } else {
               emit(LoginFailed(message: e.response?.data["message"]));
@@ -152,8 +154,7 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
             emit(RegistrationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(RegistrationFailed(message: e.response?.data["message"][0]));
             } else {
               emit(RegistrationFailed(message: e.response?.data["message"]));
@@ -204,8 +205,7 @@ class EmailVerificationBloc
             emit(EmailVerificationInitiationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(EmailVerificationInitiationFailed(
                   message: e.response?.data["message"][0]));
             } else {
@@ -248,8 +248,7 @@ class EmailVerificationBloc
             emit(EmailVerificationResendFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(EmailVerificationResendFailed(
                   message: e.response?.data["message"][0]));
             } else {
@@ -290,8 +289,7 @@ class EmailVerificationBloc
             emit(EmailVerificationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(EmailVerificationFailed(
                   message: e.response?.data["message"][0]));
             } else {
@@ -343,8 +341,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordInitiationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(PasswordInitiationFailed(
                   message: e.response?.data["message"][0]));
             } else {
@@ -387,8 +384,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordResetOtpResendFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(PasswordResetOtpResendFailed(
                   message: e.response?.data["message"][0]));
             } else {
@@ -429,8 +425,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordResetFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(
                   PasswordResetFailed(message: e.response?.data["message"][0]));
             } else {
@@ -471,8 +466,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
             emit(PasswordVerificationFailed(
                 message: 'Something went wrong. Please try again later'));
           } else {
-            if (e.response?.data["message"].runtimeType !=
-                e.response?.data["message"]) {
+            if (e.response?.data["message"].runtimeType != String) {
               emit(PasswordVerificationFailed(
                   message: e.response?.data["message"][0]));
             } else {

@@ -11,6 +11,7 @@ import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
+import 'package:user_mobile_app/features/appointment/widgets/no_appointment_widget.dart';
 import 'package:user_mobile_app/features/authentication/data/model/specialities.dart';
 import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_bloc.dart';
 import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_event.dart';
@@ -18,12 +19,13 @@ import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_stat
 import 'package:user_mobile_app/features/home/widgets/appointment_widget.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
 import 'package:user_mobile_app/features/home/widgets/home_appbar.dart';
+import 'package:user_mobile_app/features/home/widgets/no_doctor_widget.dart';
 import 'package:user_mobile_app/features/home/widgets/tile_bar.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/data/model/search_param.dart';
 
 class HomeContent extends StatefulWidget {
-  HomeContent({super.key});
+  const HomeContent({super.key});
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -31,18 +33,13 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   String name = '';
-
   List<Appointment> appointment = [];
-
   List<User> doctors = [];
-
   List<Specialities> specialities = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // to fetch data from server after the widget is built for the first time and then update the UI with the fetched data
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<UserHomeBloc>().add(FetchUserHomeEvent());
     });
@@ -55,20 +52,8 @@ class _HomeContentState extends State<HomeContent> {
     TextTheme textTheme = theme.textTheme;
     return BlocConsumer<UserHomeBloc, UserHomeState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is TokenExpired) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'login_screen', (route) => false);
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                'Token Expired! Please login again to continue',
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.handleTokenExpired(context);
         }
 
         if (state is ToggleFavouriteSuccess) {
@@ -104,7 +89,9 @@ class _HomeContentState extends State<HomeContent> {
         if (state is UserHomeLoadFailed) {
           return InkWell(
             onTap: () async {
-              context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+              if (Utils.checkInternetConnection(context)) {
+                context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+              }
             },
             child: Center(
               child: Text(state.message),
@@ -119,7 +106,10 @@ class _HomeContentState extends State<HomeContent> {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+            if (Utils.checkInternetConnection(context)) {
+              context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+            }
+            await Future.delayed(const Duration(seconds: 1));
           },
           child: Scaffold(
             body: Padding(
@@ -132,9 +122,10 @@ class _HomeContentState extends State<HomeContent> {
                   children: [
                     BlocProvider(
                       create: (context) => NotificationBloc(),
-                      child: HomeAppBar(name: name.split(' ')[0], drawer: false),
+                      child:
+                          HomeAppBar(name: name.split(' ')[0], drawer: false),
                     ),
-                    
+
                     const SizedBox(
                       height: 45,
                     ),
@@ -143,11 +134,12 @@ class _HomeContentState extends State<HomeContent> {
                         Navigator.pushNamed(context, 'search_doctor');
                       },
                       child: Container(
-                        height: 60,
+                        height: HeightManager.h60,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: gray200, width: 2),
+                          border: Border.all(
+                              color: gray200, width: WidthManager.w2),
                         ),
                         child: Row(
                           children: [
@@ -192,7 +184,7 @@ class _HomeContentState extends State<HomeContent> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(
                           horizontal: PaddingManager.paddingMedium2,
-                          vertical: 12,
+                          vertical: PaddingManager.p12,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,12 +205,12 @@ class _HomeContentState extends State<HomeContent> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      height: 60,
-                                      width: 60,
+                                      height: HeightManager.h60,
+                                      width: WidthManager.w60,
                                       margin: const EdgeInsets.only(right: 10),
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 12,
+                                        horizontal: PaddingManager.p12,
+                                        vertical: PaddingManager.p12,
                                       ),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
@@ -230,13 +222,15 @@ class _HomeContentState extends State<HomeContent> {
                                       ),
                                       child: speciality.image != null
                                           ? CachedNetworkImage(
-                                              imageUrl: BASE_URL +
-                                                  speciality.image!,
-                                              progressIndicatorBuilder: (context,
-                                                      url, downloadProgress) =>
-                                                  CircularProgressIndicator(
-                                                      value: downloadProgress
-                                                          .progress),
+                                              imageUrl:
+                                                  BASE_URL + speciality.image!,
+                                              progressIndicatorBuilder:
+                                                  (context, url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       const Center(
@@ -250,7 +244,7 @@ class _HomeContentState extends State<HomeContent> {
                                             ),
                                     ),
                                     const SizedBox(
-                                      height: 10,
+                                      height: HeightManager.h10,
                                     ),
                                     Text(
                                       speciality.name ?? '-',
@@ -272,38 +266,34 @@ class _HomeContentState extends State<HomeContent> {
                     TileBarWidget(
                       title: 'Upcoming Schedules',
                       subTitle: ' (${appointment.length})',
-                      padding: 20,
+                      padding: PaddingManager.paddingMedium2,
                     ),
                     if (appointment.isNotEmpty)
                       AppointmentWidget(appointment: appointment[0])
                     else
-                      Text('No appointment'),
+                      const NoAppointmentWidget(),
+
                     const TileBarWidget(
                       title: 'NearBy Doctors',
                       more: true,
-                      padding: 20,
+                      padding: PaddingManager.paddingMedium2,
                     ),
-                    // list generate 
-                    // if (doctors.isNotEmpty)
-                    for (int i = 0; i < doctors.length; i++)
-                      DoctorTile(
-                        doctor: doctors[i],
-                        onPressed: () {
-                          if (state is ToggleFavouriteLoading) return;
-                          final bloc = context.read<UserHomeBloc>();
-                          bloc.add(ToggleFavouriteEvent(doctorId: doctors[i].id!));
-                        },
-                      ),
+                    // list generate
+                    if (doctors.isEmpty)
+                      const NoDoctorWidget()
+                    else
+                      for (int i = 0; i < doctors.length; i++)
+                        DoctorTile(
+                          doctor: doctors[i],
+                          onPressed: () {
+                            if (state is ToggleFavouriteLoading) return;
+                            final bloc = context.read<UserHomeBloc>();
+                            bloc.add(
+                                ToggleFavouriteEvent(doctorId: doctors[i].id!));
+                          },
+                        ),
 
-                    // for (User doctor in doctors)
-                    //   DoctorTile(
-                    //     doctor: doctor,
-                    //     onPressed: () {
-                    //       if (state is ToggleFavouriteLoading) return;
-                    //       final bloc = context.read<UserHomeBloc>();
-                    //       bloc.add(ToggleFavouriteEvent(doctorId: doctor.id!));
-                    //     },
-                    //   ),
+                    
                     const SizedBox(
                       height: HeightManager.h73,
                     ),

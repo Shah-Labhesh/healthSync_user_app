@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 
 class TileBarWidget extends StatelessWidget {
   const TileBarWidget({
@@ -21,7 +22,7 @@ class TileBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: padding ?? 10),
+      padding: EdgeInsets.symmetric(vertical: padding ?? PaddingManager.p10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [

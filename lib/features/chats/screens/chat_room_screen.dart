@@ -20,7 +20,6 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initializeRole();
   }
@@ -60,30 +59,30 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: HeightManager.h20,
                 ),
               ],
-              ChatRoomTileWidget(
+              const ChatRoomTileWidget(
                 image: AppImages.user1,
                 name: 'Toya',
                 lastMessage: 'Hello, How are you?',
                 time: '5 Mins ago',
               ),
-              ChatRoomTileWidget(
+              const ChatRoomTileWidget(
                 image: AppImages.defaultAvatar,
                 name: 'Niskar',
                 lastMessage:
                     'I’m here for you, don’t worry just follow the instructions I gave you.',
                 time: 'Just Now',
               ),
-              ChatRoomTileWidget(
+              const ChatRoomTileWidget(
                 image: AppImages.doctor2,
                 name: 'Dr. John Doe',
                 lastMessage: 'Hello, How are you?',
                 isImage: true,
                 time: '10:00 AM',
               ),
-              ChatRoomTileWidget(
+              const ChatRoomTileWidget(
                 image: AppImages.defaultAvatar,
                 name: 'Mueion',
                 lastMessage:

@@ -44,7 +44,11 @@ class DocHomeBloc extends Bloc<DocHomeEvent, DocHomeState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(DocHomeError(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(DocHomeError(message: e.response?.data["message"][0]));
+            } else {
+              emit(DocHomeError(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(DocHomeError(message: e.response?.data["message"][0]));

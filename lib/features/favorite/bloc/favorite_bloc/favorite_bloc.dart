@@ -37,7 +37,11 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(FavoriteLoadFailed(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(FavoriteLoadFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(FavoriteLoadFailed(message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(FavoriteLoadFailed(message: e.response?.data["message"][0]));
@@ -78,7 +82,13 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
           } else if (statusCode == 401) {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
-            emit(ToggleFavouriteFailed(message: e.response?.data["message"]));
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ToggleFavouriteFailed(
+                  message: e.response?.data["message"][0]));
+            } else {
+              emit(ToggleFavouriteFailed(
+                  message: e.response?.data["message"]));
+            }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
               emit(ToggleFavouriteFailed(

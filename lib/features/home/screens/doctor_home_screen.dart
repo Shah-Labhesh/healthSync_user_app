@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/account/screens/drawer_doctor.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
+import 'package:user_mobile_app/features/appointment/widgets/no_appointment_widget.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_bloc.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_event.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_state.dart';
@@ -26,9 +28,6 @@ class DoctorHomeScreen extends StatefulWidget {
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // User doctor = User();
-  // List<Appointment> appointments = [];
-  // List<User> patients = [];
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +41,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
       },
       child: BlocConsumer<DocHomeBloc, DocHomeState>(
         listener: (context, state) {
-          // TODO: implement listener
 
           if (state is TokenExpired) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, 'login_screen', (route) => false);
-
-            Utils.showSnackBar(
-              context,
-              'Session Expired. Please login again',
-              isSuccess: false,
-            );
+            Utils.handleTokenExpired(context);
           }
         },
         builder: (context, state) {
@@ -61,7 +52,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
           }
 
           if (state is DocHomeLoading) {
-            return Scaffold(
+            return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
               ),
@@ -86,7 +77,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
+                        horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
                     child: Column(
                       children: [
                         BlocProvider(
@@ -100,19 +91,14 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                           ),
                         ),
                         const SizedBox(
-                          height: 6,
+                          height: HeightManager.h6,
                         ),
                         const TileBarWidget(title: 'My Appointments'),
                         const SizedBox(
-                          height: 6,
+                          height: HeightManager.h6,
                         ),
                         if (state.appointments.isEmpty)
-                          SizedBox(
-                            height: 190,
-                            child: const Center(
-                              child: Text('No Appointments'),
-                            ),
-                          )
+                    const NoAppointmentWidget()
                         else
                           IntrinsicGridView.vertical(
                             columnCount: 2,
@@ -127,13 +113,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             ],
                           ), // IntrinsicGridView.vertical
                         const SizedBox(
-                          height: 10,
+                          height: HeightManager.h10,
                         ),
                         const TileBarWidget(title: 'Patients List'),
                         if (state.patients.isEmpty)
-                          SizedBox(
-                            height: 190,
-                            child: const Center(
+                         const SizedBox(
+                            height: HeightManager.h190,
+                            child:  Center(
                               child: Text('No Patients'),
                             ),
                           )
@@ -144,7 +130,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             ),
 
                         const SizedBox(
-                          height: 30,
+                          height: HeightManager.h30,
                         ),
                       ],
                     ),

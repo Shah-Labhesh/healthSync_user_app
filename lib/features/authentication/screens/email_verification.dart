@@ -9,6 +9,7 @@ import 'package:otp_pin_field/otp_pin_field.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/authentication/bloc/auth_bloc/auth_bloc.dart';
 import 'package:user_mobile_app/features/authentication/bloc/auth_bloc/auth_event.dart';
 import 'package:user_mobile_app/features/authentication/bloc/auth_bloc/auth_state.dart';
@@ -75,7 +76,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     }
     return BlocConsumer<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is EmailVerificationCompleted) {
           showDialog(
             context: context,
@@ -134,7 +134,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               color: blue900, size: 60),
           child: Scaffold(
             appBar: const PreferredSize(
-              preferredSize: Size.fromHeight(70),
+              preferredSize: Size.fromHeight(HeightManager.h73),
               child: AppBarCustomWithSceenTitle(
                 title: "Email Verification",
                 isBackButton: true,
@@ -142,11 +142,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             ),
             body: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 20,
+                      height: HeightManager.h20,
                     ),
                     Center(
                       child: Text(
@@ -159,11 +159,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: HeightManager.h20,
                     ),
                     OtpPinField(
-                      fieldHeight: 65,
-                      fieldWidth: 65,
+                      fieldHeight: HeightManager.h65,
+                      fieldWidth: WidthManager.w65,
                       autoFillEnable: true,
                       textInputAction: TextInputAction.done,
                       otpPinFieldDecoration:
@@ -194,10 +194,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       onSubmit: (text) {},
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: HeightManager.h20,
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -246,7 +246,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         ],
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     CustomButtom(
                         title: "Verify",
                         onPressed: () {
@@ -270,7 +270,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                               );
                         }),
                     const SizedBox(
-                      height: 40,
+                      height: HeightManager.h40,
                     ),
                   ],
                 ),

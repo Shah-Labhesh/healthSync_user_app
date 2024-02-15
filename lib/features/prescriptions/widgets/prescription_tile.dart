@@ -1,10 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/prescription.dart';
+import 'package:user_mobile_app/features/prescriptions/widgets/generate_pdf.dart';
 import 'package:user_mobile_app/features/preview_screen/image_preview.dart';
 import 'package:user_mobile_app/features/preview_screen/pdf_preview.dart';
 
@@ -13,12 +17,12 @@ class PrescriptionTile extends StatelessWidget {
     super.key,
     required this.isDoctor,
     required this.prescription,
-    required this.popupMenuItems,
+    // required this.popupMenuItems,
   });
 
   final bool isDoctor;
   final Prescription prescription;
-  final PopupMenuItem<dynamic> popupMenuItems;
+  // final PopupMenuItem<dynamic> popupMenuItems;
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +39,20 @@ class PrescriptionTile extends StatelessWidget {
           ),
         ],
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(
+          horizontal: PaddingManager.paddingMedium2,
+          vertical: PaddingManager.p10),
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
+        horizontal: PaddingManager.p12,
+        vertical: PaddingManager.p8,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
+              horizontal: PaddingManager.p12,
+              vertical: PaddingManager.p8,
             ),
             decoration: BoxDecoration(
               color: blue600,
@@ -66,7 +72,7 @@ class PrescriptionTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 2,
+                  height: HeightManager.h2,
                 ),
                 Text(
                   prescription.createdAt!.splitMonth(),
@@ -81,7 +87,7 @@ class PrescriptionTile extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            width: 12,
+            width: WidthManager.w12,
           ),
           Expanded(
             child: Column(
@@ -100,7 +106,7 @@ class PrescriptionTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: HeightManager.h4,
                 ),
                 RichText(
                     text: TextSpan(
@@ -116,7 +122,7 @@ class PrescriptionTile extends StatelessWidget {
                     ),
                     TextSpan(
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
+                        ..onTap = () async {
                           if (prescription.recordType == 'PDF') {
                             Navigator.push(context, MaterialPageRoute(
                               builder: (context) {
@@ -137,6 +143,20 @@ class PrescriptionTile extends StatelessWidget {
                               },
                             ));
                           }
+
+                          if (prescription.recordType == 'TEXT') {
+                            final pdfFile =
+                                await PdfInvoiceApi.generate(prescription);
+
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return PDFPreviewScreen(
+                                  pdfPath: pdfFile.path,
+                                  isFromNetwork: false,
+                                );
+                              },
+                            ));
+                          }
                         },
                       text: 'preview',
                       style: TextStyle(
@@ -152,24 +172,24 @@ class PrescriptionTile extends StatelessWidget {
               ],
             ),
           ),
-          PopupMenuButton(
-            iconSize: 22,
-            iconColor: gray700,
-            color: white,
-            shape: ShapeBorder.lerp(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              0.5,
-            ),
-            offset: const Offset(-25, 25),
-            itemBuilder: (context) {
-              return [popupMenuItems];
-            },
-          ),
+          // PopupMenuButton(
+          //   iconSize: 22,
+          //   iconColor: gray700,
+          //   color: white,
+          //   shape: ShapeBorder.lerp(
+          //     RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(4),
+          //     ),
+          //     RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(4),
+          //     ),
+          //     0.5,
+          //   ),
+          //   offset: const Offset(-25, 25),
+          //   itemBuilder: (context) {
+          //     return [popupMenuItems];
+          //   },
+          // ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
@@ -110,7 +111,7 @@ class SlotsTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 8,
+                height: HeightManager.h8,
               ),
               Text(
                 convertTime(slots.slotDateTime ?? ""),
@@ -127,8 +128,8 @@ class SlotsTile extends StatelessWidget {
           if (slots.isBooked ?? false)
             Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
+                horizontal: PaddingManager.p10,
+                vertical: PaddingManager.p5,
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(WidthManager.w10),
@@ -153,14 +154,15 @@ class SlotsTile extends StatelessWidget {
               onTap: onEditTap,
             ),
             const SizedBox(
-              width: 10,
+              width: WidthManager.w10,
             ),
             CustomIconButton(
               color: red600,
               size: 22,
               icon: Icons.delete,
               onTap: () {
-                final SlotsBloc slotsBloc = BlocProvider.of<SlotsBloc>(context);
+                if (Utils.checkInternetConnection(context)){
+                  final SlotsBloc slotsBloc = BlocProvider.of<SlotsBloc>(context);
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -173,6 +175,7 @@ class SlotsTile extends StatelessWidget {
                     );
                   },
                 );
+                }
               },
             ),
           ]

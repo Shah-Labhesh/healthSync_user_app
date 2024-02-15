@@ -1,4 +1,3 @@
-import 'package:user_mobile_app/constants/app_images.dart';
 
 class ChatMessage {
   final String? text;
@@ -17,7 +16,7 @@ class ChatMessage {
 }
 
 class ChatMessageModelData {
-  static List<ChatMessage> chatMessages = [
+  static List<ChatMessage> chatMessages = const [
     ChatMessage(
       text: 'Hello',
       time: '10:00 AM',

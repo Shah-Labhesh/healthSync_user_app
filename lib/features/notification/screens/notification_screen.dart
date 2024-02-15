@@ -7,12 +7,13 @@ import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
-import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_event.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_state.dart';
 import 'package:user_mobile_app/features/notification/data/model/notification.dart';
+import 'package:user_mobile_app/features/notification/widgets/no_notification_widget.dart';
 import 'package:user_mobile_app/features/notification/widgets/notification_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
@@ -44,7 +45,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<NotificationBloc>().add(MarkNotificationAsRead());
   }
@@ -61,16 +61,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
         body: BlocConsumer<NotificationBloc, NotificationState>(
           listener: (context, state) {
-            // TODO: implement listener
             if (state is TokenExpired) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'login_screen', (route) => false);
-
-              Utils.showSnackBar(
-                context,
-                'Session Expired. Please login again',
-                isSuccess: false,
-              );
+              Utils.handleTokenExpired(context);
             }
 
             if (state is NotificationLoaded) {
@@ -95,36 +87,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
             return SafeArea(
               child: SingleChildScrollView(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: notificationList.isEmpty
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
                   children: [
                     if (notificationList.isEmpty)
-                      const Center(
-                        child: Text(
-                          'No Notification Found',
-                        ),
-                      ),
-              
+                      const NoNotificationWidget()
+                    else if (notificationList.isNotEmpty) 
                     for (String date in dateList) ...[
                       Text(
                         date == DateTime.now().toString().splitDate()
                             ? 'Today'
                             : date ==
                                     DateTime.now()
-                                        .subtract(Duration(days: 1))
+                                        .subtract(const Duration(days: 1))
                                         .toString()
                                         .splitDate()
                                 ? 'Yesterday'
-                                : 'Past',
+                                : date.splitDate(),
                         style: TextStyle(
                           color: gray800,
-                          fontSize: 20,
+                          fontSize: FontSizeManager.f20,
                           fontWeight: FontWeightManager.semiBold,
                           fontFamily: GoogleFonts.montserrat().fontFamily,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: HeightManager.h12),
                       for (Notifications notification
                           in notificationMap[date]!) ...[
                         NotificationTile(
@@ -138,28 +129,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                       ],
                     ],
-                    // Text(
-                    //   'Today',
-                    //   style: TextStyle(
-                    //     color: gray800,
-                    //     fontSize: 20,
-                    //     fontWeight: FontWeightManager.semiBold,
-                    //     fontFamily: GoogleFonts.montserrat().fontFamily,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 10),
-                    // for (Notifications notification in notificationList) ...[
-                    //   NotificationTile(
-                    //     index: notificationList.indexOf(
-                    //       notification,
-                    //     ),
-                    //     notificationType: notification.notificationType ?? '',
-                    //     title: notification.title ?? '',
-                    //     subTitle: notification.body ?? '',
-                    //     time: notification.createdAt!.splitDate(),
-                    //   ),
-                    // ],
-                    // ],
+                    
                   ],
                 ),
               ),
