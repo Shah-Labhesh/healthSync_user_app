@@ -46,17 +46,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     return date;
   }
 
-  // void mapSlotsAccordingToDate() {
-  //   groupedAppointments.forEach((date, slots) {
-  //     print('Date: $date');
-  //     if (!dates.contains(date)) {
-  //       dates.add(date);
-  //     }
-  //     for (var slot in slots) {
-  //       print('  Slot: ${slot.slotDateTime!}');
-  //     }
-  //   });
-  // }
+  void mapSlotsAccordingToDate() {
+    groupedAppointments.forEach((date, slots) {
+      print('Date: $date');
+      if (!dates.contains(date)) {
+        dates.add(date);
+      }
+     
+    });
+  }
 
   int countOfAvailableSlots(List<Slots> slots) {
     int count = 0;
@@ -121,9 +119,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
         if (state is FetchSlotsSuccess) {
           slots = state.slots;
+          print(slots);
           groupedAppointments = groupByDate(slots);
-          // mapSlotsAccordingToDate();
+          mapSlotsAccordingToDate();
           dates.sort((a, b) => a.compareTo(b));
+          print(dates);
         }
         return LoadingOverlay(
           isLoading: state is BookAppointmentLoading,

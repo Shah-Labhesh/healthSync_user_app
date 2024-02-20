@@ -69,6 +69,8 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
               message: 'Connection timed out. Please try again later'));
         }
       } else {
+        print(e);
+
         emit(UserHomeLoadFailed(
             message: 'Connection timed out. Please try again later'));
       }
@@ -87,6 +89,7 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
             message: 'Something went wrong. Please try again later'));
       }
     } catch (e) {
+      print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -111,10 +114,12 @@ class UserHomeBloc extends Bloc<UserHomeEvent, UserHomeState> {
             }
           }
         } else {
+          print(e);
           emit(ToggleFavouriteFailed(
               message: 'Connection timed out. Please try again later'));
         }
       } else {
+        print(e);
         emit(ToggleFavouriteFailed(
             message: 'Connection timed out. Please try again later'));
       }

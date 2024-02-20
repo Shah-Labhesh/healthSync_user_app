@@ -15,8 +15,8 @@ class Appointment {
     String? reminderTime;
     String? appointmentStatus;
     bool? isExpired;
-    String? platformCost;
-    String? totalFee;
+    int? platformCost;
+    int? totalFee;
     String? createdAt;
     String? updatedAt;
     String? deletedAt;
@@ -56,8 +56,8 @@ class Appointment {
       reminderTime: map['reminderTime'] != null ? map['reminderTime'] as String : null,
       appointmentStatus: map['appointmentStatus'] != null ? map['appointmentStatus'] as String : null,
       isExpired: map['isExpired'] != null ? map['isExpired'] as bool : null,
-      platformCost: map['platformCost'] != null ? map['platformCost'] as String : null,
-      totalFee: map['totalFee'] != null ? map['totalFee'] as String : null,
+      platformCost: map['platformCost'] != null ? map['platformCost'] as int : null,
+      totalFee: map['totalFee'] != null ? map['totalFee'] as int : null,
       createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
       updatedAt: map['updatedAt'] != null ? map['updatedAt'] as String : null,
       deletedAt: map['deletedAt'] != null ? map['deletedAt'] as String : null,

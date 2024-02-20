@@ -33,7 +33,7 @@ class AppointmentRepo{
   Future<Response> getMyAppointments() async {
     final token = await SharedUtils.getToken();
     Response response = await dio.get(
-      AppUrls.getMyAppointments,
+      AppUrls.getAllAppointments,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
     print(response);

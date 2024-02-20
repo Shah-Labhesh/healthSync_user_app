@@ -31,19 +31,20 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   List<DocQualification> qualification = [];
   List<Ratings> rating = [];
   
+  String? docId;
 
   bool isFirstBuild = true;
 
   void fetchData() {
     if (Utils.checkInternetConnection(context)) {
-      context.read<DocProfileBloc>().add(GetDocProfile(doctorId: doctor!.id!));
+      context.read<DocProfileBloc>().add(GetDocProfile(doctorId: docId!));
     }
   }
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as String;
     if (isFirstBuild) {
-      doctor!.id = args;
+      docId = args;
       isFirstBuild = false;
     }
     return Scaffold(

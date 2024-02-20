@@ -1,7 +1,23 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'Runner' do
+  # Uncomment this line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for Runner
+  # Add your dependencies here, for example:
+  # pod 'Firebase/Auth'
+  # pod 'GoogleSignIn'
+end
+
+# Flutter Pod
+eval(File.read(File.join(File.dirname(__FILE__), 'Flutter', 'version')))
+
+# Post Install processing for Flutter pods
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-
 
     target.build_configurations.each do |config|
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [

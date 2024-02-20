@@ -107,7 +107,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         .toString()
                                         .splitDate()
                                 ? 'Yesterday'
-                                : date.splitDate(),
+                                : date,
                         style: TextStyle(
                           color: gray800,
                           fontSize: FontSizeManager.f20,

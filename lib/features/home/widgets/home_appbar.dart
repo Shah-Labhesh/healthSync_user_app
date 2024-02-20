@@ -95,7 +95,12 @@ class _HomeAppBarState extends State<HomeAppBar> {
             const Spacer(),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, 'notification_screen');
+                Navigator.pushNamed(context, 'notification_screen')
+                    .then((value) {
+                  context
+                      .read<NotificationBloc>()
+                      .add(FetchUnreadNotificationCount());
+                });
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

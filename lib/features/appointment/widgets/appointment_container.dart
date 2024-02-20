@@ -194,6 +194,33 @@ class AppointmentTile extends StatelessWidget {
           ),
           Row(
             children: [
+              if (appointment.isExpired == true)
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: PaddingManager.paddingMedium,
+                      vertical: PaddingManager.paddingSmall,
+                    ),
+                    decoration: BoxDecoration(
+                      color: blue800,
+                      border: Border.all(
+                        color: red600,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Rate Experience',
+                      style: TextStyle(
+                        fontSize: FontSizeManager.f16,
+                        fontWeight: FontWeightManager.semiBold,
+                        fontFamily: GoogleFonts.montserrat().fontFamily,
+                        color: gray50,
+                      ),
+                    ),
+                  ),
+                )
+              else
               if (appointment.payment == null && !doctor)
                 Expanded(
                   child: Container(

@@ -62,7 +62,10 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(HeightManager.h73),
                 child: AppBarCustomWithSceenTitle(
-                    title: 'My Appointments', isBackButton: true))
+                  title: 'My Appointments',
+                  isBackButton: true,
+                ),
+              )
             : null,
         body: BlocConsumer<MyAppointmentBloc, MyAppointmentState>(
           listener: (context, state) {
@@ -75,8 +78,13 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
               context.read<MyAppointmentBloc>().add(FetchMyAppointmentEvent());
             }
             if (state is MyAppointmentLoadFailed) {
-              return Center(
-                child: Text(state.message),
+              return GestureDetector(
+                onTap: () {
+                  fetchData();
+                },
+                child: Center(
+                  child: Text(state.message),
+                ),
               );
             }
             if (state is MyAppointmentLoading) {

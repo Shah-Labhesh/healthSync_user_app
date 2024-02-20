@@ -57,6 +57,7 @@ class AppUrls{
   // appointment
   static String bookAppointment = '$BASE_URL/appointment';
   static String getMyAppointments = '$BASE_URL/appointment/my-appointments';
+  static String getAllAppointments = '$BASE_URL/appointment/all-appointments';
 
   // medical record 
   static String uploadRecord = '$BASE_URL/medical-record';
@@ -77,4 +78,6 @@ class AppUrls{
   static String markRead = '$BASE_URL/notification/mark-read';
   static String notificationCount = '$BASE_URL/notification/unread-count';
 
+  // faqs
+  static String faqs = '$BASE_URL/faqs';
 }

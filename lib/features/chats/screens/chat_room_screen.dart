@@ -63,7 +63,7 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                 ),
               ],
               const ChatRoomTileWidget(
-                image: AppImages.user1,
+                image: AppImages.defaultAvatar,
                 name: 'Toya',
                 lastMessage: 'Hello, How are you?',
                 time: '5 Mins ago',
@@ -76,7 +76,7 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                 time: 'Just Now',
               ),
               const ChatRoomTileWidget(
-                image: AppImages.doctor2,
+                image: AppImages.defaultAvatar,
                 name: 'Dr. John Doe',
                 lastMessage: 'Hello, How are you?',
                 isImage: true,

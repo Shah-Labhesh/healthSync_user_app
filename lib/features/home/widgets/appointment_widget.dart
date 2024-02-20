@@ -11,6 +11,7 @@ import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
+import 'package:user_mobile_app/features/appointment/screens/call_screen.dart';
 
 class AppointmentWidget extends StatelessWidget {
   AppointmentWidget({
@@ -103,16 +104,16 @@ class AppointmentWidget extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => CallScreen(
-                  //         callID: appointment.id!,
-                  //         userId: appointment.user!.id!,
-                  //         userName: appointment.user!.name!,
-                  //       ),
-                  //     ),
-                  //   );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CallScreen(
+                          callID: appointment.id!,
+                          userId: appointment.user!.id!,
+                          userName: appointment.user!.name!,
+                        ),
+                      ),
+                    );
                 },
                 child: Container(
                   height: HeightManager.h55,

@@ -31,6 +31,8 @@ import 'package:user_mobile_app/features/contact_support/bloc/contact_bloc/conta
 import 'package:user_mobile_app/features/contact_support/screens/contact_support_screen.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_bloc.dart';
 import 'package:user_mobile_app/features/doc_profile/screen/doc_profile.dart';
+import 'package:user_mobile_app/features/faqs/bloc/faqs_bloc/faqs_bloc.dart';
+import 'package:user_mobile_app/features/faqs/screen/faqs_screen.dart';
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_bloc.dart';
 import 'package:user_mobile_app/features/favorite/screens/favorite_screen.dart';
 import 'package:user_mobile_app/features/home/bloc/doc_home_bloc/doc_home_bloc.dart';
@@ -100,10 +102,10 @@ class _MyAppState extends State<MyApp> {
         initialRoute: 'splash_screen',
         routes: {
           'splash_screen': (context) => const SplashScreen(),
-          'onboarding_screen': (context) => OnBoardingScreen(),
+          'onboarding_screen': (context) => const OnBoardingScreen(),
           'login_screen': (context) => BlocProvider(
                 create: (context) => LoginBloc(),
-                child: LoginPage(),
+                child: const LoginPage(),
               ),
           'signup_screen': (context) => BlocProvider(
                 create: (context) => UserRegisterBloc(),
@@ -220,7 +222,7 @@ class _MyAppState extends State<MyApp> {
                     create: (context) => UpdateProfileBloc(),
                   ),
                 ],
-                child: SettingsScreen(),
+                child: const SettingsScreen(),
               ),
           'my_slots_screen': (context) => BlocProvider(
                 create: (context) => SlotsBloc(),
@@ -228,7 +230,7 @@ class _MyAppState extends State<MyApp> {
               ),
           'change_password_screen': (context) => BlocProvider(
                 create: (context) => UpdateProfileBloc(),
-                child: ChangePasswordScreen(),
+                child: const ChangePasswordScreen(),
               ),
           'update_profile_screen': (context) => MultiBlocProvider(
                 providers: [
@@ -242,31 +244,35 @@ class _MyAppState extends State<MyApp> {
                     create: (context) => UpdateProfileBloc(),
                   ),
                 ],
-                child: UpdateProfileScreen(),
+                child: const UpdateProfileScreen(),
               ),
           'about_us_screen': (context) => const AboutUsScreen(),
           'upload_record_screen': (context) => BlocProvider(
                 create: (context) => RecordBloc(),
-                child: UploadRecordScreen(),
+                child: const UploadRecordScreen(),
               ),
           'rate_experience': (context) => const RateExperienceScreen(),
           'upload_prescription_screen': (context) => BlocProvider(
                 create: (context) => PrescriptionBloc(),
-                child: UploadPrescriptionScreen(),
+                child: const UploadPrescriptionScreen(),
               ),
           'my_qualification_screen': (context) => BlocProvider(
                 create: (context) => QualificationBloc(),
-                child: MyQualificationScreen(),
+                child: const MyQualificationScreen(),
               ),
           'auth_qualification_screen': (context) => BlocProvider(
                 create: (context) => QualificationBloc(),
-                child: AuthQualificationScreen(),
+                child: const AuthQualificationScreen(),
               ),
-          'update_address': (context) => UpdateLocationScreen(),
+          'update_address': (context) => const UpdateLocationScreen(),
           'change_speciality_screen': (context) => BlocProvider(
                 create: (context) => UpdateProfileBloc(),
                 child: const ChangeSpecialtyScreen(),
               ),
+              'faqs_screen': (context) => BlocProvider(
+                create: (context) => FAQBloc(),
+                child: const FAQsScreen(),
+              )
         },
       ),
     );

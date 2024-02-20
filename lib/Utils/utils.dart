@@ -46,11 +46,11 @@ class Utils {
 
   static bool checkInternetConnection(BuildContext context) {
     final bloc = BlocProvider.of<NetworkBloc>(context).state;
-    if (bloc is NetworkSuccess) {
-      return true;
+    if (bloc is NetworkFailure) {
+      showSnackBar(context, 'No Internet Connection', isSuccess: false);
+      return false;
     }
-    showSnackBar(context, 'No Internet Connection', isSuccess: false);
-    return false;
+    return true;
   }
 
   static Widget successDialog(BuildContext context, String message,

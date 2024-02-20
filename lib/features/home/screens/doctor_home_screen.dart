@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
+import 'package:user_mobile_app/features/account/bloc/account_bloc.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/account/screens/drawer_doctor.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
@@ -28,7 +29,6 @@ class DoctorHomeScreen extends StatefulWidget {
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -41,7 +41,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
       },
       child: BlocConsumer<DocHomeBloc, DocHomeState>(
         listener: (context, state) {
-
           if (state is TokenExpired) {
             Utils.handleTokenExpired(context);
           }
@@ -72,12 +71,16 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
               },
               child: Scaffold(
                 key: _scaffoldKey, // Add a key to the Scaffold
-                drawer: DoctorDrawer(doctor: state.doctors),
+                drawer: BlocProvider(
+                  create: (context) => AccountBloc(),
+                  child: DoctorDrawer(doctor: state.doctors),
+                ),
                 body: SafeArea(
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.paddingMedium2),
+                        horizontal: PaddingManager.paddingMedium2,
+                        vertical: PaddingManager.paddingMedium2),
                     child: Column(
                       children: [
                         BlocProvider(
@@ -98,7 +101,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                           height: HeightManager.h6,
                         ),
                         if (state.appointments.isEmpty)
-                    const NoAppointmentWidget()
+                          const NoAppointmentWidget()
                         else
                           IntrinsicGridView.vertical(
                             columnCount: 2,
@@ -117,9 +120,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                         ),
                         const TileBarWidget(title: 'Patients List'),
                         if (state.patients.isEmpty)
-                         const SizedBox(
+                          const SizedBox(
                             height: HeightManager.h190,
-                            child:  Center(
+                            child: Center(
                               child: Text('No Patients'),
                             ),
                           )

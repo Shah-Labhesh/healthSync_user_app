@@ -186,6 +186,11 @@ class _AccountScreenState extends State<AccountScreen> {
                     title: 'Contact Support',
                     route: 'contact_support',
                   ),
+                  const TileBarWidget(
+                    icon: faqsIcon,
+                    title: 'FAQs',
+                    route: 'faqs_screen',
+                  ),
                   TileBarWidget(
                     icon: settingsIcon,
                     title: 'Settings',

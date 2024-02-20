@@ -40,6 +40,7 @@ const String roundQualificationIcon = 'assets/images/roundQualificationIcon.png'
 const String githubIcon = 'assets/images/github_icon.png';  
 const String linkedinIcon = 'assets/images/linkedIn_icon.png';
 const String instagramIcon = 'assets/images/instagram_icon.png';
+const String faqsIcon = 'assets/images/faqs_icon.png';
 const String pdfIcon = 'assets/images/pdf_icon.png';
 const String textIcon = 'assets/images/text_icon.png';
 const String imageIcon = 'assets/images/image_icon.png';
