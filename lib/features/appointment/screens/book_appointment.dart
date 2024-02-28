@@ -48,7 +48,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
   void mapSlotsAccordingToDate() {
     groupedAppointments.forEach((date, slots) {
-      print('Date: $date');
       if (!dates.contains(date)) {
         dates.add(date);
       }
@@ -119,11 +118,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
         if (state is FetchSlotsSuccess) {
           slots = state.slots;
-          print(slots);
           groupedAppointments = groupByDate(slots);
           mapSlotsAccordingToDate();
           dates.sort((a, b) => a.compareTo(b));
-          print(dates);
         }
         return LoadingOverlay(
           isLoading: state is BookAppointmentLoading,

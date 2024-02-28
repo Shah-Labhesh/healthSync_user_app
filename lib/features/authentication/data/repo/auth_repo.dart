@@ -18,7 +18,6 @@ class AuthRepo {
 
   Future<Response> userRegister({Map<String, dynamic>? data}) async {
     Response response = await dio.post(AppUrls.userRegister, data: data);
-    print(response);
     return response;
   }
 
@@ -62,10 +61,8 @@ class AuthRepo {
 
   Future<Response> uploadAddress(
       {required String id, required Map<String, dynamic> data}) async {
-    print(AppUrls.uploadAddress(doctorId: id));
     Response response =
         await dio.post(AppUrls.uploadAddress(doctorId: id), data: data);
-    print("response is $response");
     return response;
   }
 
@@ -98,7 +95,6 @@ class AuthRepo {
       data: data,
       options: Options(headers: {"Content-Type": "multipart/form-data"}),
     );
-    print(response);
     return response;
   }
 

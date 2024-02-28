@@ -74,26 +74,25 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           );
         }
         if (state is PasswordResetOtpResendFailed) {
-          showDialog(
-            context: context,
-            builder: (context) => Utils.errorDialog(
-              context,
-              state.message,
-              onPressed: () => Navigator.pop(context),
-            ),
+          Utils.showSnackBar(
+            context,
+            state.message,
+            isSuccess: false,
           );
         }
         if (state is PasswordVerificationFailed) {
-          showDialog(
-            context: context,
-            builder: (context) => Utils.errorDialog(
-              context,
-              state.message,
-              onPressed: () => Navigator.pop(context),
-            ),
+          Utils.showSnackBar(
+            context,
+            state.message,
+            isSuccess: false,
           );
         }
         if (state is PasswordVerified) {
+          Utils.showSnackBar(
+            context,
+            'OTP verified successfully',
+            isSuccess: true,
+          );
           Navigator.pushNamed(context, 'reset_password',
               arguments: {'email': args, 'otp': otp});
         }
@@ -227,15 +226,10 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   title: "Verify",
                   onPressed: () {
                     if (otp == null || otp!.length != 4) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Utils.errorDialog(
-                            context,
-                            "Please enter a valid OTP",
-                            onPressed: () => Navigator.pop(context),
-                          );
-                        },
+                      Utils.showSnackBar(
+                        context,
+                        "Please enter a valid OTP",
+                        isSuccess: false,
                       );
                       return;
                     }

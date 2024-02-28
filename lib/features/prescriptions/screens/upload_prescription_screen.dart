@@ -121,13 +121,7 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
           Navigator.pop(context, state.prescription);
         }
         if (state is PrescriptionUploadError) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(context, state.message,
-                  onPressed: () => Navigator.pop(context));
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
 
         if (state is TokenExpired) {

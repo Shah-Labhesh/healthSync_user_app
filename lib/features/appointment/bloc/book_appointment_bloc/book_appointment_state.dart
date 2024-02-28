@@ -7,9 +7,9 @@ class BookAppointmentInitial extends BookAppointmentState {}
 class BookAppointmentLoading extends BookAppointmentState {}
 
 class BookAppointmentSuccess extends BookAppointmentState {
-  final String message;
+  final String appointmentId;
 
-  BookAppointmentSuccess({required this.message});
+  BookAppointmentSuccess({required this.appointmentId});
 }
 
 class BookAppointmentFailure extends BookAppointmentState {

@@ -1,5 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
+import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
+import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
@@ -16,10 +25,76 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
+String token = '';
+String chatRoomId = '';
+String destination = 'get-messages';
+StreamController<List<ChatMessage>> chatStream = StreamController();
+
+StompClient stompClient = StompClient(
+  config: StompConfig(
+    url: 'ws://10.0.2.2:8086/ws',
+    onConnect: onConnect,
+    beforeConnect: () async {
+      print('connecting...');
+      print('destination: $destination');
+    },
+    onDisconnect: (p0) {
+      print('onDisconnect: $p0');
+      print('destination: $destination');
+    },
+    onStompError: (p0) => print('onStompError: $p0'),
+    onWebSocketError: (dynamic error) => print('onWebSocketError: $error'),
+    stompConnectHeaders: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+    webSocketConnectHeaders: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+  ),
+);
+void onConnect(StompFrame frame) {
+  stompClient.subscribe(
+    destination: '/topic/$destination',
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+    callback: (frame) {
+      print('destination: $destination');
+
+      Map<String, dynamic> result = json.decode(frame.body as String);
+      List<ChatMessage> message = (result['body'] as List<dynamic>)
+          .map((e) => ChatMessage.fromMap(e))
+          .toList();
+      chatStream.sink.add(message);
+    },
+  );
+
+  Timer.periodic(const Duration(seconds:1), (_) {
+  stompClient.send(
+    destination: '/app/get-messages',
+    body: json.encode({'token': token, 'roomId': chatRoomId}),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket',
+      'content-type': 'application/json',
+    },
+  );
+  });
+}
+
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool isFocusCustom = false;
+
+  String currentUser = '';
 
   changeState(bool value) {
     setState(() {
@@ -28,7 +103,35 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initToken();
+    chatStream = StreamController();
+  }
+
+  initToken() async {
+    token = await SharedUtils.getToken();
+    stompClient.activate();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    chatStream.close();
+    stompClient.deactivate();
+    destination = 'get-messages';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      chatRoomId = args['roomId'];
+      currentUser = args['user'];
+    }
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(HeightManager.h73),
@@ -46,27 +149,52 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        reverse: true,
-        controller: _scrollController,
-        child: Column(
-          children: [
-            const SizedBox(height: HeightManager.h20),
-            for (ChatMessage chat in ChatMessageModelData.chatMessages) ...[
-              ChatBubble(
-                isMe: chat.isMe,
-                text: chat.text ?? '',
-                time: chat.time,
+      body: StreamBuilder<List<ChatMessage>>(
+          stream: chatStream.stream,
+          builder: (context, snapshot) {
+            return SingleChildScrollView(
+              reverse: true,
+              controller: _scrollController,
+              child: Column(
+                children: [
+                  const SizedBox(height: HeightManager.h20),
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  else if (snapshot.hasError)
+                    const Center(
+                      child: Text('Error'),
+                    )
+                  else if (!snapshot.hasData)
+                    const Center(
+                      child: Text('No messages'),
+                    )
+                  else if (snapshot.hasData) ...[
+                    for (ChatMessage chat in snapshot.data!) ...[
+                      ChatBubble(
+                        isMe: chat.senderId != currentUser,
+                        text: chat.message ?? '',
+                        time: chat.createdAt!.splitTime(),
+                      ),
+                    ],
+                  ],
+                  // for (ChatMessage chat in ChatMessageModelData.chatMessages) ...[
+                  //   ChatBubble(
+                  //     isMe: chat.isMe,
+                  //     text: chat.text ?? '',
+                  //     time: chat.time,
+                  //   ),
+                  // ],
+                  // const ImageBubble(
+                  //   image: AppImages.doctor2,
+                  //   time: '10:00 AM',
+                  //   isMe: false,
+                  // ),
+                ],
               ),
-            ],
-            const ImageBubble(
-              image: AppImages.doctor2,
-              time: '10:00 AM',
-              isMe: false,
-            ),
-          ],
-        ),
-      ),
+            );
+          }),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
           left: PaddingManager.paddingMedium,
@@ -152,13 +280,19 @@ class _ChatScreenState extends State<ChatScreen> {
               GestureDetector(
                 onTap: () {
                   if (controller.text.isNotEmpty) {
-                    ChatMessageModelData.chatMessages.add(
-                      ChatMessage(
-                        text: controller.text,
-                        isMe: true,
-                        isImage: false,
-                        time: '10:00 AM',
-                      ),
+                    stompClient.send(
+                      destination: '/app/message',
+                      body: json.encode({
+                        'token': token,
+                        'roomId': chatRoomId,
+                        'message': controller.text,
+                      }),
+                      headers: {
+                        'Authorization': 'Bearer $token',
+                        'Connection': 'Upgrade',
+                        'Upgrade': 'websocket',
+                        'content-type': 'application/json',
+                      },
                     );
                     controller.clear();
                     _scrollController.animateTo(
@@ -166,7 +300,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       curve: Curves.easeOut,
                       duration: const Duration(milliseconds: 300),
                     );
+                    destination = chatRoomId;
                   }
+
                   setState(() {});
                 },
                 child: Container(

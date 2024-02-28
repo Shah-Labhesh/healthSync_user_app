@@ -1,12 +1,11 @@
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:user_mobile_app/main.dart';
 
 class FirebaseService {
   static Future<String> requestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    
 
     NotificationSettings settings = await messaging.requestPermission(
         alert: true,
@@ -35,11 +34,6 @@ class FirebaseService {
     String token = await FirebaseMessaging.instance.getToken() ?? '';
     print('Token: $token');
     return token;
-    // final userToken = await SecureStorageUtils.getToken() ?? '';
-    // if (token.isNotEmpty) {
-    //   PushNotificationRepo.saveDeviceToken(
-    //       token: token, userToken: userToken ,device: Platform.isAndroid ? 'ANDROID' : 'IOS');
-    // }
   }
 
   static void onMessage() {
@@ -63,13 +57,16 @@ class FirebaseService {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
     print('Message data: ${message.data}');
   }
 
   static void onInitialMessage() {
-    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
       if (message != null) {
         print('A new onMessageOpenedApp event was published!');
         print('Message data: ${message.data}');
@@ -105,21 +102,50 @@ class FirebaseService {
       return;
     }
 
-    navigatorKey.currentState?.pushNamed('home_screen', arguments: 3);
+    // navigatorKey.currentState?.pushNamed('home_screen', arguments: 3);
   }
 
-  Future initialize(BuildContext context) async {
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+  static Future initialize(FlutterLocalNotificationsPlugin plugin) async {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var iosInitialize = IOSInitializationSettings();
+    var initializationSettings =
+        InitializationSettings(android: androidInitialize);
+    // ios: iosInitialize);
+    await plugin.initialize(
+      initializationSettings,
+    );
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      // notificationCountBloc.fetchNotificationCount();
-      // NotificationBloc notificationBloc =
-      //     BlocProvider.of<NotificationBloc>(context);
-      // notificationBloc.add(ResetNotification());
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        plugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(),
+          // NotificationDetails(
+          //   android: AndroidNotificationDetails(
+          //     channel.id,
+          //     channel.name,
+          //     channel.description,
+          //     icon: android.smallIcon,
+          //   ),
+          // ),
+        );
+      }
     });
+
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Got a message whilst in the background!');
-      handleMessage(message);
+      print('A new onMessageOpenedApp event was published!');
+      print('Message data: ${message.data}');
     });
   }
 }

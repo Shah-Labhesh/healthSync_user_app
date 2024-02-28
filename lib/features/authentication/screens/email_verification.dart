@@ -77,53 +77,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return BlocConsumer<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
         if (state is EmailVerificationCompleted) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.successDialog(
-                context,
-                state.data["message"],
-                onPressed: () => Navigator.pushReplacementNamed(context, 'login_screen', arguments: {"email": args!["email"], "password": args["password"]}),
-              );
-            },
-          );
-          
+          Utils.showSnackBar(context, state.data['message'], isSuccess: true);
+          Navigator.pushReplacementNamed(context, 'login_screen', arguments: {"email": args!["email"], "password": args["password"]});
         }
         if (state is EmailVerificationInitiationFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
         if (state is EmailVerificationFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
         if (state is EmailVerificationInitiated) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.successDialog(
-                context,
-                state.data["message"],
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.data['message'], isSuccess: true);
         }
       },
       builder: (context, state) {
@@ -251,16 +215,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         title: "Verify",
                         onPressed: () {
                           if (otp == null || otp!.length != 4) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Utils.errorDialog(
-                                  context,
-                                  "Please enter a valid OTP",
-                                  onPressed: () => Navigator.pop(context),
-                                );
-                              },
-                            );
+                            Utils.showSnackBar(context,
+                                "Please enter a valid OTP", isSuccess: false);
                             return;
                           }
                           context.read<EmailVerificationBloc>().add(

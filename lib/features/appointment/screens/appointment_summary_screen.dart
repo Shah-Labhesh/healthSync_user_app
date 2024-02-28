@@ -55,11 +55,10 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
     }
     return BlocConsumer<BookAppointmentBloc, BookAppointmentState>(
       listener: (context, state) {
-        print(state);
         if (state is BookAppointmentSuccess) {
           Utils.showSnackBar(context, 'Appointment Booked Successfully');
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'user_home_screen', (route) => false);
+          Navigator.pushNamed(
+              context, 'make_payment', arguments: state.appointmentId);
         }
 
         if (state is BookAppointmentFailure) {

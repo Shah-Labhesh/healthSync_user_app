@@ -14,8 +14,6 @@ class AppointmentRepo{
       ),
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
-
     return response;
   }
 
@@ -26,7 +24,6 @@ class AppointmentRepo{
       data: data,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
     return response;
   }
 
@@ -36,8 +33,6 @@ class AppointmentRepo{
       AppUrls.getAllAppointments,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
-
     return response;
   }
 }

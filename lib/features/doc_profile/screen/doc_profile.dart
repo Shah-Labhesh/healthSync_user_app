@@ -1,6 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
+import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -10,6 +18,8 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/ratings.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
+import 'package:user_mobile_app/features/chats/data/model/chat_room.dart';
+import 'package:user_mobile_app/features/chats/screens/chat_room_screen.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_bloc.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_event.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_state.dart';
@@ -17,6 +27,7 @@ import 'package:user_mobile_app/features/doc_profile/widgets/custom_icon_button.
 import 'package:user_mobile_app/features/doc_profile/widgets/doc_profile_tile.dart';
 import 'package:user_mobile_app/features/doc_profile/widgets/expandable_container.dart';
 import 'package:user_mobile_app/features/doc_profile/widgets/ratingbar_widget.dart';
+import 'package:user_mobile_app/main.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class DoctorProfileScreen extends StatefulWidget {
@@ -26,20 +37,94 @@ class DoctorProfileScreen extends StatefulWidget {
   State<DoctorProfileScreen> createState() => _DoctorProfileScreenState();
 }
 
+String token = '';
+String? docId;
+
+StompClient stompClient = StompClient(
+  config: StompConfig(
+    url: 'ws://10.0.2.2:8086/ws',
+    onConnect: onConnect,
+    beforeConnect: () async {
+      print('connecting...');
+    },
+    onDisconnect: (p0) {
+      print('onDisconnect: $p0');
+    },
+    onStompError: (p0) => print('onStompError: $p0'),
+    onWebSocketError: (dynamic error) => print('onWebSocketError: $error'),
+    stompConnectHeaders: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+    webSocketConnectHeaders: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+  ),
+);
+
+void onConnect(StompFrame frame) {
+  stompClient.send(
+    destination: '/app/create-room',
+    body: json.encode({"doctorId": docId, 'token': token}),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket',
+      'content-type': 'application/json',
+    },
+  );
+  print('connected');
+  stompClient.subscribe(
+    destination: '/topic/create-room',
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Connection': 'Upgrade',
+      'Upgrade': 'websocket'
+    },
+    callback: (frame) {
+      Map<String, dynamic> result = json.decode(frame.body as String);
+      ChatRoom chatRoom = ChatRoom.fromMap(result['body']);
+
+      Get.toNamed('chat_screen', arguments: {
+        'roomId': chatRoom.id,
+        'user': chatRoom.user!.id!,
+      });
+    },
+  );
+}
+
 class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   User? doctor;
   List<DocQualification> qualification = [];
   List<Ratings> rating = [];
-  
-  String? docId;
 
   bool isFirstBuild = true;
+
+  initToken() async {
+    token = await SharedUtils.getToken();
+    print(token);
+    stompClient.activate();
+    setState(() {});
+  }
 
   void fetchData() {
     if (Utils.checkInternetConnection(context)) {
       context.read<DocProfileBloc>().add(GetDocProfile(doctorId: docId!));
     }
   }
+
+  void navigate(String roomId, String userId) {}
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    stompClient.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as String;
@@ -68,7 +153,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             if (state is TokenExpired) {
               Utils.handleTokenExpired(context);
             }
-        
+
             if (state is DocProfileLoaded) {
               doctor = state.doctor;
               context
@@ -77,17 +162,17 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             }
             if (state is DocQualificationLoaded) {
               qualification = state.qualification;
-        
+
               context.read<DocProfileBloc>().add(GetDocRatings(doctorId: args));
             }
             if (state is FavouriteToggleError) {
               Utils.showSnackBar(context, state.message, isSuccess: false);
             }
-        
+
             if (state is FavouriteToggled) {
               doctor!.favorite = !doctor!.favorite!;
             }
-        
+
             if (state is DocRatingsLoaded) {
               rating = state.rating;
             }
@@ -115,7 +200,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                 ),
               );
             }
-        
+
             return PopScope(
               canPop: false,
               onPopInvoked: (didPop) {
@@ -129,23 +214,31 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                   DocProfileTile(doctor: doctor!),
                   const SizedBox(height: HeightManager.h20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: PaddingManager.paddingMedium2),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
+                                horizontal: PaddingManager.paddingMedium2,
+                                vertical: PaddingManager.p10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                const CustomIconbutton(
-                                  iconImage: ImageIcon(
+                                CustomIconbutton(
+                                  iconImage: const ImageIcon(
                                     AssetImage(chatIcon),
                                     color: white,
                                     size: 50,
                                   ),
                                   iconTitle: 'Message',
+                                  onTap: () {
+                                    if (Utils.checkInternetConnection(
+                                        context)) {
+                                      initToken();
+                                    }
+                                  },
                                 ),
                                 CustomIconbutton(
                                   iconImage: ImageIcon(
@@ -158,12 +251,12 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                   iconTitle: 'Favorite',
                                   onTap: () {
                                     if (state is FavouriteToggleLoading) return;
-                                    if (Utils.checkInternetConnection(context)) {
+                                    if (Utils.checkInternetConnection(
+                                        context)) {
                                       context
-                                        .read<DocProfileBloc>()
-                                        .add(ToggleFavourite(doctorId: args));
+                                          .read<DocProfileBloc>()
+                                          .add(ToggleFavourite(doctorId: args));
                                     }
-                                    
                                   },
                                 ),
                               ],
@@ -179,16 +272,19 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                 title: 'My Experience',
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
+                                      horizontal: PaddingManager.paddingMedium2,
+                                      vertical: PaddingManager.p10),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       if (doctor!.experience == null)
                                         Text(
                                           'No experience added yet',
                                           style: TextStyle(
                                             fontSize: FontSizeManager.f16,
-                                            fontWeight: FontWeightManager.medium,
+                                            fontWeight:
+                                                FontWeightManager.medium,
                                             color: gray200,
                                             fontFamily: GoogleFonts.montserrat()
                                                 .fontFamily,
@@ -199,7 +295,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                           doctor!.experience!,
                                           style: TextStyle(
                                             fontSize: FontSizeManager.f16,
-                                            fontWeight: FontWeightManager.medium,
+                                            fontWeight:
+                                                FontWeightManager.medium,
                                             color: gray200,
                                             fontFamily: GoogleFonts.montserrat()
                                                 .fontFamily,
@@ -222,7 +319,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                           if (state is DocQualificationError)
                             InkWell(
                               onTap: () {
-                                if (Utils.checkInternetConnection(context)){
+                                if (Utils.checkInternetConnection(context)) {
                                   context
                                       .read<DocProfileBloc>()
                                       .add(GetDocQualification(doctorId: args));
@@ -238,7 +335,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                             title: 'Qualification',
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
+                                  horizontal: PaddingManager.paddingMedium2,
+                                  vertical: PaddingManager.p10),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -263,7 +361,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                             color: gray400,
                                             size: 10,
                                           ),
-                                          const SizedBox(width: WidthManager.w10),
+                                          const SizedBox(
+                                              width: WidthManager.w10),
                                           Text(
                                             '${qualification.title}, ${qualification.institute}',
                                             style: TextStyle(
@@ -271,8 +370,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                               fontWeight:
                                                   FontWeightManager.medium,
                                               color: gray200,
-                                              fontFamily: GoogleFonts.montserrat()
-                                                  .fontFamily,
+                                              fontFamily:
+                                                  GoogleFonts.montserrat()
+                                                      .fontFamily,
                                             ),
                                           ),
                                         ],
@@ -304,10 +404,10 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                           if (state is DocRatingsError)
                             InkWell(
                               onTap: () {
-                                if (Utils.checkInternetConnection(context)){
+                                if (Utils.checkInternetConnection(context)) {
                                   context
-                                    .read<DocProfileBloc>()
-                                    .add(GetDocRatings(doctorId: args));
+                                      .read<DocProfileBloc>()
+                                      .add(GetDocRatings(doctorId: args));
                                 }
                               },
                               child: Center(

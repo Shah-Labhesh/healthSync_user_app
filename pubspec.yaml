@@ -69,7 +69,12 @@ dependencies:
   zego_uikit_signaling_plugin: ^2.7.4
   pdf: ^3.10.7
   connectivity_plus: ^5.0.2
-  
+  stomp_dart_client: ^1.0.3
+  flutter_local_notifications: ^16.3.2
+  get: ^4.6.6
+  toastification: ^1.2.1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

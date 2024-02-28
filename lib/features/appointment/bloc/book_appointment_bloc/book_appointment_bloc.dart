@@ -63,9 +63,8 @@ class BookAppointmentBloc
     emit(BookAppointmentLoading());
     try {
       Response response = await AppointmentRepo().bookAppointment(data: event.appointmentData);
-      print(response);
       if (response.statusCode == 201) {
-        emit(BookAppointmentSuccess(message: response.data['message']));
+        emit(BookAppointmentSuccess(appointmentId: response.data['id']));
       } else {
         emit(BookAppointmentFailure(message: response.data['message']));
       }

@@ -80,4 +80,11 @@ class AppUrls{
 
   // faqs
   static String faqs = '$BASE_URL/faqs';
+
+  // khalti
+  static String initiatePaymentUrl = '$BASE_URL/khalti/initiate';
+  static String confirmPaymentUrl = '$BASE_URL/khalti/confirm';
+
+  // rate
+  static String rate({required String id}) => '$BASE_URL/rating/$id';
 }

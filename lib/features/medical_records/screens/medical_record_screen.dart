@@ -87,12 +87,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             }
 
             if (state is DoctorListError) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Utils.errorDialog(context, state.message,
-                        onPressed: () => Navigator.pop(context));
-                  });
+             Utils.showSnackBar(context, state.message, isSuccess: false);
             }
 
             if (state is RecordShared) {
@@ -102,13 +97,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             }
 
             if (state is RecordShareError) {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return Utils.errorDialog(context, state.message,
-                      onPressed: () => Navigator.pop(context));
-                },
-              );
+              Utils.showSnackBar(context, state.message, isSuccess: false);
             }
 
             if (state is RecordRevokedSuccess) {
@@ -117,13 +106,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             }
 
             if (state is RecordRevokedError) {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return Utils.errorDialog(context, state.message,
-                      onPressed: () => Navigator.pop(context));
-                },
-              );
+              Utils.showSnackBar(context, state.message, isSuccess: false);
             }
           },
           builder: (context, state) {

@@ -37,18 +37,12 @@ class ForgotPasswordScreen extends StatelessWidget {
     return BlocConsumer<PasswordResetBloc, PasswordResetState>(
       listener: (context, state) {
         if (state is PasswordInitiated) {
+          Utils.showSnackBar(context, 'OTP sent to your email');
           Navigator.pushNamed(context, 'otp_verification',
               arguments: _emailController.text.trim());
         }
         if (state is PasswordInitiationFailed) {
-          showDialog(
-            context: context,
-            builder: (context) => Utils.errorDialog(
-              context,
-              state.message,
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
       },
       builder: (context, state) {

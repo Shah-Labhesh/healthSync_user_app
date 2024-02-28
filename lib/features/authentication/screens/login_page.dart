@@ -52,16 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false, durationForDisplay: 8);
         }
         if (state is LoginSucess) {
           String? route = Routes.afterLoginRoutes[state.data['role']];

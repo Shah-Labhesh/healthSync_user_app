@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
+import 'package:user_mobile_app/constants/app_images.dart';
+import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 
@@ -15,35 +18,62 @@ class ChatRoomTileWidget extends StatelessWidget {
     required this.lastMessage,
     required this.time,
     this.isImage = false,
+    this.onTap,
   }) : super(key: key);
 
   final bool isImage;
-  final String image;
+  final String? image;
   final String name;
   final String lastMessage;
   final String time;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, 'chat_screen');
-      },
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            Container(
-              height: HeightManager.h65,
-              width: WidthManager.w65,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage(image),
+            // if (image != null) 
+            CachedNetworkImage(imageUrl: BASE_URL + image!,
+              imageBuilder: (context, imageProvider) => Container(
+                height: HeightManager.h65,
+                width: WidthManager.w65,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: imageProvider,
+                  ),
                 ),
               ),
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Container(
+                height: HeightManager.h65,
+                width: WidthManager.w65,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage(AppImages.defaultAvatar),
+                  ),
+                ),
+              )
             ),
+            // else
+            // Container(
+            //   height: HeightManager.h65,
+            //   width: WidthManager.w65,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(10),
+            //     image: DecorationImage(
+            //       fit: BoxFit.cover,
+            //       image: AssetImage(image),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(
               width: PaddingManager.paddingMedium,
             ),

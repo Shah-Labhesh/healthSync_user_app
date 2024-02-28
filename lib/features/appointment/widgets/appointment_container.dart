@@ -23,8 +23,8 @@ class AppointmentTile extends StatelessWidget {
     final currentTime = DateTime.now();
     final appointmentTime = DateTime.parse(time);
     // only cancel is the appointment is 3 hours away
-    return appointmentTime
-        .isAfter(currentTime.subtract(const Duration(hours: 3)));
+    return currentTime
+        .isBefore(appointmentTime.subtract(const Duration(hours: 3)));
   }
 
   final Appointment appointment;
@@ -196,53 +196,65 @@ class AppointmentTile extends StatelessWidget {
             children: [
               if (appointment.isExpired == true)
                 Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: PaddingManager.paddingMedium,
-                      vertical: PaddingManager.paddingSmall,
-                    ),
-                    decoration: BoxDecoration(
-                      color: blue800,
-                      border: Border.all(
-                        color: red600,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'rate_experience',
+                          arguments: {
+                            'user':
+                                doctor ? appointment.user : appointment.doctor,
+                            'ratingType': doctor ? 'USER' : 'DOCTOR',
+                          });
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: PaddingManager.paddingMedium,
+                        vertical: PaddingManager.paddingSmall,
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'Rate Experience',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f16,
-                        fontWeight: FontWeightManager.semiBold,
-                        fontFamily: GoogleFonts.montserrat().fontFamily,
-                        color: gray50,
+                      decoration: BoxDecoration(
+                        color: blue800,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Rate Experience',
+                        style: TextStyle(
+                          fontSize: FontSizeManager.f16,
+                          fontWeight: FontWeightManager.semiBold,
+                          fontFamily: GoogleFonts.montserrat().fontFamily,
+                          color: gray50,
+                        ),
                       ),
                     ),
                   ),
                 )
-              else
-              if (appointment.payment == null && !doctor)
+              else if (appointment.payment == null && !doctor)
                 Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: PaddingManager.paddingMedium,
-                      vertical: PaddingManager.paddingSmall,
-                    ),
-                    decoration: BoxDecoration(
-                      color: red600,
-                      border: Border.all(
-                        color: red600,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'make_payment',
+                          arguments: appointment.id);
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: PaddingManager.paddingMedium,
+                        vertical: PaddingManager.paddingSmall,
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'Pay',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f16,
-                        fontWeight: FontWeightManager.semiBold,
-                        fontFamily: GoogleFonts.montserrat().fontFamily,
-                        color: red50,
+                      decoration: BoxDecoration(
+                        color: red600,
+                        border: Border.all(
+                          color: red600,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Pay',
+                        style: TextStyle(
+                          fontSize: FontSizeManager.f16,
+                          fontWeight: FontWeightManager.semiBold,
+                          fontFamily: GoogleFonts.montserrat().fontFamily,
+                          color: red50,
+                        ),
                       ),
                     ),
                   ),
@@ -257,9 +269,9 @@ class AppointmentTile extends StatelessWidget {
                         Utils.showSnackBar(
                             context, 'Appointment time has passed');
                       } else if (dateTime.isAfter(DateTime.now())) {
-                        showDialog(context: context, builder: (context) {
-                          return Utils.errorDialog(context, 'You can only join the appointment at the scheduled time.',onPressed: () => Navigator.pop(context),);
-                        },);
+                        Utils.showSnackBar(context,
+                            'You can only join the appointment at the scheduled time.',
+                            isSuccess: false);
                       }
                     },
                     child: Container(

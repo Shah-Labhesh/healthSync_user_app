@@ -1,24 +1,24 @@
 extension MyCustomFunctions on String {
   String capitalize() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
-    return this.substring(0, 1).toUpperCase() + this.substring(1).toLowerCase();
+    return substring(0, 1).toUpperCase() + substring(1).toLowerCase();
   }
 
   String capitalizeFirstofEach() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
-    return this.split(" ").map((str) {
+    return  split(" ").map((str) {
       return str.capitalize();
     }).join(" ");
   }
 
   String splitDate() {
-    if (this == null || this.isEmpty) {
+    if ( isEmpty) {
       return this;
     }
 
@@ -27,7 +27,7 @@ extension MyCustomFunctions on String {
   }
 
   String splitTime() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
@@ -36,7 +36,7 @@ extension MyCustomFunctions on String {
   }
 
   String splitDay() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
@@ -45,7 +45,7 @@ extension MyCustomFunctions on String {
   }
 
   String splitMonth() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
@@ -54,7 +54,7 @@ extension MyCustomFunctions on String {
   }
 
   String splitYear() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
@@ -63,11 +63,11 @@ extension MyCustomFunctions on String {
   }
 
   String removeUnderScore() {
-    if (this == null || this.isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
-    List<String> words = this.split('_');
+    List<String> words = split('_');
     StringBuffer result = StringBuffer();
 
     for (int i = 0; i < words.length; i++) {
@@ -94,6 +94,28 @@ extension MyCustomFunctions on String {
     } else if (difference.inHours < 24) {
       return "${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago";
     } else {
+      return date.toString().splitDate();
+    }
+  }
+
+
+   String chatTimeAgo() {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime.parse(this);
+
+    Duration difference = now.difference(date);
+
+    if (difference.inSeconds < 60) {
+      return "Just Now";
+    } else if (difference.inMinutes < 60) {
+      return "${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago";
+    } // yesterday
+    else if (difference.inDays == 1) {
+      return "Yesterday";
+    }
+    else {
       return date.toString().splitDate();
     }
   }

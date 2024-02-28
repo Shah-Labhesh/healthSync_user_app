@@ -23,7 +23,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -50,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-@override
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -63,16 +62,15 @@ class _SignUpPageState extends State<SignUpPage> {
     String name = _nameController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    if (Utils.checkInternetConnection(context)){
-
-    Map<String, dynamic> data = {
-      "name": name,
-      "email": email,
-      "role": "USER",
-      "password": password,
-    };
-    BlocProvider.of<UserRegisterBloc>(context)
-        .add(UserRegisterEvent(userInfo: data));
+    if (Utils.checkInternetConnection(context)) {
+      Map<String, dynamic> data = {
+        "name": name,
+        "email": email,
+        "role": "USER",
+        "password": password,
+      };
+      BlocProvider.of<UserRegisterBloc>(context)
+          .add(UserRegisterEvent(userInfo: data));
     }
   }
 
@@ -89,33 +87,13 @@ class _SignUpPageState extends State<SignUpPage> {
     return BlocConsumer<UserRegisterBloc, UserRegisterState>(
       listener: (context, state) {
         if (state is RegistrationCompleted) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.successDialog(
-                context,
-                state.data["message"],
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  },
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.data["message"], isSuccess: true);
+          Navigator.pop(context);
+
           clearAllText();
-          
         }
         if (state is RegistrationFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
       },
       builder: (context, state) {

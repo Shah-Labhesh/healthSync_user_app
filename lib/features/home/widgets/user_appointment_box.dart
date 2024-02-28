@@ -165,9 +165,7 @@ class UserAppointmentBox extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CallScreen(
-                            callID: appointment.id!,
-                            userId: appointment.doctor!.id!,
-                            userName: appointment.doctor!.name!,
+                            appointment: appointment,
                           ),
                         ),
                       );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:toastification/toastification.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
@@ -21,20 +22,31 @@ class Utils {
       formattedMessage = "Something went wrong. Please try again later.";
     }
 
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    scaffoldMessenger.hideCurrentSnackBar();
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          formattedMessage,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: white,
-                fontSize: 12,
-              ),
-        ),
-        backgroundColor: isSuccess ? successColor : errorColor,
-        duration: Duration(seconds: durationForDisplay),
-      ),
+    if (!isSuccess) {
+      toastification.show(
+        title: Text('Error'),
+        description: Text(formattedMessage),
+        context: context,
+        dragToClose: true,
+        showProgressBar: true,
+        animationDuration: const Duration(milliseconds: 300),
+        type: ToastificationType.error,
+        autoCloseDuration: Duration(seconds: durationForDisplay),
+        style: ToastificationStyle.minimal,
+      );
+      return;
+    }
+
+    toastification.show(
+      title: Text('Success'),
+      description: Text(formattedMessage),
+      context: context,
+      dragToClose: true,
+      showProgressBar: true,
+      animationDuration: const Duration(milliseconds: 300),
+      type: ToastificationType.success,
+      autoCloseDuration: Duration(seconds: durationForDisplay),
+      style: ToastificationStyle.minimal,
     );
   }
 

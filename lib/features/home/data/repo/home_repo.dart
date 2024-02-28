@@ -17,7 +17,6 @@ class HomeRepo {
       AppUrls.getSpeciality,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
     return response;
   }
 
@@ -25,15 +24,11 @@ class HomeRepo {
     LatLng location = await LocationUtils().getCurrentLocation() ??
         LatLng(latitude, longitude);
     final token = await SharedUtils.getToken();
-    print(AppUrls.getDoctors(
-        latitude: location.latitude, longitude: location.longitude));
     Response response = await dio.get(
       AppUrls.getDoctors(
           latitude: location.latitude, longitude: location.longitude),
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
-
     return response;
   }
 
@@ -43,8 +38,6 @@ class HomeRepo {
       AppUrls.getMyAppointments,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
-
     return response;
   }
 
@@ -55,8 +48,6 @@ class HomeRepo {
       AppUrls.currentUser,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    print(response);
-
     return response;
   }
 

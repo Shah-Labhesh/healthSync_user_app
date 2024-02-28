@@ -67,14 +67,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           Utils.showSnackBar(context, state.data['message'], isSuccess: true);
         }
         if (state is PasswordResetFailed) {
-          showDialog(
-            context: context,
-            builder: (context) => Utils.errorDialog(
-              context,
-              state.message,
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
       },
       builder: (context, state) {

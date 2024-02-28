@@ -24,6 +24,8 @@ class MyFavoriteScreen extends StatelessWidget {
           Utils.handleTokenExpired(context);
         }
         if (state is ToggleFavouriteSuccess) {
+          Utils.showSnackBar(context, 'Removed from favorite', isSuccess: true);
+
           for (User doctor in doctors) {
             if (doctor.id == state.doctorId) {
               doctors.remove(doctor);
@@ -33,16 +35,7 @@ class MyFavoriteScreen extends StatelessWidget {
         }
 
         if (state is ToggleFavouriteFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
       },
       builder: (context, state) {

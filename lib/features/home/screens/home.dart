@@ -48,13 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
       isBuiltInit = true;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (c) async {
+        if (c) return;
         (_selectedIndex == 0) ? exitApp() : _onItemTapped(0);
-        return false;
       },
       child: Scaffold(
-        
         extendBody: true,
         body: SafeArea(
           bottom: false,

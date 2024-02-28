@@ -137,24 +137,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           }
         }
         if (state is UpdateProfileFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(context, state.message,
-                  onPressed: () => Navigator.pop(context));
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
-        if (state is EmailVerificationState) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(context, 'Email Verification Required',
-                  onPressed: () => Navigator.pop(context));
-            },
-          );
-        }
-
+        
         if (state is EmailVerificationState) {
           Navigator.pushNamedAndRemoveUntil(
               context, 'login_screen', (route) => false);

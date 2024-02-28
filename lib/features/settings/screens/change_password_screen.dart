@@ -65,16 +65,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         }
 
         if (state is ChangePasswordFailed) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Utils.errorDialog(
-                context,
-                state.message,
-                onPressed: () => Navigator.pop(context),
-              );
-            },
-          );
+          Utils.showSnackBar(context, state.message, isSuccess: false);
         }
       },
       builder: (context, state) {
