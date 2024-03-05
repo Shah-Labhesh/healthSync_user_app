@@ -12,13 +12,13 @@ extension MyCustomFunctions on String {
       return this;
     }
 
-    return  split(" ").map((str) {
+    return split(" ").map((str) {
       return str.capitalize();
     }).join(" ");
   }
 
   String splitDate() {
-    if ( isEmpty) {
+    if (isEmpty) {
       return this;
     }
 
@@ -81,7 +81,7 @@ extension MyCustomFunctions on String {
     return result.toString();
   }
 
-   String formatTimeAgo() {
+  String formatTimeAgo() {
     DateTime now = DateTime.now();
     DateTime date = DateTime.parse(this);
 
@@ -98,8 +98,7 @@ extension MyCustomFunctions on String {
     }
   }
 
-
-   String chatTimeAgo() {
+  String chatTimeAgo() {
     DateTime now = DateTime.now();
     DateTime date = DateTime.parse(this);
 
@@ -114,9 +113,48 @@ extension MyCustomFunctions on String {
     } // yesterday
     else if (difference.inDays == 1) {
       return "Yesterday";
-    }
-    else {
+    } else {
       return date.toString().splitDate();
+    }
+  }
+
+  String day() {
+    switch (this) {
+      case "0":
+        return "Sun";
+      case "1":
+        return "Mon";
+      case "2":
+        return "Tue";
+      case "3":
+        return "Wed";
+      case "4":
+        return "Thu";
+      case "5":
+        return "Fri";
+      case "6":
+        return "Sat";
+
+      default:
+        return "";
+    }
+  }
+
+  String slotDateFormat() {
+    DateTime date = DateTime.parse(this);
+    DateTime today = DateTime.now();
+    DateTime tomorrow = today.add(const Duration(days: 1));
+
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
+      return "Today, ${date.day} ${date.year}";
+    } else if (date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day) {
+      return "Tomorrow, ${date.day} ${date.year}";
+    } else {
+      return "${date.weekday.toString().day()} ${date.day}, ${date.year}";
     }
   }
 }

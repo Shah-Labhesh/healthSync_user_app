@@ -1,14 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:stomp_dart_client/stomp.dart';
-import 'package:stomp_dart_client/stomp_config.dart';
-import 'package:stomp_dart_client/stomp_frame.dart';
-import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -18,8 +13,6 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/ratings.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
-import 'package:user_mobile_app/features/chats/data/model/chat_room.dart';
-import 'package:user_mobile_app/features/chats/screens/chat_room_screen.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_bloc.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_event.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_state.dart';
@@ -27,7 +20,6 @@ import 'package:user_mobile_app/features/doc_profile/widgets/custom_icon_button.
 import 'package:user_mobile_app/features/doc_profile/widgets/doc_profile_tile.dart';
 import 'package:user_mobile_app/features/doc_profile/widgets/expandable_container.dart';
 import 'package:user_mobile_app/features/doc_profile/widgets/ratingbar_widget.dart';
-import 'package:user_mobile_app/main.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class DoctorProfileScreen extends StatefulWidget {
@@ -37,78 +29,21 @@ class DoctorProfileScreen extends StatefulWidget {
   State<DoctorProfileScreen> createState() => _DoctorProfileScreenState();
 }
 
-String token = '';
-String? docId;
-
-StompClient stompClient = StompClient(
-  config: StompConfig(
-    url: 'ws://10.0.2.2:8086/ws',
-    onConnect: onConnect,
-    beforeConnect: () async {
-      print('connecting...');
-    },
-    onDisconnect: (p0) {
-      print('onDisconnect: $p0');
-    },
-    onStompError: (p0) => print('onStompError: $p0'),
-    onWebSocketError: (dynamic error) => print('onWebSocketError: $error'),
-    stompConnectHeaders: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket'
-    },
-    webSocketConnectHeaders: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket'
-    },
-  ),
-);
-
-void onConnect(StompFrame frame) {
-  stompClient.send(
-    destination: '/app/create-room',
-    body: json.encode({"doctorId": docId, 'token': token}),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket',
-      'content-type': 'application/json',
-    },
-  );
-  print('connected');
-  stompClient.subscribe(
-    destination: '/topic/create-room',
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket'
-    },
-    callback: (frame) {
-      Map<String, dynamic> result = json.decode(frame.body as String);
-      ChatRoom chatRoom = ChatRoom.fromMap(result['body']);
-
-      Get.toNamed('chat_screen', arguments: {
-        'roomId': chatRoom.id,
-        'user': chatRoom.user!.id!,
-      });
-    },
-  );
-}
-
 class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   User? doctor;
   List<DocQualification> qualification = [];
   List<Ratings> rating = [];
 
+  // String token = '';
+  String? docId;
+
   bool isFirstBuild = true;
 
-  initToken() async {
-    token = await SharedUtils.getToken();
-    print(token);
-    stompClient.activate();
-    setState(() {});
-  }
+  // initToken() async {
+  //   token = await SharedUtils.getToken();
+
+  //   setState(() {});
+  // }
 
   void fetchData() {
     if (Utils.checkInternetConnection(context)) {
@@ -116,13 +51,16 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     }
   }
 
-  void navigate(String roomId, String userId) {}
+  void navigate(String roomId, String userId) {
+    Navigator.pushNamed(context, 'chat_screen', arguments: {
+      'roomId': roomId,
+      'user': userId,
+    });
+  }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    stompClient.deactivate();
   }
 
   @override
@@ -176,6 +114,14 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
             if (state is DocRatingsLoaded) {
               rating = state.rating;
             }
+
+            if (state is ChatRoomCreated) {
+              navigate(state.chatRoom.id!, state.chatRoom.user!.id!);
+            }
+
+            if (state is ChatRoomError) {
+              Utils.showSnackBar(context, state.message, isSuccess: false);
+            }
           },
           builder: (context, state) {
             if (state is DocProfileInitial) {
@@ -226,20 +172,28 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                CustomIconbutton(
-                                  iconImage: const ImageIcon(
-                                    AssetImage(chatIcon),
+                                if (state is CreatingChatRoom)
+                                  // cupertion loading widget
+                                  const CupertinoActivityIndicator(
+                                    radius: 20,
                                     color: white,
-                                    size: 50,
+                                  )
+                                else
+                                  CustomIconbutton(
+                                    iconImage: const ImageIcon(
+                                      AssetImage(chatIcon),
+                                      color: white,
+                                      size: 50,
+                                    ),
+                                    iconTitle: 'Message',
+                                    onTap: () {
+                                      if (Utils.checkInternetConnection(
+                                          context)) {
+                                        context.read<DocProfileBloc>().add(
+                                            CreateChatRoom(doctorId: args));
+                                      }
+                                    },
                                   ),
-                                  iconTitle: 'Message',
-                                  onTap: () {
-                                    if (Utils.checkInternetConnection(
-                                        context)) {
-                                      initToken();
-                                    }
-                                  },
-                                ),
                                 CustomIconbutton(
                                   iconImage: ImageIcon(
                                     AssetImage(doctor!.favorite!

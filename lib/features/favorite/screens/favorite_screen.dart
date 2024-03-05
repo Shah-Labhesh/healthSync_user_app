@@ -11,21 +11,26 @@ import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_st
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
-class MyFavoriteScreen extends StatelessWidget {
-  MyFavoriteScreen({super.key});
+class MyFavoriteScreen extends StatefulWidget {
+  const MyFavoriteScreen({super.key});
 
+  @override
+  State<MyFavoriteScreen> createState() => _MyFavoriteScreenState();
+}
+
+class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
   List<User> doctors = [];
+
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<FavoriteBloc, FavoriteState>(
       listener: (context, state) {
+        print(state);
         if (state is TokenExpired) {
           Utils.handleTokenExpired(context);
         }
         if (state is ToggleFavouriteSuccess) {
-          Utils.showSnackBar(context, 'Removed from favorite', isSuccess: true);
-
           for (User doctor in doctors) {
             if (doctor.id == state.doctorId) {
               doctors.remove(doctor);
@@ -36,6 +41,11 @@ class MyFavoriteScreen extends StatelessWidget {
 
         if (state is ToggleFavouriteFailed) {
           Utils.showSnackBar(context, state.message, isSuccess: false);
+        }
+
+        if (state is FavoriteLoaded) {
+          doctors = state.doctors;
+          setState(() {});
         }
       },
       builder: (context, state) {
@@ -52,13 +62,10 @@ class MyFavoriteScreen extends StatelessWidget {
             child: Text(state.message),
           );
         }
-        if (state is FavoriteLoaded) {
-          doctors = state.doctors;
-        }
 
         return RefreshIndicator(
           onRefresh: () async {
-            if (Utils.checkInternetConnection(context)){
+            if (Utils.checkInternetConnection(context)) {
               context.read<FavoriteBloc>().add(FetchFavoriteEvent());
             }
             await Future.delayed(const Duration(seconds: 1));

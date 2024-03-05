@@ -34,7 +34,7 @@ class _DoctorTileState extends State<DoctorTile> {
     return InkWell(
       onTap: widget.onNavigate ??
           () {
-            if(Utils.checkInternetConnection(context)){
+            if (Utils.checkInternetConnection(context)) {
               Navigator.pushNamed(context, 'doc_profile',
                       arguments: widget.doctor.id)
                   .then((value) {
@@ -50,7 +50,9 @@ class _DoctorTileState extends State<DoctorTile> {
         padding: const EdgeInsets.only(bottom: PaddingManager.p18),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
+          padding: const EdgeInsets.symmetric(
+              horizontal: PaddingManager.paddingMedium2,
+              vertical: PaddingManager.p10),
           decoration: BoxDecoration(
             color: gray50,
             borderRadius: BorderRadius.circular(20),
@@ -81,6 +83,7 @@ class _DoctorTileState extends State<DoctorTile> {
                         errorWidget: (context, url, error) => const Center(
                           child: Icon(Icons.error),
                         ),
+                        
                         fit: BoxFit.cover,
                       )
                     : Image.asset(
@@ -134,7 +137,7 @@ class _DoctorTileState extends State<DoctorTile> {
                           width: WidthManager.w5,
                         ),
                         Text(
-                          '${widget.doctor.avgRatings} (${widget.doctor.ratingCount} Reviews)',
+                          '${widget.doctor.avgRatings != null ? widget.doctor.avgRatings!.toStringAsFixed(1) : '0'} (${widget.doctor.ratingCount} Reviews)',
                           style: TextStyle(
                             fontSize: FontSizeManager.f14,
                             fontWeight: FontWeightManager.medium,

@@ -1,12 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:user_mobile_app/.env.dart';
-import 'package:user_mobile_app/Utils/firebase.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/theme.dart';
 import 'package:user_mobile_app/features/account/bloc/account_bloc.dart';
@@ -45,12 +42,14 @@ import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_bloc
 import 'package:user_mobile_app/features/home/screens/doctor_home_screen.dart';
 import 'package:user_mobile_app/features/home/screens/home.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_bloc.dart';
+import 'package:user_mobile_app/features/medical_records/screens/edit_medical_record.dart';
 import 'package:user_mobile_app/features/medical_records/screens/medical_record_screen.dart';
 import 'package:user_mobile_app/features/medical_records/screens/upload_record_screen.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/notification/screens/notification_screen.dart';
 import 'package:user_mobile_app/features/onboarding/page_view.dart';
 import 'package:user_mobile_app/features/payment/bloc/make_payment_bloc/make_payment_bloc.dart';
+import 'package:user_mobile_app/features/payment/bloc/payment_bloc/payment_bloc.dart';
 import 'package:user_mobile_app/features/payment/screens/make_payment_screen.dart';
 import 'package:user_mobile_app/features/payment/screens/payment_screen.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_bloc.dart';
@@ -78,20 +77,12 @@ import 'package:user_mobile_app/widgets/google_map_widget.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Handling a background message ${message.messageId}');
-}
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   AppEnvironment.setupEnv(Environment.local);
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await FirebaseService.initialize(flutterLocalNotificationsPlugin);
 
   runApp(const MyApp());
 }
@@ -234,12 +225,19 @@ class _MyAppState extends State<MyApp> {
                 create: (context) => RecordBloc(),
                 child: MedicalRecordScreen(),
               ),
+          'edit_medical_record': (context) => BlocProvider(
+                create: (context) => RecordBloc(),
+                child: const EditRecordScreen(),
+              ),
           'prescription_screen': (context) => BlocProvider(
                 create: (context) => PrescriptionBloc(),
                 child: PrescriptionScreen(),
               ),
           'privacy_policy_screen': (context) => const PrivacyPolicyScreen(),
-          'payment_screen': (context) => const PaymentsScreen(),
+          'payment_screen': (context) => BlocProvider(
+                create: (context) => PaymentBloc(),
+                child: PaymentsScreen(),
+              ),
           'settings_screen': (context) => MultiBlocProvider(
                 providers: [
                   BlocProvider(

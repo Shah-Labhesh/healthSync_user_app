@@ -4,7 +4,7 @@ class MedicalRecord {
   String? id;
   String? recordType;
   String? record;
-  String? recordCreatedDate;
+  String? medicalRecordType;
   bool? selfAdded;
   String? createdAt;
   String? updatedAt;
@@ -16,7 +16,7 @@ class MedicalRecord {
     this.id,
     this.recordType,
     this.record,
-    this.recordCreatedDate,
+    this.medicalRecordType,
     this.selfAdded,
     this.createdAt,
     this.updatedAt,
@@ -31,8 +31,8 @@ class MedicalRecord {
       recordType:
           map['recordType'] != null ? map['recordType'] as String : null,
       record: map['record'] != null ? map['record'] as String : null,
-      recordCreatedDate: map['recordCreatedDate'] != null
-          ? map['recordCreatedDate'] as String
+      medicalRecordType: map['medicalRecordType'] != null
+          ? map['medicalRecordType'] as String
           : null,
       selfAdded: map['selfAdded'] != null ? map['selfAdded'] as bool : null,
       createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,

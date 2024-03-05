@@ -31,3 +31,9 @@ class RevokeSharedRecord extends RecordEvent {
   final String recordId;
   RevokeSharedRecord({required this.recordId});
 }
+
+class UpdateRecord extends RecordEvent {
+  final String recordId;
+  final Map<String, dynamic> record;
+  UpdateRecord({required this.recordId, required this.record});
+}

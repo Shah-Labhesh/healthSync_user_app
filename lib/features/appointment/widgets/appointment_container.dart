@@ -10,6 +10,7 @@ import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
+import 'package:user_mobile_app/features/appointment/screens/call_screen.dart';
 
 class AppointmentTile extends StatelessWidget {
   const AppointmentTile({
@@ -265,13 +266,26 @@ class AppointmentTile extends StatelessWidget {
                     onTap: () {
                       DateTime dateTime =
                           DateTime.parse(appointment.slot!.slotDateTime!);
-                      if (dateTime.isBefore(DateTime.now())) {
+                      DateTime endTime =
+                          DateTime.parse(appointment.slot!.slotDateTime!)
+                              .add(const Duration(minutes: 30));
+                      if (endTime.isBefore(DateTime.now())) {
                         Utils.showSnackBar(
-                            context, 'Appointment time has passed');
+                            context, 'Appointment time has passed',
+                            isSuccess: false);
                       } else if (dateTime.isAfter(DateTime.now())) {
                         Utils.showSnackBar(context,
                             'You can only join the appointment at the scheduled time.',
                             isSuccess: false);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CallScreen(
+                              appointment: appointment,
+                            ),
+                          ),
+                        );
                       }
                     },
                     child: Container(
@@ -281,7 +295,7 @@ class AppointmentTile extends StatelessWidget {
                         vertical: PaddingManager.paddingSmall,
                       ),
                       decoration: BoxDecoration(
-                        color: green600,
+                        color: blue900,
                         border: Border.all(
                           color: green600,
                         ),
@@ -300,7 +314,8 @@ class AppointmentTile extends StatelessWidget {
                   ),
                 ),
               const SizedBox(width: HeightManager.h6),
-              if (checkTime(appointment.slot!.slotDateTime!))
+              if (checkTime(appointment.slot!.slotDateTime!) &&
+                  appointment.payment == null)
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,

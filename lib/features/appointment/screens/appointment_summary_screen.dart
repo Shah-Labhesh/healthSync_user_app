@@ -57,8 +57,9 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
       listener: (context, state) {
         if (state is BookAppointmentSuccess) {
           Utils.showSnackBar(context, 'Appointment Booked Successfully');
-          Navigator.pushNamed(
-              context, 'make_payment', arguments: state.appointmentId);
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, 'make_payment',
+              arguments: state.appointmentId);
         }
 
         if (state is BookAppointmentFailure) {
@@ -122,17 +123,16 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                           const SizedBox(
                             height: 10,
                           ),
-                          // PaymentOptionWidget(
-                          //   image: AppImages.esewaImage,
-                          //   title: 'eSewa Wallet',
-                          //   value: selectedPaymentType == 'ESEWA_WALLET',
-                          //   onTapped: () {
-                          //     print('value');
-                          //     setState(() {
-                          //       selectedPaymentType = 'ESEWA_WALLET';
-                          //     });
-                          //   },
-                          // ),
+                          PaymentOptionWidget(
+                            image: AppImages.esewaImage,
+                            title: 'eSewa Wallet',
+                            value: selectedPaymentType == 'ESEWA_WALLET',
+                            onTapped: () {
+                              setState(() {
+                                selectedPaymentType = 'ESEWA_WALLET';
+                              });
+                            },
+                          ),
                           PaymentOptionWidget(
                             image: AppImages.khaltiImage,
                             title: 'Khalti Wallet',
@@ -143,17 +143,16 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                               });
                             },
                           ),
-                          // PaymentOptionWidget(
-                          //   image: AppImages.fonepayImage,
-                          //   title: 'Fonepay',
-                          //   value: selectedPaymentType == 'FONEPAY',
-                          //   onTapped: () {
-                          //     print('value');
-                          //     setState(() {
-                          //       selectedPaymentType = 'FONEPAY';
-                          //     });
-                          //   },
-                          // ),
+                          PaymentOptionWidget(
+                            image: AppImages.fonepayImage,
+                            title: 'Fonepay',
+                            value: selectedPaymentType == 'FONEPAY',
+                            onTapped: () {
+                              setState(() {
+                                selectedPaymentType = 'FONEPAY';
+                              });
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -421,6 +420,11 @@ class _AppointmentSummaryState extends State<AppointmentSummary> {
                   CustomButtom(
                       title: 'Book Appointment',
                       onPressed: () {
+                        if (selectedPaymentType != 'KHALTI_WALLET') {
+                          Utils.showSnackBar(
+                              context, 'Sorry, Only Khalti Wallet is available', isSuccess: false);
+                          return;
+                        }
                         bookAppointmentModel!.reminderTime = selectedTime;
                         bookAppointmentModel!.platformCost = 50;
                         bookAppointmentModel!.totalFee =

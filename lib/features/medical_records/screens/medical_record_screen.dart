@@ -33,7 +33,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   String sort = 'ALL';
 
   void shareRecord(String? id) {
-    if (Utils.checkInternetConnection(context)){
+    if (Utils.checkInternetConnection(context)) {
       context
           .read<RecordBloc>()
           .add(ShareRecord(recordId: selectedRecord!.id!, doctorId: id!));
@@ -71,7 +71,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         body: BlocConsumer<RecordBloc, RecordState>(
           listener: (context, state) {
             if (state is TokenExpired) {
-             Utils.handleTokenExpired(context);
+              Utils.handleTokenExpired(context);
             }
 
             if (state is DoctorListFetched) {
@@ -87,7 +87,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             }
 
             if (state is DoctorListError) {
-             Utils.showSnackBar(context, state.message, isSuccess: false);
+              Utils.showSnackBar(context, state.message, isSuccess: false);
             }
 
             if (state is RecordShared) {
@@ -147,7 +147,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: PaddingManager.paddingMedium2),
+                    padding: const EdgeInsets.only(
+                        left: PaddingManager.paddingMedium2),
                     child: Row(
                       children: [
                         Container(
@@ -246,14 +247,33 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                       .add(FetchDoctorList());
                                 },
                               ),
-                              const CustomPopupItem(
+                              CustomPopupItem(
                                 title: 'Edit',
                                 icon: CupertinoIcons.pencil,
+                                onTap: () {
+                                  if (Utils.checkInternetConnection(context) == false){
+                                    return;
+                                  }
+                                  if (record.selfAdded == false) {
+                                    Utils.showSnackBar(
+                                        context, 'You have no permission to edit this record.',
+                                        isSuccess: false);
+                                    return;
+                                  }
+                                  Navigator.pushNamed(
+                                    context,
+                                    'edit_medical_record',
+                                    arguments: record,
+                                  ).then((value) {
+                                    if (value != null) {
+                                      records.removeWhere(
+                                          (element) => element.id == record.id);
+                                      records.add(value as MedicalRecord);
+                                      setState(() {});
+                                    }
+                                  });
+                                },
                               ),
-                              const CustomPopupItem(
-                                title: 'Delete',
-                                icon: Icons.delete,
-                              )
                             ],
                           ),
                         ),
@@ -265,7 +285,6 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         popupMenuItems: PopupMenuItem(
                           child: Column(
                             children: [
-                              
                               CustomPopupItem(
                                 title: 'Revoke',
                                 icon: Icons.backspace_rounded,
@@ -285,13 +304,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (Utils.checkInternetConnection(context)){
-            Navigator.pushNamed(context, 'upload_record_screen').then((value) {
-              if (value != null) {
-                records.add(value as MedicalRecord);
-                setState(() {});
-              }
-            });
+            if (Utils.checkInternetConnection(context)) {
+              Navigator.pushNamed(context, 'upload_record_screen')
+                  .then((value) {
+                if (value != null) {
+                  records.add(value as MedicalRecord);
+                  setState(() {});
+                }
+              });
             }
           },
           backgroundColor: blue900,

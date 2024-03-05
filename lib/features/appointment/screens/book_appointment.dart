@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -88,7 +89,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       slots,
       (slot) {
         DateTime slotDate = DateTime.parse(slot.slotDateTime!);
-        return '${slotDate.year}-${slotDate.month}-${slotDate.day}';
+        return slotDate.toString().slotDateFormat();
       },
     );
   }

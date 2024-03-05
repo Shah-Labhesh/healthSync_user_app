@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/ratings.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
+import 'package:user_mobile_app/features/chats/data/model/chat_room.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_event.dart';
 import 'package:user_mobile_app/features/doc_profile/bloc/doc_profile_bloc/doc_profile_state.dart';
 import 'package:user_mobile_app/features/doc_profile/data/repo/doc_profile_repo.dart';
@@ -13,12 +14,15 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
     on<GetDocQualification>((event, emit) => getDocQualification(event, emit));
     on<GetDocRatings>((event, emit) => getDocRatings(event, emit));
     on<ToggleFavourite>((event, emit) => toggleFavourite(event, emit));
+    on<CreateChatRoom>((event, emit) => createChatRoom(event, emit));
   }
+
+  final _repo = DocProfileRepo();
 
   void getDocProfile(GetDocProfile event, Emitter<DocProfileState> emit) async {
     emit(DocProfileLoading());
     try {
-      Response response = await DocProfileRepo().getDocProfile(event.doctorId);
+      Response response = await _repo.getDocProfile(event.doctorId);
       if (response.statusCode == 200) {
         emit(DocProfileLoaded(doctor: User.fromMap(response.data)));
       } else {
@@ -63,7 +67,7 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
     emit(DocQualificationLoading());
     try {
       Response response =
-          await DocProfileRepo().getDocQualification(event.doctorId);
+          await _repo.getDocQualification(event.doctorId);
       if (response.statusCode == 200) {
         emit(DocQualificationLoaded(
             qualification: (response.data as List)
@@ -111,7 +115,7 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
   void getDocRatings(GetDocRatings event, Emitter<DocProfileState> emit) async {
     emit(DocRatingsLoading());
     try {
-      Response response = await DocProfileRepo().getDocRatings(event.doctorId);
+      Response response = await _repo.getDocRatings(event.doctorId);
       if (response.statusCode == 200) {
         emit(DocRatingsLoaded(
             rating: (response.data as List<dynamic>)
@@ -159,7 +163,7 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
     emit(FavouriteToggleLoading());
     try {
       Response response =
-          await DocProfileRepo().toggleFavourite(event.doctorId);
+          await _repo.toggleFavourite(event.doctorId);
       if (response.statusCode == 200) {
         emit(FavouriteToggled(id: event.doctorId));
       } else {
@@ -196,6 +200,49 @@ class DocProfileBloc extends Bloc<DocProfileEvent, DocProfileState> {
         }
       } else {
         emit(FavouriteToggleError(
+            message: 'Something went wrong. Please try again later'));
+      }
+    }
+  }
+
+  void createChatRoom(CreateChatRoom event, Emitter<DocProfileState> emit) async {
+    emit(CreatingChatRoom());
+    try {
+      Response response = await _repo.createChatRoom(event.doctorId);
+      if (response.statusCode == 200) {
+        emit(ChatRoomCreated(chatRoom: ChatRoom.fromMap(response.data)));
+      } else {
+        emit(ChatRoomError(
+            message: 'Something went wrong. Please try again later'));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(ChatRoomError(
+                message: 'Connection timed out. Please try again later'));
+          } else if (statusCode == 401) {
+            emit(TokenExpired());
+          } else if (statusCode! >= 500 || statusCode >= 402) {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ChatRoomError(message: e.response?.data["message"][0]));
+            } else {
+              emit(ChatRoomError(message: e.response?.data["message"]));
+            }
+          } else {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ChatRoomError(message: e.response?.data["message"][0]));
+            } else {
+              emit(ChatRoomError(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(ChatRoomError(
+              message: 'Something went wrong. Please try again later'));
+        }
+      } else {
+        emit(ChatRoomError(
             message: 'Something went wrong. Please try again later'));
       }
     }

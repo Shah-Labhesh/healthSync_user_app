@@ -157,7 +157,7 @@ class _MySlotsScreenState extends State<MySlotsScreen> {
                           showDatePicker(
                               context: context,
                               initialDate: date,
-                              firstDate: DateTime.now(),
+                              firstDate: date,
                               lastDate: DateTime.now().add(
                                 const Duration(days: 30),
                               )).then((value) {

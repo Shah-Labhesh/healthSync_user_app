@@ -16,6 +16,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
     on<FetchDoctorList>((event, emit) => _getDoctorList(event, emit));
     on<ShareRecord>((event, emit) => _shareRecord(event, emit));
     on<RevokeSharedRecord>((event, emit) => _revokeSharedRecord(event, emit));
+    on<UpdateRecord>((event, emit) => _updateRecord(event, emit));
   }
 
   void _getrecords(FetchRecords event, Emitter<RecordState> emit) async {
@@ -54,9 +55,9 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
             }
           } else {
              if (e.response?.data["message"].runtimeType != String) {
-              emit(RecordShareError(message: e.response?.data["message"][0]));
+              emit(RecordError(message: e.response?.data["message"][0]));
             } else {
-              emit(RecordShareError(message: e.response?.data["message"]));
+              emit(RecordError(message: e.response?.data["message"]));
             }
           }
         } else {
@@ -96,9 +97,9 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
             }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
-              emit(RecordShareError(message: e.response?.data["message"][0]));
+              emit(UploadRecordError(message: e.response?.data["message"][0]));
             } else {
-              emit(RecordShareError(message: e.response?.data["message"]));
+              emit(UploadRecordError(message: e.response?.data["message"]));
             }
           }
         } else {
@@ -142,9 +143,9 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
             }
           } else {
              if (e.response?.data["message"].runtimeType != String) {
-              emit(RecordShareError(message: e.response?.data["message"][0]));
+              emit(PatientListError(message: e.response?.data["message"][0]));
             } else {
-              emit(RecordShareError(message: e.response?.data["message"]));
+              emit(PatientListError(message: e.response?.data["message"]));
             }
           }
         } else {
@@ -186,9 +187,9 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
             }
           } else {
              if (e.response?.data["message"].runtimeType != String) {
-              emit(RecordShareError(message: e.response?.data["message"][0]));
+              emit(UploadRecordError(message: e.response?.data["message"][0]));
             } else {
-              emit(RecordShareError(message: e.response?.data["message"]));
+              emit(UploadRecordError(message: e.response?.data["message"]));
             }
           }
         } else {
@@ -231,9 +232,9 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
             }
           } else {
              if (e.response?.data["message"].runtimeType != String) {
-              emit(RecordShareError(message: e.response?.data["message"][0]));
+              emit(DoctorListError(message: e.response?.data["message"][0]));
             } else {
-              emit(RecordShareError(message: e.response?.data["message"]));
+              emit(DoctorListError(message: e.response?.data["message"]));
             }
           }
         } else {
@@ -284,7 +285,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
               message: 'Something went wrong. Please try again later'));
         }
       } else {
-        emit(RecordError(
+        emit(RecordShareError(
             message: 'Something went wrong. Please try again later'));
       }
     }
@@ -329,6 +330,48 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
         }
       } else {
         emit(RecordError(
+            message: 'Something went wrong. Please try again later'));
+      }
+    }
+  }
+
+  void _updateRecord(UpdateRecord event, Emitter<RecordState> emit) async {
+    emit(UpdatingRecord());
+    try {
+      final response = await RecordRepo().updateRecord(event.recordId, event.record);
+      if (response.statusCode == 200) {
+        emit(RecordUpdated(record: MedicalRecord.fromMap(response.data)));
+      } else {
+        emit(RecordUpdateError(message: 'Something went wrong'));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(RecordUpdateError(
+                message: 'Connection timed out. Please try again later'));
+          } else if (statusCode == 401) {
+            emit(TokenExpired());
+          } else if (statusCode! >= 500 || statusCode >= 402) {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(RecordUpdateError(message: e.response?.data["message"][0]));
+            } else {
+              emit(RecordUpdateError(message: e.response?.data["message"]));
+            }
+          } else {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(RecordUpdateError(message: e.response?.data["message"][0]));
+            } else {
+              emit(RecordUpdateError(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(RecordUpdateError(
+              message: 'Something went wrong. Please try again later'));
+        }
+      } else {
+        emit(RecordUpdateError(
             message: 'Something went wrong. Please try again later'));
       }
     }

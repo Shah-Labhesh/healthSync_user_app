@@ -97,3 +97,17 @@ class RecordRevokedError extends RecordState {
 
   RecordRevokedError({required this.message});
 }
+
+class UpdatingRecord extends RecordState {}
+
+class RecordUpdated extends RecordState {
+  final MedicalRecord record;
+
+  RecordUpdated({required this.record});
+}
+
+class RecordUpdateError extends RecordState {
+  final String message;
+
+  RecordUpdateError({required this.message});
+}

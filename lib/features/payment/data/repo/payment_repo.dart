@@ -26,4 +26,15 @@ class PaymentRepo {
       ),
     );
   }
+
+  Future<Response> myPayments() async {
+    final token = await SharedUtils.getToken();
+    return await dio.get(
+      AppUrls.myPayments,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token'},
+      ),
+    );
+
+  }
 }

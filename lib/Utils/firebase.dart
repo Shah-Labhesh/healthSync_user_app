@@ -1,7 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:user_mobile_app/main.dart';
 
 class FirebaseService {
   static Future<String> requestPermission() async {
@@ -74,18 +71,6 @@ class FirebaseService {
     });
   }
 
-  // static void onTokenRefresh() {
-  //   FirebaseMessaging.onTokenRefresh.listen((String token) {
-  //     print('onTokenRefresh: $token');
-  //   });
-  // }
-
-  // static void onLocalNotification() {
-  //   FirebaseMessaging.onLocalNotificationOpenedApp.listen((RemoteMessage message) {
-  //     print('A new onLocalNotification event was published!');
-  //     print('Message data: ${message.data}');
-  //   });
-  // }
 
   static void onLocalNotificationForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -101,51 +86,6 @@ class FirebaseService {
     if (message == null) {
       return;
     }
-
-    // navigatorKey.currentState?.pushNamed('home_screen', arguments: 3);
   }
 
-  static Future initialize(FlutterLocalNotificationsPlugin plugin) async {
-    var androidInitialize =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    // var iosInitialize = IOSInitializationSettings();
-    var initializationSettings =
-        InitializationSettings(android: androidInitialize);
-    // ios: iosInitialize);
-    await plugin.initialize(
-      initializationSettings,
-    );
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null) {
-        plugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(),
-          // NotificationDetails(
-          //   android: AndroidNotificationDetails(
-          //     channel.id,
-          //     channel.name,
-          //     channel.description,
-          //     icon: android.smallIcon,
-          //   ),
-          // ),
-        );
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      print('Message data: ${message.data}');
-    });
-  }
 }

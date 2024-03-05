@@ -21,7 +21,6 @@ class RecordRepo {
           'Authorization': 'Bearer $token',
           "Content-Type": "multipart/form-data"
         }));
-    print(response);
     return response;
   }
 
@@ -40,7 +39,6 @@ class RecordRepo {
           'Authorization': 'Bearer $token',
           "Content-Type": "multipart/form-data"
         }));
-    print(response);
     return response;
   }
 
@@ -62,6 +60,17 @@ class RecordRepo {
     final token = await SharedUtils.getToken();
     Response response = await dio.delete(AppUrls.revokeSharedRecord(recordId: recordId),
         options: Options(headers: {'Authorization': 'Bearer $token'}));
+    return response;
+  }
+
+  Future<Response> updateRecord(String recordId, Map<String, dynamic> record) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.put(AppUrls.updateRecord(recordId: recordId),
+        data: FormData.fromMap(record),
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+          "Content-Type": "multipart/form-data"
+        }));
     return response;
   }
 

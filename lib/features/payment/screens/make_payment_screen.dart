@@ -33,6 +33,8 @@ class _MakePaymentState extends State<MakePayment> {
   bool hideMPIN = true;
   bool hideTransactionPin = true;
 
+  final _transactionFocus = FocusNode();
+
   String? token;
 
   String? appointmentId;
@@ -87,13 +89,20 @@ class _MakePaymentState extends State<MakePayment> {
       appointmentId = args;
     }
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(HeightManager.h73),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: 'Pay via Khalti',
           backgroundColor: blue800,
           textColor: white,
           isBackButton: true,
+          onPop: () {
+            Utils.showSnackBar(context,
+                "Make Payment before 3 hours of appointment time, else it will be cancel",
+                isSuccess: false);
+            Navigator.pushNamedAndRemoveUntil(
+                context, 'user_home_screen', arguments: 1, (route) => false);
+          },
         ),
       ),
       body: BlocConsumer<MakePaymentBloc, MakePaymentState>(
@@ -106,6 +115,12 @@ class _MakePaymentState extends State<MakePayment> {
           setState(() {
             token = state.khaltiToken;
           });
+          Utils.showSnackBar(
+            context,
+            'OTP sent to your mobile number via Khalti. Please confirm payment.',
+            isSuccess: true,
+          );
+          _transactionFocus.requestFocus();
         }
 
         if (state is ConfirmPaymentSuccess) {
@@ -134,149 +149,164 @@ class _MakePaymentState extends State<MakePayment> {
           );
         }
       }, builder: (context, state) {
-        return LoadingOverlay(
-          isLoading: state is MakePaymentLoading,
-          progressIndicator: LoadingAnimationWidget.threeArchedCircle(
-            color: blue900,
-            size: 60,
-          ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(
-                horizontal: PaddingManager.paddingMedium2,
-                vertical: PaddingManager.paddingMedium2,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Add your widgets here
-                    SizedBox(
-                      width: double.infinity,
-                      height: HeightManager.h73,
-                      child: Image.asset(
-                        AppImages.khaltiImage,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: HeightManager.h20,
-                    ),
-                    if (token == null) ...[
-                      CustomTextfield(
-                        label: 'Mobile Number',
-                        hintText: 'Enter Mobile Number',
-                        textInputType: TextInputType.phone,
-                        controller: mobileController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Mobile number is required';
-                          }
-                          if (value.trim().length != 10) {
-                            return 'Mobile number must be 10 digits';
-                          }
-                          return null;
-                        },
-                      ),
-                      CustomTextfield(
-                        label: 'MPIN',
-                        hintText: 'Enter MPIN',
-                        textInputType: TextInputType.number,
-                        obscure: hideMPIN,
-                        controller: mPinController,
-                        suffixPressed: () {
-                          setState(() {
-                            hideMPIN = !hideMPIN;
-                          });
-                        },
-                        suffixIcon: hideMPIN
-                            ? const Icon(
-                                CupertinoIcons.eye,
-                                color: gray400,
-                                size: 22,
-                              )
-                            : const Icon(
-                                CupertinoIcons.eye_slash,
-                                color: gray400,
-                                size: 22,
-                              ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'MPIN is required';
-                          }
-                          if (value.trim().length != 4) {
-                            return 'MPIN must be 4 digits';
-                          }
-                          return null;
-                        },
-                      ),
-                    ] else ...[
-                      const SizedBox(
-                        height: HeightManager.h20,
-                      ),
-                      Text(
-                        'Confirm Payment',
-                        style: TextStyle(
-                          color: gray700,
-                          fontSize: FontSizeManager.f22,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.poppins().fontFamily,
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) {
+            if (didPop) {
+              return;
+            }
+            Utils.showSnackBar(context,
+                "Make Payment before 3 hours of appointment time, else it will be cancel",
+                isSuccess: false);
+            Navigator.pushNamedAndRemoveUntil(
+                context, 'user_home_screen', arguments: 1, (route) => false);
+          },
+          child: LoadingOverlay(
+            isLoading: state is MakePaymentLoading,
+            progressIndicator: LoadingAnimationWidget.flickr(
+              leftDotColor: red600,
+              rightDotColor: blue900,
+              size: 40,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: PaddingManager.paddingMedium2,
+                  vertical: PaddingManager.paddingMedium2,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // Add your widgets here
+                      SizedBox(
+                        width: double.infinity,
+                        height: HeightManager.h73,
+                        child: Image.asset(
+                          AppImages.khaltiImage,
+                          fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(
                         height: HeightManager.h20,
                       ),
-                      CustomTextfield(
-                        label: 'Transaction Pin',
-                        hintText: 'Enter Transaction Pin',
-                        textInputType: TextInputType.number,
-                        controller: transactionPinController,
-                        obscure: hideTransactionPin,
-                        suffixPressed: () {
-                          setState(() {
-                            hideTransactionPin = !hideTransactionPin;
-                          });
-                        },
-                        suffixIcon: hideTransactionPin
-                            ? const Icon(
-                                CupertinoIcons.eye,
-                                color: gray400,
-                                size: 22,
-                              )
-                            : const Icon(
-                                CupertinoIcons.eye_slash,
-                                color: gray400,
-                                size: 22,
-                              ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Transaction Pin is required';
+                      if (token == null) ...[
+                        CustomTextfield(
+                          label: 'Mobile Number',
+                          hintText: 'Enter Mobile Number',
+                          textInputType: TextInputType.phone,
+                          controller: mobileController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Mobile number is required';
+                            }
+                            if (value.trim().length != 10) {
+                              return 'Mobile number must be 10 digits';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomTextfield(
+                          label: 'MPIN',
+                          hintText: 'Enter MPIN',
+                          textInputType: TextInputType.number,
+                          obscure: hideMPIN,
+                          controller: mPinController,
+                          suffixPressed: () {
+                            setState(() {
+                              hideMPIN = !hideMPIN;
+                            });
+                          },
+                          suffixIcon: hideMPIN
+                              ? const Icon(
+                                  CupertinoIcons.eye,
+                                  color: gray400,
+                                  size: 22,
+                                )
+                              : const Icon(
+                                  CupertinoIcons.eye_slash,
+                                  color: gray400,
+                                  size: 22,
+                                ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'MPIN is required';
+                            }
+                            if (value.trim().length != 4) {
+                              return 'MPIN must be 4 digits';
+                            }
+                            return null;
+                          },
+                        ),
+                      ] else ...[
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                        Text(
+                          'Confirm Payment',
+                          style: TextStyle(
+                            color: gray700,
+                            fontSize: FontSizeManager.f22,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                        CustomTextfield(
+                          label: 'Transaction Pin',
+                          hintText: 'Enter Transaction Pin',
+                          focusNode: _transactionFocus,
+                          textInputType: TextInputType.number,
+                          controller: transactionPinController,
+                          obscure: hideTransactionPin,
+                          suffixPressed: () {
+                            setState(() {
+                              hideTransactionPin = !hideTransactionPin;
+                            });
+                          },
+                          suffixIcon: hideTransactionPin
+                              ? const Icon(
+                                  CupertinoIcons.eye,
+                                  color: gray400,
+                                  size: 22,
+                                )
+                              : const Icon(
+                                  CupertinoIcons.eye_slash,
+                                  color: gray400,
+                                  size: 22,
+                                ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Transaction Pin is required';
+                            }
+                            if (value.trim().length != 6) {
+                              return 'Transaction Pin must be 6 digits';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                      const SizedBox(
+                        height: HeightManager.h20,
+                      ),
+                      CustomButtom(
+                        title: token != null ? 'Confirm' : 'Pay',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Add your logic here
+                            if (token == null) {
+                              initiatePayment();
+                            } else {
+                              confirmPayment();
+                            }
                           }
-                          if (value.trim().length != 6) {
-                            return 'Transaction Pin must be 6 digits';
-                          }
-                          return null;
                         },
                       ),
                     ],
-                    const SizedBox(
-                      height: HeightManager.h20,
-                    ),
-                    CustomButtom(
-                      title: token != null ? 'Confirm' : 'Pay',
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Add your logic here
-                          if (token == null) {
-                            initiatePayment();
-                          } else {
-                            confirmPayment();
-                          }
-                        }
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -19,3 +19,8 @@ class ToggleFavourite extends DocProfileEvent {
   final String doctorId;
   ToggleFavourite({required this.doctorId});
 }
+
+class CreateChatRoom extends DocProfileEvent {
+  final String doctorId;
+  CreateChatRoom({required this.doctorId});
+}

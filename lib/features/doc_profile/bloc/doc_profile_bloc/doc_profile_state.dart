@@ -1,6 +1,7 @@
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/ratings.dart';
 import 'package:user_mobile_app/features/authentication/data/model/Qualification.dart';
+import 'package:user_mobile_app/features/chats/data/model/chat_room.dart';
 
 abstract class DocProfileState {}
 
@@ -54,3 +55,15 @@ class FavouriteToggleError extends DocProfileState {
   FavouriteToggleError({required this.message});
 }
 class TokenExpired extends DocProfileState {}
+
+class CreatingChatRoom extends DocProfileState {}
+
+class ChatRoomCreated extends DocProfileState {
+  final ChatRoom chatRoom;
+  ChatRoomCreated({required this.chatRoom});
+}
+
+class ChatRoomError extends DocProfileState {
+  final String message;
+  ChatRoomError({required this.message});
+}
