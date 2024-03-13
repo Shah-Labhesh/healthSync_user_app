@@ -1,4 +1,4 @@
-enum Environment { local, network, dev , prod}
+enum Environment { local,  dev , prod}
 
 abstract class AppEnvironment{
     static late String androidBaseUrl;
@@ -18,20 +18,14 @@ abstract class AppEnvironment{
                 latitude = 26.4831;
                 longitude = 87.28337;
                 break;
-            case Environment.network:
+            case Environment.dev:
                 androidBaseUrl = "http://192.168.1.66:8086/api/v1";
                 shareUrl = "http://192.168.1.66:8086";
                 mapApiKey = "AIzaSyBkVhR0qo33PVwEaedI6y504SzyzJf2l9U";
                 latitude = 26.4831;
                 longitude = 87.28337;
                 break;
-            case Environment.dev:
-                androidBaseUrl = "";
-                shareUrl = "";
-                mapApiKey = "";
-                latitude = 0.0;
-                longitude = 0.0;
-                break;
+            
             case Environment.prod:
                 androidBaseUrl = "";
                 shareUrl = "";
