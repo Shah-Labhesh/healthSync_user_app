@@ -228,7 +228,7 @@ class AppointmentTile extends StatelessWidget {
                     ),
                   ),
                 )
-              else if (appointment.payment == null && !doctor)
+              else if (appointment.paymentStatus == 'PENDING' && !doctor)
                 Expanded(
                   child: GestureDetector(
                     onTap: () {

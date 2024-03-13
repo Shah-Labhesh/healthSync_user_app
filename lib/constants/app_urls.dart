@@ -29,6 +29,8 @@ class AppUrls {
   static String addKhaltiPayment({required String doctorId}) =>
       '$BASE_URL/user/khaltiId/$doctorId';
   static String firebaseToken = '$BASE_URL/user/firebase-token';
+  static String dataRemoval = '$BASE_URL/user/data-removal';
+  static String approval = '$BASE_URL/user/approval';
 
   //qualification
   static String updateOrDeleteQualification(
@@ -96,10 +98,22 @@ class AppUrls {
       '$BASE_URL/medical-record/revoke/$recordId';
   static String updateRecord({required String recordId}) =>
       '$BASE_URL/medical-record/$recordId';
+  static String getPatientRecords({required String userId}) =>
+      '$BASE_URL/medical-record/view/$userId';
+  static String allRequest = '$BASE_URL/medical-record/request';
+  static String updateRequestStatus({required String requestId, required bool value}) =>
+      '$BASE_URL/medical-record/approval/$requestId/$value';
+      static String requestRecordPermission({required String userId}) => '$BASE_URL/medical-record/request/$userId';
 
   // prescription
   static String prescription = '$BASE_URL/prescription';
-
+  static String getPatientPrescriptions({required String patientId}) =>
+      '$BASE_URL/prescription/$patientId';
+  static String updatePermissionStatus({required String requestId, required bool value}) =>
+      '$BASE_URL/prescription/permission/$requestId/$value';
+  static String allPrescriptionRequest= '$BASE_URL/prescription/permission';
+  static String requestPermission({required String userId}) => '$BASE_URL/prescription/permission/$userId';
+  
   // contact
   static String contactMessage(
           {required String email, required String message}) =>

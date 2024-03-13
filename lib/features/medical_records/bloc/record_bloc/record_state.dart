@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/medical_records/data/model/medical_record.dart';
+import 'package:user_mobile_app/features/medical_records/data/model/record_request.dart';
 
 abstract class RecordState {}
 
@@ -110,4 +112,38 @@ class RecordUpdateError extends RecordState {
   final String message;
 
   RecordUpdateError({required this.message});
+}
+
+class FetchingRequest extends RecordState {}
+
+class RequestFetched extends RecordState {
+  final List<RecordRequest> requests;
+
+  RequestFetched({required this.requests});
+}
+
+class RequestError extends RecordState {
+  final String message;
+
+  RequestError({required this.message});
+}
+
+class UpdatingRequestStatus extends RecordState {}
+
+class RequestStatusUpdated extends RecordState {
+  final String id;
+  final bool value;
+  final String message;
+
+  RequestStatusUpdated({
+    required this.id,
+    required this.value,
+    required this.message,
+  });
+}
+
+class RequestStatusError extends RecordState {
+  final String message;
+
+  RequestStatusError({required this.message});
 }

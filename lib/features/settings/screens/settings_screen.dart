@@ -199,6 +199,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ],
+
+                  TileWithIcon(
+                    text: 'Request Data Deletion',
+                    icon: CupertinoIcons.delete_left_fill,
+                    color: red800,
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      'data_deletion_screen',
+                    ),
+                  ),
                   TileWithIcon(
                     text: 'About Us',
                     icon: CupertinoIcons.person_2_fill,

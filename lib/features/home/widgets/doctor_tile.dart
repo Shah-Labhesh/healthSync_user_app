@@ -67,29 +67,54 @@ class _DoctorTileState extends State<DoctorTile> {
           ),
           child: Row(
             children: [
-              Container(
-                height: HeightManager.h90,
-                width: WidthManager.w90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: widget.doctor.avatar != null
-                    ? CachedNetworkImage(
-                        imageUrl: BASE_URL + widget.doctor.avatar!,
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) =>
-                                CircularProgressIndicator(
-                                    value: downloadProgress.progress),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(Icons.error),
+              Stack(
+                children: [
+                  Container(
+                    height: HeightManager.h90,
+                    width: WidthManager.w90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: widget.doctor.avatar != null
+                        ? CachedNetworkImage(
+                            imageUrl: BASE_URL + widget.doctor.avatar!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) => const Center(
+                              child: Icon(Icons.error),
+                            ),
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            AppImages.defaultAvatar,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                  if (widget.doctor.popular!)
+                    Positioned(
+                      bottom: 5,
+                      right: 3,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: blue900,
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        AppImages.defaultAvatar,
-                        fit: BoxFit.cover,
+                        child: Text(
+                          'Popular',
+                          style: TextStyle(
+                            fontSize: FontSizeManager.f12,
+                            fontWeight: FontWeightManager.medium,
+                            color: white,
+                            fontFamily: GoogleFonts.montserrat().fontFamily,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
+                    ),
+                ],
               ),
               const SizedBox(
                 width: WidthManager.w10,

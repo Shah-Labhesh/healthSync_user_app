@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:user_mobile_app/.env.dart';
+import 'package:user_mobile_app/Utils/firebase.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/theme.dart';
 import 'package:user_mobile_app/features/account/bloc/account_bloc.dart';
@@ -48,6 +49,10 @@ import 'package:user_mobile_app/features/medical_records/screens/upload_record_s
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/notification/screens/notification_screen.dart';
 import 'package:user_mobile_app/features/onboarding/page_view.dart';
+import 'package:user_mobile_app/features/patients/bloc/patient_bloc/patient_bloc.dart';
+import 'package:user_mobile_app/features/patients/bloc/patient_view_bloc/patient_view_bloc.dart';
+import 'package:user_mobile_app/features/patients/screens/patient_view_screen.dart';
+import 'package:user_mobile_app/features/patients/screens/patients_list_screen.dart';
 import 'package:user_mobile_app/features/payment/bloc/make_payment_bloc/make_payment_bloc.dart';
 import 'package:user_mobile_app/features/payment/bloc/payment_bloc/payment_bloc.dart';
 import 'package:user_mobile_app/features/payment/screens/make_payment_screen.dart';
@@ -59,11 +64,13 @@ import 'package:user_mobile_app/features/privacy_policy/screens/privacy_policy_s
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/screens/search_screen.dart';
 import 'package:user_mobile_app/features/settings/bloc/qualification_bloc/qualification_bloc.dart';
+import 'package:user_mobile_app/features/settings/bloc/request_deletion_bloc/request_deletion_bloc.dart';
 import 'package:user_mobile_app/features/settings/bloc/update_profile/update_profile_bloc.dart';
 import 'package:user_mobile_app/features/settings/screens/aboutus_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/auth_qualification_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/change_password_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/change_specialty_screen.dart';
+import 'package:user_mobile_app/features/settings/screens/data_deletion_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/my_qualification_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/settings_screen.dart';
 import 'package:user_mobile_app/features/settings/screens/update_location_screen.dart';
@@ -82,7 +89,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  AppEnvironment.setupEnv(Environment.local);
+  FirebaseService.initMessaging();
+  FirebaseService.initLocalNotification();
+  AppEnvironment.setupEnv(Environment.network);
 
   runApp(const MyApp());
 }
@@ -161,22 +170,7 @@ class _MyAppState extends State<MyApp> {
                     create: (context) => UserHomeBloc(),
                   ),
                 ],
-                child: BlocConsumer<NetworkBloc, NetworkState>(
-                  listener: (context, state) {
-                    // TODO: implement listener
-                    if (state is NetworkFailure) {
-                      Utils.showSnackBar(context, 'No Internet Connection',
-                          isSuccess: false);
-                    } else {
-                      Utils.showSnackBar(
-                          context, 'Internet Connection Restored',
-                          isSuccess: true);
-                    }
-                  },
-                  builder: (context, state) {
-                    return HomeScreen();
-                  },
-                ),
+                child: HomeScreen(),
               ),
           'doctor_home_screen': (context) => BlocProvider(
                 create: (context) => DocHomeBloc(),
@@ -274,6 +268,10 @@ class _MyAppState extends State<MyApp> {
                 ],
                 child: const UpdateProfileScreen(),
               ),
+          'my_patient_screen': (context) => BlocProvider(
+                create: (context) => MyPatientBloc(),
+                child: const MyPatientsScreen(),
+              ),
           'about_us_screen': (context) => const AboutUsScreen(),
           'upload_record_screen': (context) => BlocProvider(
                 create: (context) => RecordBloc(),
@@ -307,6 +305,14 @@ class _MyAppState extends State<MyApp> {
           'make_payment': (context) => BlocProvider(
                 create: (context) => MakePaymentBloc(),
                 child: const MakePayment(),
+              ),
+          'data_deletion_screen': (context) => BlocProvider(
+                create: (context) => RequestDeletionBloc(),
+                child: const DataDeletionScreen(),
+              ),
+          'patient_view_screen': (context) => BlocProvider(
+                create: (context) => PatientViewBloc(),
+                child: const PatientViewScreen(),
               ),
         },
       ),

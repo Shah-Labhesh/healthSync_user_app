@@ -79,4 +79,13 @@ class HomeRepo {
     );
     return response;
   }
+
+  // request approval
+  Future<Response> requestForApproval() async {
+    final token = await SharedUtils.getToken();
+    return await dio.post(
+      AppUrls.approval,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
 }

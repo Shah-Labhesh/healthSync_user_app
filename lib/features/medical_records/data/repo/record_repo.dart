@@ -74,4 +74,20 @@ class RecordRepo {
     return response;
   }
 
+  // get all req
+  Future<Response> getPatientRecords() async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.get(AppUrls.allRequest,
+        options: Options(headers: {'Authorization': 'Bearer $token'}));
+    return response;
+  }
+
+  // approve or reject req
+  Future<Response> approveOrRejectReq(String requestId, bool status) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.put(AppUrls.updateRequestStatus(requestId: requestId, value: status),
+        options: Options(headers: {'Authorization': 'Bearer $token'}));
+    return response;
+  }
+
 }

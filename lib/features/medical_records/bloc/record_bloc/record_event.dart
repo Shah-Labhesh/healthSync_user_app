@@ -37,3 +37,11 @@ class UpdateRecord extends RecordEvent {
   final Map<String, dynamic> record;
   UpdateRecord({required this.recordId, required this.record});
 }
+
+class FetchAllRequest extends RecordEvent {}
+
+class UpdateRequestStatus extends RecordEvent {
+  final String requestId;
+  final bool value;
+  UpdateRequestStatus({required this.requestId, required this.value});
+}

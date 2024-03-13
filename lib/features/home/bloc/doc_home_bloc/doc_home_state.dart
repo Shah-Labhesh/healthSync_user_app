@@ -23,3 +23,12 @@ class DocHomeError extends DocHomeState {
 }
 
 class TokenExpired extends DocHomeState {}
+
+class RequestingAproval extends DocHomeState {}
+
+class AprovalRequested extends DocHomeState {}
+
+class ApprovalRequestFailed extends DocHomeState {
+  final String message;
+  ApprovalRequestFailed({required this.message});
+}

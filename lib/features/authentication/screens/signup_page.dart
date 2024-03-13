@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -380,33 +381,34 @@ class _SignUpPageState extends State<SignUpPage> {
                         const SizedBox(
                           height: HeightManager.h18,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Already have an account?",
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                fontSize: FontSizeManager.f16,
-                                fontWeight: FontWeightManager.medium,
-                                color: gray800,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                " Login here",
-                                style: TextStyle(
-                                  fontFamily: GoogleFonts.poppins().fontFamily,
-                                  fontSize: FontSizeManager.f16,
-                                  fontWeight: FontWeightManager.medium,
-                                  color: blue800,
+                        Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              
+                              text: TextSpan(children: [
+                                TextSpan(
+                                  text: "Already have an account?",
+                                  style: TextStyle(
+                                    fontFamily: GoogleFonts.poppins().fontFamily,
+                                    fontSize: FontSizeManager.f16,
+                                    fontWeight: FontWeightManager.medium,
+                                    color: gray800,
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.pop(context);
+                                    },
+                                  text: " Login here",
+                                  style: TextStyle(
+                                    fontFamily: GoogleFonts.poppins().fontFamily,
+                                    fontSize: FontSizeManager.f16,
+                                    fontWeight: FontWeightManager.medium,
+                                    color: blue800,
+                                  ),
+                                ),
+                              ])),
                         ),
                         const SizedBox(
                           height: HeightManager.h18,

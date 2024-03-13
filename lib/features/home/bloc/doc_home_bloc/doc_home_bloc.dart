@@ -9,6 +9,7 @@ import 'package:user_mobile_app/features/home/data/repo/home_repo.dart';
 class DocHomeBloc extends Bloc<DocHomeEvent, DocHomeState> {
   DocHomeBloc() : super(DocHomeInitial()) {
     on<GetDocHome>((event, emit) => getDocHome(event, emit));
+    on<RequestForAproval>((event, emit) => request(emit));
   }
 
   void getDocHome(GetDocHome event, Emitter<DocHomeState> emit) async {
@@ -62,6 +63,50 @@ class DocHomeBloc extends Bloc<DocHomeEvent, DocHomeState> {
         }
       } else {
         emit(DocHomeError(
+            message: 'Something went wrong. Please try again later'));
+      }
+    }
+  }
+
+
+  void request(Emitter<DocHomeState> emit) async {
+    emit(RequestingAproval());
+    try {
+      Response response = await HomeRepo().requestForApproval();
+      if (response.statusCode==201) {
+        emit(AprovalRequested());
+      } else {
+        emit(ApprovalRequestFailed(
+            message: 'Something went wrong. Please try again later'));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(ApprovalRequestFailed(
+                message: 'Connection timed out. Please try again later'));
+          } else if (statusCode == 401) {
+            emit(TokenExpired());
+          } else if (statusCode! >= 500 || statusCode >= 402) {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ApprovalRequestFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(ApprovalRequestFailed(message: e.response?.data["message"]));
+            }
+          } else {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(ApprovalRequestFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(ApprovalRequestFailed(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(ApprovalRequestFailed(
+              message: 'Something went wrong. Please try again later'));
+        }
+      } else {
+        emit(ApprovalRequestFailed(
             message: 'Something went wrong. Please try again later'));
       }
     }

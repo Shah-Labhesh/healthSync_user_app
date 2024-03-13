@@ -32,25 +32,30 @@ class TileWithText extends StatelessWidget {
       child: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                text,
-                style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
-                  fontSize: FontSizeManager.f16,
-                  color: gray400,
-                  fontWeight: FontWeightManager.light,
-                ),
-              ),
-              const Spacer(),
-              if (isSwitch == false) ...[
-                Text(
-                  value!,
+              Expanded(
+                child: Text(
+                  text,
                   style: TextStyle(
                     fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: FontSizeManager.f16,
                     color: gray400,
                     fontWeight: FontWeightManager.light,
+                  ),
+                ),
+              ),
+              if (isSwitch == false) ...[
+                Expanded(
+                  child: Text(
+                    value!,
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontSize: FontSizeManager.f16,
+                      color: gray400,
+                      fontWeight: FontWeightManager.light,
+                    ),
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const SizedBox(

@@ -98,51 +98,52 @@ class DoctorDrawer extends StatelessWidget {
                         const SizedBox(
                           width: 10,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Dr. ${doctor.name}',
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f16,
-                                fontFamily: GoogleFonts.inter().fontFamily,
-                                fontWeight: FontWeightManager.semiBold,
-                                color: gray50,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Dr. ${doctor.name}',
+                                style: TextStyle(
+                                  fontSize: FontSizeManager.f16,
+                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                  fontWeight: FontWeightManager.semiBold,
+                                  color: gray50,
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: HeightManager.h5,
-                            ),
-                            SizedBox(
-                              width: width * 0.6,
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    CupertinoIcons.mail_solid,
-                                    color: white,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(
-                                    width: WidthManager.w5,
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      '${doctor.email}',
-                                      style: TextStyle(
-                                        fontSize: FontSizeManager.f14,
-                                        fontFamily:
-                                            GoogleFonts.inter().fontFamily,
-                                        fontWeight: FontWeightManager.medium,
-                                        color: gray50,
+                              const SizedBox(
+                                height: HeightManager.h5,
+                              ),
+                              SizedBox(
+                                width: width * 0.6,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      CupertinoIcons.mail_solid,
+                                      color: white,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(
+                                      width: WidthManager.w5,
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        '${doctor.email}',
+                                        style: TextStyle(
+                                          fontSize: FontSizeManager.f14,
+                                          fontFamily:
+                                              GoogleFonts.inter().fontFamily,
+                                          fontWeight: FontWeightManager.medium,
+                                          color: gray50,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const Spacer(),
                         GestureDetector(
                           onTap: () {
                             Scaffold.of(context).openEndDrawer();
@@ -168,7 +169,7 @@ class DoctorDrawer extends StatelessWidget {
                       },
                     ),
                     TileBarWidget(
-                      icon: appointmentIcon,
+                      icon: appointmentFilledicon,
                       title: 'My Appointments',
                       color: gray50,
                       gap: HeightManager.h20,
@@ -177,12 +178,12 @@ class DoctorDrawer extends StatelessWidget {
                       },
                     ),
                     TileBarWidget(
-                      icon: recordIcon,
-                      title: 'Medical Records',
+                      icon: patienticon,
+                      title: 'My Patients',
                       color: gray50,
                       gap: HeightManager.h20,
                       onPressed: () {
-                        Navigator.pushNamed(context, 'medical_record_screen');
+                        Navigator.pushNamed(context, 'my_patient_screen');
                       },
                     ),
                     TileBarWidget(
@@ -194,15 +195,15 @@ class DoctorDrawer extends StatelessWidget {
                         Navigator.pushNamed(context, 'payment_screen');
                       },
                     ),
-                    TileBarWidget(
-                      icon: prescriptionIcon,
-                      title: 'Prescriptions',
-                      color: gray50,
-                      gap: HeightManager.h20,
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'prescription_screen');
-                      },
-                    ),
+                    // TileBarWidget(
+                    //   icon: prescriptionIcon,
+                    //   title: 'Prescriptions',
+                    //   color: gray50,
+                    //   gap: HeightManager.h20,
+                    //   onPressed: () {
+                    //     Navigator.pushNamed(context, 'prescription_screen');
+                    //   },
+                    // ),
                     TileBarWidget(
                       icon: mySlotIcon,
                       title: 'My Slots',

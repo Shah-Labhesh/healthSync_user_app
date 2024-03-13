@@ -74,11 +74,19 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           .read<EmailVerificationBloc>()
           .add(InitiateEmailVerificationEvent(email: args["email"]));
     }
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    final fieldHeight = screenWidth < 260 ? screenWidth * 0.110 : screenHeight * 0.070;
+    final fieldWidth = screenWidth < 260 ? screenWidth * 0.110 : screenWidth * 0.160; 
     return BlocConsumer<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
         if (state is EmailVerificationCompleted) {
           Utils.showSnackBar(context, state.data['message'], isSuccess: true);
-          Navigator.pushReplacementNamed(context, 'login_screen', arguments: {"email": args!["email"], "password": args["password"]});
+          Navigator.pushReplacementNamed(context, 'login_screen', arguments: {
+            "email": args!["email"],
+            "password": args["password"]
+          });
         }
         if (state is EmailVerificationInitiationFailed) {
           Utils.showSnackBar(context, state.message, isSuccess: false);
@@ -89,6 +97,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         if (state is EmailVerificationInitiated) {
           Utils.showSnackBar(context, state.data['message'], isSuccess: true);
         }
+        if (state is EmailVerificationResent) {
+          Utils.showSnackBar(context, state.data['message'], isSuccess: true);
+        }
+        if (state is EmailVerificationResendFailed) {
+          Utils.showSnackBar(context, state.message, isSuccess: false);
+        }
       },
       builder: (context, state) {
         return LoadingOverlay(
@@ -97,75 +111,76 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           progressIndicator: LoadingAnimationWidget.threeArchedCircle(
               color: blue900, size: 60),
           child: Scaffold(
-            appBar: const PreferredSize(
-              preferredSize: Size.fromHeight(HeightManager.h73),
-              child: AppBarCustomWithSceenTitle(
-                title: "Email Verification",
-                isBackButton: true,
+              appBar: const PreferredSize(
+                preferredSize: Size.fromHeight(HeightManager.h73),
+                child: AppBarCustomWithSceenTitle(
+                  title: "Email Verification",
+                  isBackButton: true,
+                ),
               ),
-            ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: HeightManager.h20,
-                    ),
-                    Center(
-                      child: Text(
-                        "Enter the 4 digits code that you received on your email.",
-                        style: textTheme.displaySmall!.copyWith(
-                          fontSize: FontSizeManager.f14,
-                          fontWeight: FontWeightManager.regular,
-                          color: gray500,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: PaddingManager.paddingMedium2),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: HeightManager.h20,
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: HeightManager.h20,
-                    ),
-                    OtpPinField(
-                      fieldHeight: HeightManager.h65,
-                      fieldWidth: WidthManager.w65,
-                      autoFillEnable: true,
-                      textInputAction: TextInputAction.done,
-                      otpPinFieldDecoration:
-                          OtpPinFieldDecoration.defaultPinBoxDecoration,
-                      keyboardType: TextInputType.number,
-                      showCursor: true,
-                      cursorColor: gray400,
-                      highlightBorder: true,
-                      otpPinFieldStyle: const OtpPinFieldStyle(
-                        defaultFieldBorderColor: gray200,
-                        activeFieldBorderColor: gray200,
-                        filledFieldBorderColor: gray200,
-                      ),
-                      maxLength: 4,
-                      onChange: (text) {
-                        if (text.length == 4) {
-                          otp = text;
-                          context.read<EmailVerificationBloc>().add(
-                                VerifyEmailEvent(
-                                  credentials: {
-                                    "otp": text,
-                                    "email": args!["email"]
-                                  },
-                                ),
-                              );
-                        }
-                      },
-                      onSubmit: (text) {},
-                    ),
-                    const SizedBox(
-                      height: HeightManager.h20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          RichText(
+                        Center(
+                          child: Text(
+                            "Enter the 4 digits code that you received on your email.",
+                            style: textTheme.displaySmall!.copyWith(
+                              fontSize: FontSizeManager.f14,
+                              fontWeight: FontWeightManager.regular,
+                              color: gray500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                        OtpPinField(
+                          fieldHeight: fieldHeight,
+                          fieldWidth: fieldWidth,
+                          autoFillEnable: true,
+                          textInputAction: TextInputAction.done,
+                          otpPinFieldDecoration:
+                              OtpPinFieldDecoration.defaultPinBoxDecoration,
+                          keyboardType: TextInputType.number,
+                          showCursor: true,
+                          cursorColor: gray400,
+                          highlightBorder: true,
+                          otpPinFieldStyle: const OtpPinFieldStyle(
+                            defaultFieldBorderColor: gray200,
+                            activeFieldBorderColor: gray200,
+                            filledFieldBorderColor: gray200,
+                          ),
+                          maxLength: 4,
+                          onChange: (text) {
+                            if (text.length == 4) {
+                              otp = text;
+                              context.read<EmailVerificationBloc>().add(
+                                    VerifyEmailEvent(
+                                      credentials: {
+                                        "otp": text,
+                                        "email": args!["email"]
+                                      },
+                                    ),
+                                  );
+                            }
+                          },
+                          onSubmit: (text) {},
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: PaddingManager.paddingMedium2),
+                          child: RichText(
+                            textAlign: TextAlign.end,
                             text: TextSpan(
                               text: "Didn't receive the code? ",
                               style: textTheme.labelMedium!.copyWith(
@@ -207,32 +222,31 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-                    CustomButtom(
-                        title: "Verify",
-                        onPressed: () {
-                          if (otp == null || otp!.length != 4) {
-                            Utils.showSnackBar(context,
-                                "Please enter a valid OTP", isSuccess: false);
-                            return;
-                          }
-                          context.read<EmailVerificationBloc>().add(
-                                VerifyEmailEvent(
-                                  credentials: {"otp": otp, "email": args},
-                                ),
-                              );
-                        }),
-                    const SizedBox(
-                      height: HeightManager.h40,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+              bottomNavigationBar: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: PaddingManager.paddingMedium2,
+                    horizontal: PaddingManager.paddingMedium2),
+                child: CustomButtom(
+                    title: "Verify",
+                    onPressed: () {
+                      if (otp == null || otp!.length != 4) {
+                        Utils.showSnackBar(context, "Please enter a valid OTP",
+                            isSuccess: false);
+                        return;
+                      }
+                      context.read<EmailVerificationBloc>().add(
+                            VerifyEmailEvent(
+                              credentials: {"otp": otp, "email": args},
+                            ),
+                          );
+                    }),
+              )),
         );
       },
     );

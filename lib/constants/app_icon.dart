@@ -44,6 +44,8 @@ const String faqsIcon = 'assets/images/faqs_icon.png';
 const String pdfIcon = 'assets/images/pdf_icon.png';
 const String textIcon = 'assets/images/text_icon.png';
 const String imageIcon = 'assets/images/image_icon.png';
+const String patienticon = 'assets/images/patient_icon.png';
+const String appointmentFilledicon= 'assets/images/appointment_filled_icon.png';
 
 
 const Map<String,String> notificationIcons = {

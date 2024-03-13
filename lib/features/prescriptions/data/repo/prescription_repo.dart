@@ -36,4 +36,25 @@ class PrescriptionRepo {
         options: Options(headers: {'Authorization': 'Bearer $token'}));
     return response;
   }
+
+  Future<Response> getAllRequestPermission() async {
+    // get patient prescriptions from server
+    final token = await SharedUtils.getToken();
+    Response response = await dio.get(
+      AppUrls.allPrescriptionRequest,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response;
+  }
+
+  // update permission status 
+  Future<Response> updatePermissionStatus(
+      {required String permissionId, required bool status}) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.post(
+      AppUrls.updatePermissionStatus(requestId: permissionId, value: status),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response;
+  }
 }

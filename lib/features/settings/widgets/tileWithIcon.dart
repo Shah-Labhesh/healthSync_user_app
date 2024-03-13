@@ -44,16 +44,17 @@ class TileWithIcon extends StatelessWidget {
           const SizedBox(
             width: WidthManager.w6,
           ),
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontSize: FontSizeManager.f18,
-              color: gray600,
-              fontWeight: FontWeightManager.regular,
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontFamily: GoogleFonts.inter().fontFamily,
+                fontSize: FontSizeManager.f18,
+                color: gray600,
+                fontWeight: FontWeightManager.regular,
+              ),
             ),
           ),
-          const Spacer(),
           const Icon(
             Icons.arrow_forward_ios,
             color: gray400,

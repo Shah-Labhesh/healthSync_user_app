@@ -97,34 +97,36 @@ class SlotsTile extends StatelessWidget {
         ],
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                convertDate(slots.slotDateTime ?? ""),
-                style: TextStyle(
-                  fontSize: FontSizeManager.f18,
-                  fontWeight: FontWeightManager.semiBold,
-                  fontFamily: GoogleFonts.inter().fontFamily,
-                  color: gray800,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  convertDate(slots.slotDateTime ?? ""),
+                  style: TextStyle(
+                    fontSize: FontSizeManager.f18,
+                    fontWeight: FontWeightManager.semiBold,
+                    fontFamily: GoogleFonts.inter().fontFamily,
+                    color: gray800,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: HeightManager.h8,
-              ),
-              Text(
-                convertTime(slots.slotDateTime ?? ""),
-                style: TextStyle(
-                  fontSize: FontSizeManager.f14,
-                  fontWeight: FontWeightManager.regular,
-                  fontFamily: GoogleFonts.inter().fontFamily,
-                  color: gray400,
+                const SizedBox(
+                  height: HeightManager.h8,
                 ),
-              ),
-            ],
+                Text(
+                  convertTime(slots.slotDateTime ?? ""),
+                  style: TextStyle(
+                    fontSize: FontSizeManager.f14,
+                    fontWeight: FontWeightManager.regular,
+                    fontFamily: GoogleFonts.inter().fontFamily,
+                    color: gray400,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
           if (slots.isBooked ?? false)
             Container(
               padding: const EdgeInsets.symmetric(

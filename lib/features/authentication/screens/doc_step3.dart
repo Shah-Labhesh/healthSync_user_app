@@ -387,7 +387,7 @@ class _DocStep3State extends State<DocStep3> {
                               return;
                             }
                             if (_formKey.currentState!.validate() &&
-                                image != null &&
+                                 image != null &&
                                 args != null) {
                               if (Utils.checkInternetConnection(context)) {
                                 context.read<DocDetailsBloc>().add(

@@ -125,7 +125,7 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
         }
 
         if (state is TokenExpired) {
-         Utils.handleTokenExpired(context);
+          Utils.handleTokenExpired(context);
         }
       },
       builder: (context, state) {
@@ -303,183 +303,203 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
                                     ],
                                   ),
                                 ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: WidthManager.w20,
-                vertical: HeightManager.h20,
-              ),
-              decoration: BoxDecoration(
-                color: gray50,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -2),
-                    blurStyle: BlurStyle.outer,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (doctor) ...[
-                    Text(
-                      'Record for',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f18,
-                        fontWeight: FontWeightManager.medium,
-                        color: gray900,
-                        fontFamily: GoogleFonts.rubik().fontFamily,
-                      ),
-                    ),
-                    DropdownButton<User>(
-                      hint: const Text('Select Patient'),
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f18,
-                        fontWeight: FontWeightManager.semiBold,
-                        color: gray700,
-                        fontFamily: GoogleFonts.rubik().fontFamily,
-                      ),
-                      value: selectedUser,
-                      dropdownColor: white,
-                      underline: const SizedBox(),
-                      isExpanded: true,
-                      items: users
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.name!),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedUser = value;
-                        });
-                      },
-                    ),
-                    const Divider(
-                      color: gray200,
-                      thickness: 1.5,
                     ),
                     const SizedBox(
                       height: HeightManager.h20,
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: WidthManager.w20,
+                        vertical: HeightManager.h20,
+                      ),
+                      decoration: BoxDecoration(
+                        color: gray50,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, -2),
+                            blurStyle: BlurStyle.outer,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (doctor) ...[
+                            Text(
+                              'Record for',
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f18,
+                                fontWeight: FontWeightManager.medium,
+                                color: gray900,
+                                fontFamily: GoogleFonts.rubik().fontFamily,
+                              ),
+                            ),
+                            DropdownButton<User>(
+                              hint: const Text('Select Patient'),
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f18,
+                                fontWeight: FontWeightManager.semiBold,
+                                color: gray700,
+                                fontFamily: GoogleFonts.rubik().fontFamily,
+                              ),
+                              value: selectedUser,
+                              dropdownColor: white,
+                              underline: const SizedBox(),
+                              isExpanded: true,
+                              items: users
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(e.name!),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedUser = value;
+                                });
+                              },
+                            ),
+                            const Divider(
+                              color: gray200,
+                              thickness: 1.5,
+                            ),
+                            const SizedBox(
+                              height: HeightManager.h20,
+                            ),
+                          ],
+                          Text(
+                            'Type of Prescription',
+                            style: TextStyle(
+                              fontSize: FontSizeManager.f18,
+                              fontWeight: FontWeightManager.medium,
+                              color: gray900,
+                              fontFamily: GoogleFonts.rubik().fontFamily,
+                            ),
+                          ),
+                          Row(children: [
+                            IconWithText(
+                              icon: pdfIcon,
+                              title: 'PDF',
+                              iconSize: 28,
+                              color: selectedRecordType == 'PDF'
+                                  ? gray700
+                                  : gray400,
+                              onTap: () {
+                                setState(() {
+                                  selectedRecordType = 'PDF';
+                                });
+                              },
+                            ),
+                            IconWithText(
+                              icon: imageIcon,
+                              title: 'Image',
+                              iconSize: 28,
+                              color: selectedRecordType == 'Image'
+                                  ? gray700
+                                  : gray400,
+                              onTap: () {
+                                setState(() {
+                                  selectedRecordType = 'Image';
+                                });
+                              },
+                            ),
+                            IconWithText(
+                              icon: textIcon,
+                              title: 'Text',
+                              iconSize: 28,
+                              color: selectedRecordType == 'TEXT'
+                                  ? gray700
+                                  : gray400,
+                              onTap: () {
+                                setState(() {
+                                  selectedRecordType = 'TEXT';
+                                });
+                              },
+                            ),
+                          ]),
+                          const Divider(
+                            color: gray200,
+                            thickness: 1.5,
+                          ),
+                          const SizedBox(
+                            height: HeightManager.h20,
+                          ),
+                          CustomButtom(
+                              title: 'Upload',
+                              onPressed: () async {
+                                Map<String, dynamic> prescription = {};
+                                if (selectedRecordType == 'PDF' &&
+                                    recordPdf == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a PDF file',
+                                      isSuccess: false);
+                                  return;
+                                }
+                                if (selectedRecordType == 'Image' &&
+                                    recordImage == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select an image file',
+                                      isSuccess: false);
+                                  return;
+                                }
+                                if (selectedRecordType == 'TEXT' &&
+                                    recordText.isEmpty) {
+                                  Utils.showSnackBar(
+                                      context, 'Please write prescription',
+                                      isSuccess: false);
+                                  return;
+                                }
+                                // upload record
+                                if (doctor && selectedUser == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a patient',
+                                      isSuccess: false);
+                                  return;
+                                } else {
+                                  prescription['userId'] = selectedUser!.id;
+                                }
+                                if (selectedRecordType == 'TEXT' &&
+                                    recordText.isNotEmpty) {
+                                  prescription['prescriptionText'] = recordText;
+                                } else if (selectedRecordType == 'PDF' &&
+                                    recordPdf != null) {
+                                  prescription['prescription'] =
+                                      await MultipartFile.fromFile(
+                                          recordPdf!.path,
+                                          filename:
+                                              recordPdf!.path.split('/').last,
+                                          contentType:
+                                              MediaType('application', 'pdf'));
+                                } else if (selectedRecordType == 'Image' &&
+                                    recordImage != null) {
+                                  prescription['prescription'] =
+                                      await MultipartFile.fromFile(
+                                          recordImage!.path,
+                                          filename:
+                                              recordImage!.path.split('/').last,
+                                          contentType:
+                                              MediaType('image', 'jpg'));
+                                }
+                                prescription['recordType'] =
+                                    selectedRecordType.toUpperCase();
+                                if (Utils.checkInternetConnection(context)) {
+                                  context.read<PrescriptionBloc>().add(
+                                      UploadPrescriptionEvent(
+                                          prescription: prescription));
+                                }
+                              }),
+                        ],
+                      ),
+                    ),
                   ],
-                  Text(
-                    'Type of Prescription',
-                    style: TextStyle(
-                      fontSize: FontSizeManager.f18,
-                      fontWeight: FontWeightManager.medium,
-                      color: gray900,
-                      fontFamily: GoogleFonts.rubik().fontFamily,
-                    ),
-                  ),
-                  Row(children: [
-                    IconWithText(
-                      icon: pdfIcon,
-                      title: 'PDF',
-                      iconSize: 28,
-                      color: selectedRecordType == 'PDF' ? gray700 : gray400,
-                      onTap: () {
-                        setState(() {
-                          selectedRecordType = 'PDF';
-                        });
-                      },
-                    ),
-                    IconWithText(
-                      icon: imageIcon,
-                      title: 'Image',
-                      iconSize: 28,
-                      color: selectedRecordType == 'Image' ? gray700 : gray400,
-                      onTap: () {
-                        setState(() {
-                          selectedRecordType = 'Image';
-                        });
-                      },
-                    ),
-                    IconWithText(
-                      icon: textIcon,
-                      title: 'Text',
-                      iconSize: 28,
-                      color: selectedRecordType == 'TEXT' ? gray700 : gray400,
-                      onTap: () {
-                        setState(() {
-                          selectedRecordType = 'TEXT';
-                        });
-                      },
-                    ),
-                  ]),
-                  const Divider(
-                    color: gray200,
-                    thickness: 1.5,
-                  ),
-                  const SizedBox(
-                    height: HeightManager.h20,
-                  ),
-                  CustomButtom(
-                      title: 'Upload',
-                      onPressed: () async {
-                        Map<String, dynamic> prescription = {};
-                        if (selectedRecordType == 'PDF' && recordPdf == null) {
-                          Utils.showSnackBar(
-                              context, 'Please select a PDF file',
-                              isSuccess: false);
-                          return;
-                        }
-                        if (selectedRecordType == 'Image' &&
-                            recordImage == null) {
-                          Utils.showSnackBar(
-                              context, 'Please select an image file',
-                              isSuccess: false);
-                          return;
-                        }
-                        if (selectedRecordType == 'TEXT' && recordText.isEmpty){
-                           Utils.showSnackBar(context, 'Please write prescription',
-                              isSuccess: false);
-                          return;
-                        }
-                        // upload record
-                        if (doctor && selectedUser == null) {
-                          Utils.showSnackBar(context, 'Please select a patient',
-                              isSuccess: false);
-                          return;
-                        } else {
-                          prescription['userId'] = selectedUser!.id;
-                        }
-                        if (selectedRecordType == 'TEXT' && recordText.isNotEmpty) {
-                          prescription['prescriptionText'] = recordText;
-                        } else
-                        if (selectedRecordType == 'PDF' && recordPdf != null) {
-                          prescription['prescription'] = await MultipartFile.fromFile(
-                              recordPdf!.path,
-                              filename: recordPdf!.path.split('/').last,
-                              contentType: MediaType('application', 'pdf'));
-                        }else if (selectedRecordType == 'Image' && recordImage != null) {
-                          prescription['prescription'] = await MultipartFile.fromFile(
-                              recordImage!.path,
-                              filename: recordImage!.path.split('/').last,
-                              contentType: MediaType('image', 'jpg'));
-                        }
-                        prescription['recordType'] =
-                            selectedRecordType.toUpperCase();
-                            if (Utils.checkInternetConnection(context)){
-
-                        context.read<PrescriptionBloc>().add(
-                            UploadPrescriptionEvent(
-                                prescription: prescription));
-                            }
-                      }),
-                ],
+                ),
               ),
             ),
           ),

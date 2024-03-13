@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,12 +9,10 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
-import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/chats/data/model/chat_mesaage.dart';
 import 'package:user_mobile_app/features/chats/widgets/chat_bubble.dart';
-import 'package:user_mobile_app/features/chats/widgets/image_bubble.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -34,16 +31,10 @@ StompClient stompClient = StompClient(
   config: StompConfig(
     url: 'ws://10.0.2.2:8086/ws',
     onConnect: onConnect,
-    beforeConnect: () async {
-      print('connecting...');
-      print('destination: $destination');
-    },
-    onDisconnect: (p0) {
-      print('onDisconnect: $p0');
-      print('destination: $destination');
-    },
-    onStompError: (p0) => print('onStompError: $p0'),
-    onWebSocketError: (dynamic error) => print('onWebSocketError: $error'),
+    beforeConnect: () async {},
+    onDisconnect: (p0) {},
+    onStompError: (p0) => debugPrint('onStompError: $p0'),
+    onWebSocketError: (dynamic error) => debugPrint('onWebSocketError: $error'),
     stompConnectHeaders: {
       'Authorization': 'Bearer $token',
       'Connection': 'Upgrade',
@@ -56,37 +47,43 @@ StompClient stompClient = StompClient(
     },
   ),
 );
+
 void onConnect(StompFrame frame) {
-  stompClient.subscribe(
-    destination: '/topic/$destination',
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket'
-    },
-    callback: (frame) {
-      print('destination: $destination');
+  try {
+    stompClient.subscribe(
+      destination: '/topic/$destination',
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Connection': 'Upgrade',
+        'Upgrade': 'websocket'
+      },
+      callback: (frame) {
+        Map<String, dynamic> result = json.decode(frame.body as String);
+        List<ChatMessage> message = (result['body'] as List<dynamic>)
+            .map((e) => ChatMessage.fromMap(e))
+            .toList();
+        chatStream.sink.add(message);
+      },
+    );
 
-      Map<String, dynamic> result = json.decode(frame.body as String);
-      List<ChatMessage> message = (result['body'] as List<dynamic>)
-          .map((e) => ChatMessage.fromMap(e))
-          .toList();
-      chatStream.sink.add(message);
-    },
-  );
-
-  Timer.periodic(const Duration(seconds:1), (_) {
-  stompClient.send(
-    destination: '/app/get-messages',
-    body: json.encode({'token': token, 'roomId': chatRoomId}),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Connection': 'Upgrade',
-      'Upgrade': 'websocket',
-      'content-type': 'application/json',
-    },
-  );
-  });
+    Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!stompClient.isActive) {
+        return;
+      }
+      stompClient.send(
+        destination: '/app/get-messages',
+        body: json.encode({'token': token, 'roomId': chatRoomId}),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Connection': 'Upgrade',
+          'Upgrade': 'websocket',
+          'content-type': 'application/json',
+        },
+      );
+    });
+  } catch (e) {
+    debugPrint('Error: $e');
+  }
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -104,7 +101,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initToken();
     chatStream = StreamController();
@@ -117,7 +113,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     chatStream.close();
     stompClient.deactivate();
@@ -173,24 +168,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   else if (snapshot.hasData) ...[
                     for (ChatMessage chat in snapshot.data!) ...[
                       ChatBubble(
-                        isMe: chat.senderId != currentUser,
+                        isMe: chat.senderId == currentUser,
                         text: chat.message ?? '',
                         time: chat.createdAt!.splitTime(),
                       ),
                     ],
                   ],
-                  // for (ChatMessage chat in ChatMessageModelData.chatMessages) ...[
-                  //   ChatBubble(
-                  //     isMe: chat.isMe,
-                  //     text: chat.text ?? '',
-                  //     time: chat.time,
-                  //   ),
-                  // ],
-                  // const ImageBubble(
-                  //   image: AppImages.doctor2,
-                  //   time: '10:00 AM',
-                  //   isMe: false,
-                  // ),
                 ],
               ),
             );

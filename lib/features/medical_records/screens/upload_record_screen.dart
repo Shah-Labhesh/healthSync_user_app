@@ -113,13 +113,20 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
   ];
 
   Map<String, dynamic> desc = {
-    'VITAL_SIGNS_RECORD': 'blood pressure, heart rate, temperature, respiratory rate, and oxygen saturation',
+    'VITAL_SIGNS_RECORD':
+        'blood pressure, heart rate, temperature, respiratory rate, and oxygen saturation',
     'LAB_TEST_RESULTS': ' lab tests, including blood tests, urine tests',
     'RADIOLOGY_REPORTS': 'X-rays, CT scans, MRIs'
   };
 
+  String? patientId;
+
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as String?;
+    if (args != null) {
+      patientId = args;
+    }
     return BlocConsumer<RecordBloc, RecordState>(
       listener: (context, state) {
         print(state);
@@ -140,7 +147,12 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
           context.read<RecordBloc>().add(FetchPatientList());
         }
         if (state is PatientListLoaded) {
-          users = state.patients;
+          for (var user in state.patients) {
+            if (user.id == patientId) {
+              selectedUser = user;
+              setState(() {});
+            }
+          }
         }
 
         if (state is PatientListError) {
@@ -299,304 +311,344 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                                 ],
                               ),
                             ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: WidthManager.w20,
-                vertical: HeightManager.h20,
-              ),
-              decoration: BoxDecoration(
-                color: gray50,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -2),
-                    blurStyle: BlurStyle.outer,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (doctor) ...[
-                    Text(
-                      'Record for',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f18,
-                        fontWeight: FontWeightManager.medium,
-                        color: gray900,
-                        fontFamily: GoogleFonts.rubik().fontFamily,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (users.isEmpty) {
-                          Utils.showSnackBar(context, 'No patient available',
-                              isSuccess: false);
-                          return;
-                        }
-                      },
-                      child: DropdownButton<User>(
-                        hint: const Text('Select Patient'),
-                        style: TextStyle(
-                          fontSize: FontSizeManager.f18,
-                          fontWeight: FontWeightManager.semiBold,
-                          color: gray700,
-                          fontFamily: GoogleFonts.rubik().fontFamily,
-                        ),
-                        value: selectedUser,
-                        dropdownColor: white,
-                        underline: const SizedBox(),
-                        isExpanded: true,
-                        items: users
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name!),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedUser = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const Divider(
-                      color: gray200,
-                      thickness: 1.5,
                     ),
                     const SizedBox(
                       height: HeightManager.h20,
                     ),
-                  ],
-                  Text(
-                    'File Type',
-                    style: TextStyle(
-                      fontSize: FontSizeManager.f18,
-                      fontWeight: FontWeightManager.medium,
-                      color: gray900,
-                      fontFamily: GoogleFonts.rubik().fontFamily,
-                    ),
-                  ),
-                  Row(children: [
-                    IconWithText(
-                      icon: pdfIcon,
-                      title: 'PDF',
-                      iconSize: 28,
-                      color: selectedRecordType == 'PDF' ? gray700 : gray400,
-                      onTap: () {
-                        setState(() {
-                          selectedRecordType = 'PDF';
-                        });
-                      },
-                    ),
-                    IconWithText(
-                      icon: imageIcon,
-                      title: 'Image',
-                      iconSize: 28,
-                      color: selectedRecordType == 'Image' ? gray700 : gray400,
-                      onTap: () {
-                        setState(() {
-                          selectedRecordType = 'Image';
-                        });
-                      },
-                    )
-                  ]),
-                  const Divider(
-                    color: gray200,
-                    thickness: 1.5,
-                  ),
-                  const SizedBox(
-                    height: HeightManager.h20,
-                  ),
-                  InkWell(
-                    onTap: () => showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          shape: ShapeBorder.lerp(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
-                              0.5),
-                              insetPadding: const EdgeInsets.symmetric(horizontal: WidthManager.w20, vertical: HeightManager.h20),
-                          child: SingleChildScrollView(
-                            child: Column(children: [
-                              const SizedBox(
-                                height: HeightManager.h20,
-                              ),
-                              Text(
-                                'Select Record Type',
-                                style: TextStyle(
-                                  color: gray800,
-                                  fontWeight: FontWeightManager.semiBold,
-                                  fontSize: FontSizeManager.f18,
-                                  fontFamily: GoogleFonts.lato().fontFamily,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: HeightManager.h20,
-                              ),
-                              for (String type in medicalRecordType)
-                                ListTile(
-                                  title: Text(
-                                    type.removeUnderScore(),
-                                    style: TextStyle(
-                                      color: gray800,
-                                      fontWeight: FontWeightManager.semiBold,
-                                      fontSize: FontSizeManager.f18,
-                                      fontFamily: GoogleFonts.lato().fontFamily,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    desc[type] ?? '-',
-                                    style: TextStyle(
-                                      color: gray400,
-                                      fontWeight: FontWeightManager.medium,
-                                      fontSize: FontSizeManager.f14,
-                                      fontFamily:
-                                          GoogleFonts.poppins().fontFamily,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(context, type);
-                                  },
-                                )
-                            ]),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: WidthManager.w20,
+                        vertical: HeightManager.h20,
+                      ),
+                      decoration: BoxDecoration(
+                        color: gray50,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, -2),
+                            blurStyle: BlurStyle.outer,
                           ),
-                        );
-                      },
-                    ).then((value) {
-                      if (value == null) {
-                        Utils.showSnackBar(context, 'Please select a record type',
-                            isSuccess: false);
-                        return;
-                      };
-                      setState(() {
-                        selectedMedicalRecordType = value.toString();
-                      });
-                    }),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Record Type',
-                                  style: TextStyle(
-                                    fontSize: FontSizeManager.f18,
-                                    fontWeight: FontWeightManager.medium,
-                                    color: gray900,
-                                    fontFamily: GoogleFonts.rubik().fontFamily,
+                          if (doctor) ...[
+                            Text(
+                              'Record for',
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f18,
+                                fontWeight: FontWeightManager.medium,
+                                color: gray900,
+                                fontFamily: GoogleFonts.rubik().fontFamily,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // if (users.isEmpty) {
+                                //   Utils.showSnackBar(
+                                //       context, 'No patient available',
+                                //       isSuccess: false);
+                                //   return;
+                                // }
+                              },
+                              child: DropdownButton<User>(
+                                hint: const Text('Select Patient'),
+                                style: TextStyle(
+                                  fontSize: FontSizeManager.f18,
+                                  fontWeight: FontWeightManager.semiBold,
+                                  color: gray700,
+                                  fontFamily: GoogleFonts.rubik().fontFamily,
+                                ),
+                                value: selectedUser,
+                                dropdownColor: white,
+                                underline: const SizedBox(),
+                                isExpanded: true,
+                                items: users
+                                    .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e.name!),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedUser = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            const Divider(
+                              color: gray200,
+                              thickness: 1.5,
+                            ),
+                            const SizedBox(
+                              height: HeightManager.h20,
+                            ),
+                          ],
+                          Text(
+                            'File Type',
+                            style: TextStyle(
+                              fontSize: FontSizeManager.f18,
+                              fontWeight: FontWeightManager.medium,
+                              color: gray900,
+                              fontFamily: GoogleFonts.rubik().fontFamily,
+                            ),
+                          ),
+                          Row(children: [
+                            IconWithText(
+                              icon: pdfIcon,
+                              title: 'PDF',
+                              iconSize: 28,
+                              color: selectedRecordType == 'PDF'
+                                  ? gray700
+                                  : gray400,
+                              onTap: () {
+                                setState(() {
+                                  selectedRecordType = 'PDF';
+                                });
+                              },
+                            ),
+                            IconWithText(
+                              icon: imageIcon,
+                              title: 'Image',
+                              iconSize: 28,
+                              color: selectedRecordType == 'Image'
+                                  ? gray700
+                                  : gray400,
+                              onTap: () {
+                                setState(() {
+                                  selectedRecordType = 'Image';
+                                });
+                              },
+                            )
+                          ]),
+                          const Divider(
+                            color: gray200,
+                            thickness: 1.5,
+                          ),
+                          const SizedBox(
+                            height: HeightManager.h20,
+                          ),
+                          InkWell(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  shape: ShapeBorder.lerp(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      0.5),
+                                  insetPadding: const EdgeInsets.symmetric(
+                                      horizontal: WidthManager.w20,
+                                      vertical: HeightManager.h20),
+                                  child: SingleChildScrollView(
+                                    child: Column(children: [
+                                      const SizedBox(
+                                        height: HeightManager.h20,
+                                      ),
+                                      Text(
+                                        'Select Record Type',
+                                        style: TextStyle(
+                                          color: gray800,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                          fontSize: FontSizeManager.f18,
+                                          fontFamily:
+                                              GoogleFonts.lato().fontFamily,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: HeightManager.h20,
+                                      ),
+                                      for (String type in medicalRecordType)
+                                        ListTile(
+                                          title: Text(
+                                            type.removeUnderScore(),
+                                            style: TextStyle(
+                                              color: gray800,
+                                              fontWeight:
+                                                  FontWeightManager.semiBold,
+                                              fontSize: FontSizeManager.f18,
+                                              fontFamily:
+                                                  GoogleFonts.lato().fontFamily,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            desc[type] ?? '-',
+                                            style: TextStyle(
+                                              color: gray400,
+                                              fontWeight:
+                                                  FontWeightManager.medium,
+                                              fontSize: FontSizeManager.f14,
+                                              fontFamily: GoogleFonts.poppins()
+                                                  .fontFamily,
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            Navigator.pop(context, type);
+                                          },
+                                        )
+                                    ]),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: HeightManager.h10,
-                                ),
-                                Text(
-                                  selectedMedicalRecordType.removeUnderScore(),
-                                  style: TextStyle(
-                                    fontSize: FontSizeManager.f20,
-                                    fontWeight: FontWeightManager.bold,
-                                    color: blue800,
-                                    fontFamily: GoogleFonts.rubik().fontFamily,
-                                  ),
-                                ),
-                              ]),
-                          const Icon(
-                            CupertinoIcons.pencil,
-                            size: 22,
-                            color: gray600,
-                          )
-                        ]),
-                  ),
-                  const SizedBox(
-                    height: HeightManager.h20,
-                  ),
-                  const Divider(
-                    color: gray200,
-                    thickness: 1.5,
-                  ),
-                  const SizedBox(
-                    height: HeightManager.h20,
-                  ),
-                  CustomButtom(
-                      title: 'Upload',
-                      onPressed: () async {
-                        Map<String, dynamic> record = {};
-                        if (selectedRecordType == 'PDF' && recordPdf == null) {
-                          Utils.showSnackBar(
-                              context, 'Please select a PDF file',
-                              isSuccess: false);
-                          return;
-                        }
-                        if (selectedRecordType == 'Image' &&
-                            recordImage == null) {
-                          Utils.showSnackBar(
-                              context, 'Please select an image file',
-                              isSuccess: false);
-                          return;
-                        }
-                        if (selectedMedicalRecordType.isEmpty) {
-                          Utils.showSnackBar(context, 'Please select a record type',
-                              isSuccess: false);
-                          return;
-                        }
+                                );
+                              },
+                            ).then((value) {
+                              if (value == null) {
+                                Utils.showSnackBar(
+                                    context, 'Please select a record type',
+                                    isSuccess: false);
+                                return;
+                              }
+                              ;
+                              setState(() {
+                                selectedMedicalRecordType = value.toString();
+                              });
+                            }),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Record Type',
+                                          style: TextStyle(
+                                            fontSize: FontSizeManager.f18,
+                                            fontWeight:
+                                                FontWeightManager.medium,
+                                            color: gray900,
+                                            fontFamily:
+                                                GoogleFonts.rubik().fontFamily,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: HeightManager.h10,
+                                        ),
+                                        Text(
+                                          selectedMedicalRecordType
+                                              .removeUnderScore(),
+                                          style: TextStyle(
+                                            fontSize: FontSizeManager.f20,
+                                            fontWeight: FontWeightManager.bold,
+                                            color: blue800,
+                                            fontFamily:
+                                                GoogleFonts.rubik().fontFamily,
+                                          ),
+                                        ),
+                                      ]),
+                                  const Icon(
+                                    CupertinoIcons.pencil,
+                                    size: 22,
+                                    color: gray600,
+                                  )
+                                ]),
+                          ),
+                          const SizedBox(
+                            height: HeightManager.h20,
+                          ),
+                          const Divider(
+                            color: gray200,
+                            thickness: 1.5,
+                          ),
+                          const SizedBox(
+                            height: HeightManager.h20,
+                          ),
+                          CustomButtom(
+                              title: 'Upload',
+                              onPressed: () async {
+                                Map<String, dynamic> record = {};
+                                if (selectedRecordType == 'PDF' &&
+                                    recordPdf == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a PDF file',
+                                      isSuccess: false);
+                                  return;
+                                }
+                                if (selectedRecordType == 'Image' &&
+                                    recordImage == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select an image file',
+                                      isSuccess: false);
+                                  return;
+                                }
+                                if (selectedMedicalRecordType.isEmpty) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a record type',
+                                      isSuccess: false);
+                                  return;
+                                }
 
-                        // upload record
-                        if (doctor && selectedUser == null) {
-                          Utils.showSnackBar(context, 'Please select a patient',
-                              isSuccess: false);
-                          return;
-                        }
+                                // upload record
+                                if (doctor && selectedUser == null) {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a patient',
+                                      isSuccess: false);
+                                  return;
+                                }
 
-                        // upload record
-                        if (selectedMedicalRecordType.isNotEmpty) {
-                          record['medicalRecordType'] = selectedMedicalRecordType;
-                        }
+                                // upload record
+                                if (selectedMedicalRecordType.isNotEmpty) {
+                                  record['medicalRecordType'] =
+                                      selectedMedicalRecordType;
+                                }
 
-                        if (selectedRecordType == 'PDF' && recordPdf != null) {
-                          record['record'] = await MultipartFile.fromFile(
-                              recordPdf!.path,
-                              filename: recordPdf!.path.split('/').last,
-                              contentType: MediaType('application', 'pdf'));
-                        }else if (recordImage != null ) {
-                          record['record'] = await MultipartFile.fromFile(
-                              recordImage!.path,
-                              filename: recordImage!.path.split('/').last,
-                              contentType: MediaType('image', 'jpg'));
-                        }else{
-                          Utils.showSnackBar(context, 'Please select a file',
-                              isSuccess: false);
-                          return;
-                        }
-                       
-                        record['recordType'] = selectedRecordType.toUpperCase();
-                        if (doctor && selectedUser != null) {
-                          context.read<RecordBloc>().add(UploadRecordByDoctor(
-                              patientId: selectedUser!.id!, record: record));
-                          return;
-                        }
-                        if (Utils.checkInternetConnection(context)) {
-                          context
-                              .read<RecordBloc>()
-                              .add(UploadRecordEvent(record: record));
-                        }
-                      }),
-                ],
+                                if (selectedRecordType == 'PDF' &&
+                                    recordPdf != null) {
+                                  record['record'] =
+                                      await MultipartFile.fromFile(
+                                          recordPdf!.path,
+                                          filename:
+                                              recordPdf!.path.split('/').last,
+                                          contentType:
+                                              MediaType('application', 'pdf'));
+                                } else if (recordImage != null) {
+                                  record['record'] =
+                                      await MultipartFile.fromFile(
+                                          recordImage!.path,
+                                          filename:
+                                              recordImage!.path.split('/').last,
+                                          contentType:
+                                              MediaType('image', 'jpg'));
+                                } else {
+                                  Utils.showSnackBar(
+                                      context, 'Please select a file',
+                                      isSuccess: false);
+                                  return;
+                                }
+
+                                record['recordType'] =
+                                    selectedRecordType.toUpperCase();
+                                if (doctor && selectedUser != null) {
+                                  context.read<RecordBloc>().add(
+                                      UploadRecordByDoctor(
+                                          patientId: selectedUser!.id!,
+                                          record: record));
+                                  return;
+                                }
+                                if (Utils.checkInternetConnection(context)) {
+                                  context
+                                      .read<RecordBloc>()
+                                      .add(UploadRecordEvent(record: record));
+                                }
+                              }),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

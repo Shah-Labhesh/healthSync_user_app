@@ -110,7 +110,7 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                             Navigator.pushNamed(context, 'chat_screen',
                                 arguments: {
                                   'roomId': e.id,
-                                  'user': doctor ? e.user!.id! : e.doctor!.id!,
+                                  'user': doctor ? e.doctor!.id! : e.user!.id!,
                                 });
                           },
                         ),
