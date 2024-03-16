@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 abstract class SearchEvent {}
 
 class SearchDoctors extends SearchEvent {
@@ -5,6 +6,7 @@ class SearchDoctors extends SearchEvent {
   final String? speciality;
   final String? feeType;
   final String? feeFrom;
+  final double ratings;
   final String? feeTo;
   final bool? popular;
 
@@ -13,6 +15,7 @@ class SearchDoctors extends SearchEvent {
     this.speciality,
     this.feeType,
     this.feeFrom,
+    required this.ratings,
     this.feeTo,
     this.popular,
   });

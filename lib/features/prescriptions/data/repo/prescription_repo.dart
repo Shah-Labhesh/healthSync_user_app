@@ -29,14 +29,6 @@ class PrescriptionRepo {
     return response;
   }
 
-  Future<Response> getPatientList() async {
-    // get patient list from server
-    final token = await SharedUtils.getToken();
-    Response response = await dio.get(AppUrls.getDoctorPatients,
-        options: Options(headers: {'Authorization': 'Bearer $token'}));
-    return response;
-  }
-
   Future<Response> getAllRequestPermission() async {
     // get patient prescriptions from server
     final token = await SharedUtils.getToken();

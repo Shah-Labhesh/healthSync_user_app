@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:user_mobile_app/features/account/data/model/user.dart';
+import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
 
 class Payment {
     String? id;
@@ -9,18 +11,24 @@ class Payment {
     String? paymentType;
     User? user;
     User? doctor;
+    Appointment? appointment;
+    String? transactionId;
 
-    Payment({
-       this.id,
-       this.amount,
-       this.createdAt,
-       this.khaltiMobile,
-       this.khaltiToken,
-       this.paymentType,
-       this.user,
-       this.doctor,
-    });
+  Payment({
+    this.id,
+    this.amount,
+    this.createdAt,
+    this.khaltiMobile,
+    this.khaltiToken,
+    this.paymentType,
+    this.user,
+    this.doctor,
+    this.appointment,
+    this.transactionId,
+  });
 
+
+ 
 
   factory Payment.fromMap(Map<String, dynamic> map) {
     return Payment(
@@ -32,7 +40,10 @@ class Payment {
       paymentType: map['paymentType'] != null ? map['paymentType'] as String : null,
       user: map['user'] != null ? User.fromMap(map['user'] as Map<String,dynamic>) : null,
       doctor: map['doctor'] != null ? User.fromMap(map['doctor'] as Map<String,dynamic>) : null,
+      appointment: map['appointment'] != null ? Appointment.fromMap(map['appointment'] as Map<String,dynamic>) : null,
+      transactionId: map['transactionId'] != null ? map['transactionId'] as String : null,
     );
   }
+
   
 }

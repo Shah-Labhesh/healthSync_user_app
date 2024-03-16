@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -72,6 +74,15 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
             if (state is TokenExpired) {
               Utils.handleTokenExpired(context);
             }
+
+            if (state is MyAppointmentCancelSuccess) {
+              Utils.showSnackBar(context, state.message);
+              fetchData();
+            }
+
+            if (state is MyAppointmentCancelFailed) {
+              Utils.showSnackBar(context, state.message);
+            }
           },
           builder: (context, state) {
             if (state is MyAppointmentInitial) {
@@ -101,77 +112,89 @@ class _MyAppointmentScreenState extends State<MyAppointmentScreen> {
                   .toList();
             }
 
-            return SafeArea(
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: PaddingManager.paddingMedium2,
-                  vertical: PaddingManager.paddingSmall,
-                ),
-                child: Column(
-                  children: [
-                    if (!doctor) ...[
-                      BlocProvider(
-                        create: (context) => NotificationBloc(),
-                        child: const CustomAppBar(
-                          title: 'My Appointments',
-                          notification: true,
-                          isBackButton: false,
+            return LoadingOverlay(
+              isLoading: state is MyAppointmentCancelling,
+              progressIndicator: LoadingAnimationWidget.threeArchedCircle(
+                color: blue900,
+                size: 60,
+              ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: PaddingManager.paddingMedium2,
+                    vertical: PaddingManager.paddingSmall,
+                  ),
+                  child: Column(
+                    children: [
+                      if (!doctor) ...[
+                        BlocProvider(
+                          create: (context) => NotificationBloc(),
+                          child: const CustomAppBar(
+                            title: 'My Appointments',
+                            notification: true,
+                            isBackButton: false,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                      ],
+                      DefaultTabController(
+                        length: 2,
+                        child: TabBar(
+                          dividerColor: Colors.transparent,
+                          indicatorColor: blue900,
+                          labelStyle: TextStyle(
+                            fontSize: FontSizeManager.f16,
+                            fontWeight: FontWeightManager.semiBold,
+                            color: gray800,
+                            fontFamily: GoogleFonts.montserrat().fontFamily,
+                            letterSpacing: 0.5,
+                          ),
+                          onTap: (value) {
+                            setState(() {
+                              _selectedIndex = value;
+                            });
+                          },
+                          tabs: const [
+                            Tab(
+                              text: 'Upcoming',
+                            ),
+                            Tab(
+                              text: 'Completed',
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(
-                        height: HeightManager.h20,
+                        height: 20,
                       ),
+                      if (_selectedIndex == 0)
+                        if (upcomingAppointments.isEmpty)
+                          const NoAppointmentWidget()
+                        else
+                          for (Appointment appointment in upcomingAppointments)
+                            AppointmentTile(
+                              doctor: doctor,
+                              appointment: appointment,
+                              onCancel: () {
+                                context.read<MyAppointmentBloc>().add(
+                                    CancelAppointmentEvent(
+                                        appointmentId: appointment.id!));
+                              },
+                            )
+                      else if (_selectedIndex == 1)
+                        if (completedAppointments.isEmpty)
+                          const NoAppointmentWidget()
+                        else
+                          for (Appointment appointment in completedAppointments)
+                            AppointmentTile(
+                              doctor: doctor,
+                              appointment: appointment,
+                            )
                     ],
-                    DefaultTabController(
-                      length: 2,
-                      child: TabBar(
-                        dividerColor: Colors.transparent,
-                        indicatorColor: blue900,
-                        labelStyle: TextStyle(
-                          fontSize: FontSizeManager.f16,
-                          fontWeight: FontWeightManager.semiBold,
-                          color: gray800,
-                          fontFamily: GoogleFonts.montserrat().fontFamily,
-                          letterSpacing: 0.5,
-                        ),
-                        onTap: (value) {
-                          setState(() {
-                            _selectedIndex = value;
-                          });
-                        },
-                        tabs: const [
-                          Tab(
-                            text: 'Upcoming',
-                          ),
-                          Tab(
-                            text: 'Completed',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (_selectedIndex == 0)
-                      if (upcomingAppointments.isEmpty)
-                        const NoAppointmentWidget()
-                      else
-                        for (Appointment appointment in upcomingAppointments)
-                          AppointmentTile(
-                            doctor: doctor,
-                            appointment: appointment,
-                          )
-                    else if (_selectedIndex == 1)
-                      if (completedAppointments.isEmpty)
-                        const NoAppointmentWidget()
-                      else
-                        for (Appointment appointment in completedAppointments)
-                          AppointmentTile(
-                            doctor: doctor,
-                            appointment: appointment,
-                          )
-                  ],
+                  ),
                 ),
               ),
             );

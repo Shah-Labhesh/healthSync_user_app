@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/permission_prescription.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/prescription.dart';
 
@@ -19,20 +17,6 @@ class PrescriptionError extends PrescriptionState {
   final String message;
 
   PrescriptionError({required this.message});
-}
-
-class PatientListLoading extends PrescriptionState {}
-
-class PatientListLoaded extends PrescriptionState {
-  final List<User> patients;
-
-  PatientListLoaded({required this.patients});
-}
-
-class PatientListError extends PrescriptionState {
-  final String message;
-
-  PatientListError({required this.message});
 }
 
 class UploadingPrescription extends PrescriptionState {}

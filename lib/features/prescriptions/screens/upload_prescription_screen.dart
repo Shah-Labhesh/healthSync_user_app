@@ -18,7 +18,6 @@ import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
-import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_bloc.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_event.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_state.dart';
@@ -71,8 +70,6 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
 
   String recordText = '';
 
-  List<User> users = [];
-
   Widget showImageDialog(BuildContext context) {
     return SimpleDialog(
       title: const Text('Select Image'),
@@ -103,21 +100,20 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
   }
 
   File? recordPdf;
-
   File? recordImage;
-
   String selectedRecordType = 'PDF';
-
-  String date = '';
-
-  User? selectedUser;
+  String? userId;
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as String?;
+    if (args != null) {
+      userId = args;
+    }
     return BlocConsumer<PrescriptionBloc, PrescriptionState>(
       listener: (context, state) {
         if (state is PrescriptionUploaded) {
-          Utils.showSnackBar(context, 'Record uploaded successfully');
+          Utils.showSnackBar(context, 'Prescription uploaded successfully');
           Navigator.pop(context, state.prescription);
         }
         if (state is PrescriptionUploadError) {
@@ -129,18 +125,6 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
         }
       },
       builder: (context, state) {
-        if (state is PrescriptionInitial && doctor) {
-          context.read<PrescriptionBloc>().add(FetchPatientsEvent());
-        }
-        if (state is PatientListLoaded) {
-          users = state.patients;
-        }
-
-        if (state is PatientListError) {
-          return Center(
-            child: Text(state.message),
-          );
-        }
         return LoadingOverlay(
           isLoading: state is UploadingPrescription,
           progressIndicator: LoadingAnimationWidget.threeArchedCircle(
@@ -288,7 +272,7 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
                                             height: HeightManager.h8,
                                           ),
                                           Text(
-                                            '${recordImage != null ? 'Change' : 'Upload'} Record',
+                                            '${recordImage != null ? 'Change' : 'Upload'} Prescription',
                                             style: TextStyle(
                                               fontSize: FontSizeManager.f18,
                                               fontWeight:
@@ -308,72 +292,12 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
                       height: HeightManager.h20,
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: WidthManager.w20,
-                        vertical: HeightManager.h20,
-                      ),
-                      decoration: BoxDecoration(
-                        color: gray50,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: black.withOpacity(0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, -2),
-                            blurStyle: BlurStyle.outer,
-                          ),
-                        ],
-                      ),
+                      color: gray50,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (doctor) ...[
-                            Text(
-                              'Record for',
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f18,
-                                fontWeight: FontWeightManager.medium,
-                                color: gray900,
-                                fontFamily: GoogleFonts.rubik().fontFamily,
-                              ),
-                            ),
-                            DropdownButton<User>(
-                              hint: const Text('Select Patient'),
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f18,
-                                fontWeight: FontWeightManager.semiBold,
-                                color: gray700,
-                                fontFamily: GoogleFonts.rubik().fontFamily,
-                              ),
-                              value: selectedUser,
-                              dropdownColor: white,
-                              underline: const SizedBox(),
-                              isExpanded: true,
-                              items: users
-                                  .map((e) => DropdownMenuItem(
-                                        value: e,
-                                        child: Text(e.name!),
-                                      ))
-                                  .toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedUser = value;
-                                });
-                              },
-                            ),
-                            const Divider(
-                              color: gray200,
-                              thickness: 1.5,
-                            ),
-                            const SizedBox(
-                              height: HeightManager.h20,
-                            ),
-                          ],
                           Text(
                             'Type of Prescription',
                             style: TextStyle(
@@ -457,13 +381,13 @@ class _UploadPrescriptionScreenState extends State<UploadPrescriptionScreen> {
                                   return;
                                 }
                                 // upload record
-                                if (doctor && selectedUser == null) {
+                                if (doctor && userId == null) {
                                   Utils.showSnackBar(
                                       context, 'Please select a patient',
                                       isSuccess: false);
                                   return;
                                 } else {
-                                  prescription['userId'] = selectedUser!.id;
+                                  prescription['userId'] = userId;
                                 }
                                 if (selectedRecordType == 'TEXT' &&
                                     recordText.isNotEmpty) {

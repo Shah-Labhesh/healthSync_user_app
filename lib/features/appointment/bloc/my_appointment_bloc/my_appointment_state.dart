@@ -19,4 +19,18 @@ class MyAppointmentLoadFailed extends MyAppointmentState {
   MyAppointmentLoadFailed({required this.message});
 }
 
+class MyAppointmentCancelling extends MyAppointmentState {}
+
+class MyAppointmentCancelSuccess extends MyAppointmentState {
+  final String message;
+
+  MyAppointmentCancelSuccess({required this.message});
+}
+
+class MyAppointmentCancelFailed extends MyAppointmentState {
+  final String message;
+
+  MyAppointmentCancelFailed({required this.message});
+}
+
 class TokenExpired extends MyAppointmentState {}

@@ -53,19 +53,17 @@ class SharedUtils{
     return authType;
   }
 
-  static Future<void> addSearchHistory(String search) async {
+  // get amout hide from shared preferences
+  static Future<bool> getAmountHide() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> searchHistory = prefs.getStringList('searchHistory') ?? [];
-    if (searchHistory.contains(search)) {
-      searchHistory.remove(search);
-    }
-    searchHistory.insert(0, search);
-    await prefs.setStringList('searchHistory', searchHistory);
+    bool amountHide = prefs.getBool('amountHide') ?? false;
+    return amountHide;
   }
 
-  static Future<List<String>> getSearchHistory() async {
+  // store amount hide in shared preferences
+  static Future<void> setAmountHide(bool amountHide) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> searchHistory = prefs.getStringList('searchHistory') ?? [];
-    return searchHistory;
+    await prefs.setBool('amountHide', amountHide);
   }
+  
 }

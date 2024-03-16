@@ -160,33 +160,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                       PrescriptionTile(
                         isDoctor: doctor,
                         prescription: prescription,
-                        // popupMenuItems: PopupMenuItem(
-                        //   child: Column(
-                        //     children: [
-                        //       CustomPopupItem(
-                        //         title: 'Save',
-                        //         icon: CupertinoIcons.arrow_down_doc_fill,
-                        //         onTap: () async {
-                        //           try {
-                        //           String path = await PdfApi()
-                        //               .getApplicationDocumentsDirectoryPath();
-                        //           print(path);
-                        //             Dio().download(
-                        //                     BASE_URL + prescription.prescription!,
-                        //                     path);
-                        //           } catch (e) {
-                        //             print(' error in downloading file $e');
-                        //           }
-                        //           if (prescription.recordType == 'TEXT') {
-                        //             final pdf = await PdfInvoiceApi.generate(
-                        //                 prescription);
-
-                        //           }
-                        //         },
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
+                        
                       ),
                     ]
                 ],

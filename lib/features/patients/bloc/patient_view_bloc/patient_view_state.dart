@@ -8,7 +8,7 @@ class PatientViewInitial extends PatientViewState {}
 class RecordsLoading extends PatientViewState {}
 
 class RecordsLoaded extends PatientViewState {
-  final List<ShareMedicalRecord> medicalRecords;
+  final List<MedicalRecord> medicalRecords;
 
   RecordsLoaded({
     required this.medicalRecords,

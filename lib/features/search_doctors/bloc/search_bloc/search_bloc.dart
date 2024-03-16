@@ -23,6 +23,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         feeFrom: event.feeFrom,
         feeTo: event.feeTo,
         popular: event.popular,
+        ratings: event.ratings,
       );
       if (response.statusCode == 200) {
         emit(SearchSuccess(doctors: (response.data as List<dynamic>).map((e) => User.fromMap(e)).toList()));

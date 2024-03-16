@@ -1,21 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
-import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
-import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_bloc.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_event.dart';
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_state.dart';
 import 'package:user_mobile_app/features/medical_records/data/model/medical_record.dart';
+import 'package:user_mobile_app/features/medical_records/data/model/record_request.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/record_tile.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/NoMedicalRecord.dart';
-import 'package:user_mobile_app/features/medical_records/widgets/share_dialog.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 import 'package:user_mobile_app/widgets/custom_popup_item.dart';
 
@@ -27,30 +26,17 @@ class MedicalRecordScreen extends StatefulWidget {
 }
 
 class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
-  List<MedicalRecord> records = [];
-  List<ShareMedicalRecord> sharedRecords = [];
-  List<User> doctors = [];
-  String sort = 'ALL';
-
-  void shareRecord(String? id) {
-    if (Utils.checkInternetConnection(context)) {
-      context
-          .read<RecordBloc>()
-          .add(ShareRecord(recordId: selectedRecord!.id!, doctorId: id!));
-    }
-  }
-
-  MedicalRecord? selectedRecord;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    context.read<RecordBloc>().add(FetchRecords(sort: sort));
+    context.read<RecordBloc>().add(FetchRecords());
   }
 
   void fetchData() {
     if (Utils.checkInternetConnection(context)) {
-      context.read<RecordBloc>().add(FetchRecords(sort: sort));
+      context.read<RecordBloc>().add(FetchRecords());
     }
   }
 
@@ -74,71 +60,18 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               Utils.handleTokenExpired(context);
             }
 
-            if (state is DoctorListFetched) {
-              doctors = state.doctors;
-
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return ShareDialog(doctors: doctors);
-                  }).then((value) => {
-                    if (value != null) {shareRecord((value as User).id!)}
-                  });
-            }
-
-            if (state is DoctorListError) {
+            if (state is RequestStatusError){
               Utils.showSnackBar(context, state.message, isSuccess: false);
             }
 
-            if (state is RecordShared) {
-              Utils.showSnackBar(context, state.message);
-              sort = 'SHARED';
-              fetchData();
-            }
-
-            if (state is RecordShareError) {
-              Utils.showSnackBar(context, state.message, isSuccess: false);
-            }
-
-            if (state is RecordRevokedSuccess) {
-              Utils.showSnackBar(context, 'Record revoked successfully');
-              sharedRecords.removeWhere((element) => element.id == state.id);
-            }
-
-            if (state is RecordRevokedError) {
-              Utils.showSnackBar(context, state.message, isSuccess: false);
+            if (state is RequestStatusUpdated) {
+              context.read<RecordBloc>().add(FetchAllRequest());
+              Utils.showSnackBar(context, state.message, isSuccess: true);
             }
           },
           builder: (context, state) {
-            if (state is RecordLoading) {
-              Center(
-                child: LoadingAnimationWidget.threeArchedCircle(
-                  color: blue900,
-                  size: 60,
-                ),
-              );
-            }
-            if (state is RecordError) {
-              return Center(
-                child: Text(
-                  state.message,
-                  style: const TextStyle(
-                    color: red700,
-                    fontSize: FontSizeManager.f16,
-                  ),
-                ),
-              );
-            }
-            if (state is RecordLoaded) {
-              records = state.records;
-            }
-
-            if (state is ShareRecordLoaded) {
-              sharedRecords = state.records;
-            }
-
             return LoadingOverlay(
-              isLoading: state is SharingRecord || state is FetchingDoctorList,
+              isLoading: false,
               progressIndicator: LoadingAnimationWidget.threeArchedCircle(
                 color: blue900,
                 size: 60,
@@ -146,157 +79,304 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: PaddingManager.paddingMedium2),
-                    child: Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: PaddingManager.p8,
-                            vertical: PaddingManager.p8,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: PaddingManager.p8,
-                            horizontal: PaddingManager.p12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: white,
-                            border: Border.all(
-                              color: gray200,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const ImageIcon(
-                            AssetImage(
-                              funnelIcon,
-                            ),
-                            color: gray700,
-                          ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  DefaultTabController(
+                    length: 2,
+                    child: TabBar(
+                      dividerColor: Colors.transparent,
+                      indicatorColor: blue900,
+                      labelStyle: TextStyle(
+                        fontSize: FontSizeManager.f16,
+                        fontWeight: FontWeightManager.semiBold,
+                        color: gray800,
+                        fontFamily: GoogleFonts.montserrat().fontFamily,
+                        letterSpacing: 0.5,
+                      ),
+                      onTap: (value) {
+                        setState(() {
+                          _selectedIndex = value;
+                        });
+                        if (value == 0) {
+                          context.read<RecordBloc>().add(FetchRecords());
+                        }
+                        if (value == 1) {
+                          context.read<RecordBloc>().add(FetchAllRequest());
+                        }
+                      },
+                      tabs: const [
+                        Tab(
+                          text: 'Medical Records',
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            if (sort == 'ALL') {
-                              sort = 'SHARED';
-                            } else {
-                              sort = 'ALL';
-                            }
-                            setState(() {});
-                            fetchData();
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: PaddingManager.p8,
-                              vertical: PaddingManager.p8,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: PaddingManager.p8,
-                              horizontal: PaddingManager.p12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: white,
-                              border: Border.all(
-                                color: gray200,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                const Text(
-                                  'Shared',
-                                  style: TextStyle(
-                                    color: gray700,
-                                    fontSize: FontSizeManager.f16,
-                                    fontWeight: FontWeightManager.semiBold,
-                                  ),
-                                ),
-                                if (sort == 'SHARED') ...[
-                                  const SizedBox(
-                                    width: WidthManager.w6,
-                                  ),
-                                  const Icon(
-                                    CupertinoIcons.xmark_circle_fill,
-                                    size: 18,
-                                  )
-                                ]
-                              ],
-                            ),
-                          ),
+                        Tab(
+                          text: 'Permissions',
                         ),
                       ],
                     ),
                   ),
-                  if (records.isEmpty && state is RecordLoaded)
-                    const NoMedicalRecordWidget(),
-                  if (records.isNotEmpty && sort == 'ALL')
-                    for (MedicalRecord record in records)
-                      RecordTile(
-                        records: record,
-                        popupMenuItems: PopupMenuItem(
-                          child: Column(
-                            children: [
-                              CustomPopupItem(
-                                title: 'Share',
-                                icon: Icons.share_rounded,
-                                onTap: () {
-                                  selectedRecord = record;
-                                  context
-                                      .read<RecordBloc>()
-                                      .add(FetchDoctorList());
-                                },
-                              ),
-                              CustomPopupItem(
-                                title: 'Edit',
-                                icon: CupertinoIcons.pencil,
-                                onTap: () {
-                                  if (Utils.checkInternetConnection(context) == false){
-                                    return;
-                                  }
-                                  if (record.selfAdded == false) {
-                                    Utils.showSnackBar(
-                                        context, 'You have no permission to edit this record.',
-                                        isSuccess: false);
-                                    return;
-                                  }
-                                  Navigator.pushNamed(
-                                    context,
-                                    'edit_medical_record',
-                                    arguments: record,
-                                  ).then((value) {
-                                    if (value != null) {
-                                      records.removeWhere(
-                                          (element) => element.id == record.id);
-                                      records.add(value as MedicalRecord);
-                                      setState(() {});
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (_selectedIndex == 0) ...[
+                    if (state is RecordLoading)
+                      Center(
+                        child: LoadingAnimationWidget.threeArchedCircle(
+                          color: blue900,
+                          size: 60,
+                        ),
+                      )
+                    else if (state is RecordError)
+                      Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(
+                            color: red700,
+                            fontSize: FontSizeManager.f16,
                           ),
                         ),
-                      ),
-                  if (sharedRecords.isNotEmpty && sort == 'SHARED')
-                    for (ShareMedicalRecord record in sharedRecords)
-                      RecordTile(
-                        records: record.medicalRecords!,
-                        popupMenuItems: PopupMenuItem(
-                          child: Column(
-                            children: [
-                              CustomPopupItem(
-                                title: 'Revoke',
-                                icon: Icons.backspace_rounded,
-                                onTap: () {
-                                  context.read<RecordBloc>().add(
-                                      RevokeSharedRecord(recordId: record.id!));
-                                },
+                      )
+                    else if (state is RecordLoaded) ...[
+                      if (state.records.isEmpty)
+                        const NoMedicalRecordWidget()
+                      else if (state.records.isNotEmpty)
+                        for (MedicalRecord record in state.records)
+                          RecordTile(
+                            records: record,
+                            popupMenuItems: PopupMenuItem(
+                              child: Column(
+                                children: [
+                                  CustomPopupItem(
+                                    title: 'Edit',
+                                    icon: CupertinoIcons.pencil,
+                                    onTap: () {
+                                      if (Utils.checkInternetConnection(
+                                              context) ==
+                                          false) {
+                                        return;
+                                      }
+                                      if (record.selfAdded == false) {
+                                        Utils.showSnackBar(context,
+                                            'You have no permission to edit this record.',
+                                            isSuccess: false);
+                                        return;
+                                      }
+                                      Navigator.pushNamed(
+                                        context,
+                                        'edit_medical_record',
+                                        arguments: record,
+                                      ).then((value) {
+                                        if (value != null) {
+                                          _selectedIndex = 0;
+                                          context
+                                              .read<RecordBloc>()
+                                              .add(FetchRecords());
+                                          setState(() {});
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
+                          ),
+                    ],
+                  ] else if (_selectedIndex == 1) ...[
+                    if (state is FetchingRequest)
+                      Center(
+                        child: LoadingAnimationWidget.threeArchedCircle(
+                          color: blue900,
+                          size: 60,
+                        ),
+                      )
+                    else if (state is RequestError)
+                      Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(
+                            color: red700,
+                            fontSize: FontSizeManager.f16,
                           ),
                         ),
-                      ),
+                      )
+                    else if (state is RequestFetched) ...[
+                      if (state.requests.isEmpty)
+                        Center(
+                          child: Text(
+                            'No request found',
+                            style: TextStyle(
+                              fontSize: FontSizeManager.f16,
+                              fontWeight: FontWeightManager.semiBold,
+                              color: gray800,
+                              fontFamily: GoogleFonts.montserrat().fontFamily,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        )
+                      else if (state.requests.isNotEmpty)
+                        for (RecordRequest request in state.requests)
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: PaddingManager.p14,
+                                horizontal: PaddingManager.p18),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: PaddingManager.p12,
+                              vertical: PaddingManager.p10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: white,
+                              borderRadius: BorderRadius.circular(6),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: black.withOpacity(0.08),
+                                  spreadRadius: 1,
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Medical Record Request',
+                                  style: TextStyle(
+                                    fontSize: FontSizeManager.f16,
+                                    fontWeight: FontWeightManager.semiBold,
+                                    color: gray800,
+                                    fontFamily:
+                                        GoogleFonts.montserrat().fontFamily,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Doctor Name ${request.doctor!.name!}',
+                                  style: TextStyle(
+                                    fontSize: FontSizeManager.f14,
+                                    fontWeight: FontWeightManager.regular,
+                                    color: gray800,
+                                    fontFamily:
+                                        GoogleFonts.montserrat().fontFamily,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                if (state is UpdatingRequestStatus)
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                else
+                                if (request.accepted == false &&
+                                    request.rejected == false)
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (Utils.checkInternetConnection(
+                                                context)) {
+                                              context.read<RecordBloc>().add(
+                                                  UpdateRequestStatus(
+                                                      requestId: request.id!,
+                                                      value: true));
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: PaddingManager.p10,
+                                              vertical: PaddingManager.p12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: blue900,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                              border: Border.all(
+                                                color: blue900,
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Accept',
+                                                style: TextStyle(
+                                                  fontSize: FontSizeManager.f14,
+                                                  fontWeight: FontWeightManager
+                                                      .semiBold,
+                                                  color: white,
+                                                  fontFamily:
+                                                      GoogleFonts.montserrat()
+                                                          .fontFamily,
+                                                  letterSpacing: 0.5,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (Utils.checkInternetConnection(
+                                                context)) {
+                                              context.read<RecordBloc>().add(
+                                                  UpdateRequestStatus(
+                                                      requestId: request.id!,
+                                                      value: false));
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: PaddingManager.p10,
+                                              vertical: PaddingManager.p12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: white,
+                                              border: Border.all(
+                                                color: red600,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Reject',
+                                                style: TextStyle(
+                                                  fontSize: FontSizeManager.f14,
+                                                  fontWeight: FontWeightManager
+                                                      .semiBold,
+                                                  color: red600,
+                                                  fontFamily:
+                                                      GoogleFonts.montserrat()
+                                                          .fontFamily,
+                                                  letterSpacing: 0.5,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  Text(
+                                    "Status ${request.accepted! ? 'Accepted' : 'Rejected'}",
+                                    style: TextStyle(
+                                      fontSize: FontSizeManager.f14,
+                                      fontWeight: FontWeightManager.semiBold,
+                                      color:
+                                          request.accepted! ? green900 : red600,
+                                      fontFamily:
+                                          GoogleFonts.montserrat().fontFamily,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          )
+                    ],
+                  ],
                 ]),
               ),
             );
@@ -308,7 +388,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               Navigator.pushNamed(context, 'upload_record_screen')
                   .then((value) {
                 if (value != null) {
-                  records.add(value as MedicalRecord);
+                  _selectedIndex = 0;
+                  context.read<RecordBloc>().add(FetchRecords());
                   setState(() {});
                 }
               });

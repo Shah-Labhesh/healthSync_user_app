@@ -18,5 +18,18 @@ class PaymentFailure extends PaymentState {
   PaymentFailure({required this.message});
 }
 
+class UpdatingKhalti extends PaymentState {}
+
+class KhaltiUpdated extends PaymentState {
+  final String khalti;
+
+  KhaltiUpdated({required this.khalti});
+}
+
+class KhaltiUpdateFailure extends PaymentState {
+  final String message;
+
+  KhaltiUpdateFailure({required this.message});
+}
 class TokenExpired extends PaymentState {}
 

@@ -27,14 +27,28 @@ class PaymentRepo {
     );
   }
 
-  Future<Response> myPayments() async {
+  Future<Response> myPayments({required String sort}) async {
     final token = await SharedUtils.getToken();
     return await dio.get(
       AppUrls.myPayments,
+      queryParameters: {'sort': sort},
       options: Options(
         headers: {'Authorization': 'Bearer $token'},
       ),
     );
 
+  }
+
+  Future<Response> updateKhalti({required String khalti}) async {
+    final token = await SharedUtils.getToken();
+    return await dio.put(
+      AppUrls.currentUser,
+      data: {
+        'khaltiId': khalti,
+      },
+      options: Options(
+        headers: {'Authorization': 'Bearer $token'},
+      ),
+    );
   }
 }

@@ -103,9 +103,9 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
 
   File? recordPdf;
   File? recordImage;
+  String? patientId;
   String selectedRecordType = 'PDF';
   String selectedMedicalRecordType = '';
-  User? selectedUser;
   List<String> medicalRecordType = [
     'VITAL_SIGNS_RECORD',
     'LAB_TEST_RESULTS',
@@ -119,8 +119,6 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
     'RADIOLOGY_REPORTS': 'X-rays, CT scans, MRIs'
   };
 
-  String? patientId;
-
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as String?;
@@ -129,7 +127,6 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
     }
     return BlocConsumer<RecordBloc, RecordState>(
       listener: (context, state) {
-        print(state);
         if (state is UploadRecordSuccess) {
           Utils.showSnackBar(context, 'Record uploaded successfully');
           Navigator.pop(context, state.record);
@@ -143,23 +140,6 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
         }
       },
       builder: (context, state) {
-        if (state is RecordInitial && doctor) {
-          context.read<RecordBloc>().add(FetchPatientList());
-        }
-        if (state is PatientListLoaded) {
-          for (var user in state.patients) {
-            if (user.id == patientId) {
-              selectedUser = user;
-              setState(() {});
-            }
-          }
-        }
-
-        if (state is PatientListError) {
-          return Center(
-            child: Text(state.message),
-          );
-        }
         return LoadingOverlay(
           isLoading: state is UploadRecordLoading,
           progressIndicator: LoadingAnimationWidget.threeArchedCircle(
@@ -316,82 +296,13 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                       height: HeightManager.h20,
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: WidthManager.w20,
-                        vertical: HeightManager.h20,
-                      ),
-                      decoration: BoxDecoration(
-                        color: gray50,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: black.withOpacity(0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, -2),
-                            blurStyle: BlurStyle.outer,
-                          ),
-                        ],
-                      ),
+                      width: double.infinity,
+                      color: gray50,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (doctor) ...[
-                            Text(
-                              'Record for',
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f18,
-                                fontWeight: FontWeightManager.medium,
-                                color: gray900,
-                                fontFamily: GoogleFonts.rubik().fontFamily,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                // if (users.isEmpty) {
-                                //   Utils.showSnackBar(
-                                //       context, 'No patient available',
-                                //       isSuccess: false);
-                                //   return;
-                                // }
-                              },
-                              child: DropdownButton<User>(
-                                hint: const Text('Select Patient'),
-                                style: TextStyle(
-                                  fontSize: FontSizeManager.f18,
-                                  fontWeight: FontWeightManager.semiBold,
-                                  color: gray700,
-                                  fontFamily: GoogleFonts.rubik().fontFamily,
-                                ),
-                                value: selectedUser,
-                                dropdownColor: white,
-                                underline: const SizedBox(),
-                                isExpanded: true,
-                                items: users
-                                    .map((e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e.name!),
-                                        ))
-                                    .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedUser = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const Divider(
-                              color: gray200,
-                              thickness: 1.5,
-                            ),
-                            const SizedBox(
-                              height: HeightManager.h20,
-                            ),
-                          ],
                           Text(
                             'File Type',
                             style: TextStyle(
@@ -592,9 +503,9 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
                                 }
 
                                 // upload record
-                                if (doctor && selectedUser == null) {
+                                if (doctor && patientId == null) {
                                   Utils.showSnackBar(
-                                      context, 'Please select a patient',
+                                      context, 'Sorry, Patient not found',
                                       isSuccess: false);
                                   return;
                                 }
@@ -631,12 +542,14 @@ class _UploadRecordScreenState extends State<UploadRecordScreen> {
 
                                 record['recordType'] =
                                     selectedRecordType.toUpperCase();
-                                if (doctor && selectedUser != null) {
-                                  context.read<RecordBloc>().add(
-                                      UploadRecordByDoctor(
-                                          patientId: selectedUser!.id!,
-                                          record: record));
-                                  return;
+                                if (doctor && patientId != null) {
+                                  if (Utils.checkInternetConnection(context)) {
+                                    context.read<RecordBloc>().add(
+                                        UploadRecordByDoctor(
+                                            patientId: patientId!,
+                                            record: record));
+                                    return;
+                                  }
                                 }
                                 if (Utils.checkInternetConnection(context)) {
                                   context

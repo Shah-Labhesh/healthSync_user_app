@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_event.dart';
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_state.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/permission_prescription.dart';
@@ -9,59 +8,12 @@ import 'package:user_mobile_app/features/prescriptions/data/repo/prescription_re
 
 class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
   PrescriptionBloc() : super(PrescriptionInitial()) {
-    on<FetchPatientsEvent>((event, emit) => _getPatientList(event, emit));
     on<FetchPrescriptionsEvent>(
         (event, emit) => _getPrescriptions(event, emit));
     on<UploadPrescriptionEvent>(
         (event, emit) => _uploadPrescription(event, emit));
     on<FetchPermissionsEvent>((event, emit) => _getRequests(event, emit));
-    on<UpdatePermissionStatus>(
-        (event, emit) => _updatePermission(event, emit));
-  }
-
-  void _getPatientList(
-      FetchPatientsEvent event, Emitter<PrescriptionState> emit) async {
-    emit(PatientListLoading());
-    try {
-      final response = await PrescriptionRepo().getPatientList();
-      if (response.statusCode == 200) {
-        final List<User> patients =
-            (response.data as List).map((e) => User.fromMap(e)).toList();
-        emit(PatientListLoaded(patients: patients));
-      } else {
-        emit(PatientListError(message: response.data["message"]));
-      }
-    } catch (e) {
-      if (e is DioException) {
-        if (e.response != null) {
-          final statusCode = e.response!.statusCode;
-          if (statusCode == 522) {
-            emit(PatientListError(
-                message: 'Connection timed out. Please try again later'));
-          } else if (statusCode == 401) {
-            emit(TokenExpired());
-          } else if (statusCode! >= 500 || statusCode >= 402) {
-            if (e.response?.data["message"].runtimeType != String) {
-              emit(PatientListError(message: e.response?.data["message"][0]));
-            } else {
-              emit(PatientListError(message: e.response?.data["message"]));
-            }
-          } else {
-            if (e.response?.data["message"].runtimeType != String) {
-              emit(PatientListError(message: e.response?.data["message"][0]));
-            } else {
-              emit(PatientListError(message: e.response?.data["message"]));
-            }
-          }
-        } else {
-          emit(PatientListError(
-              message: 'Something went wrong. Please try again later'));
-        }
-      } else {
-        emit(PatientListError(
-            message: 'Something went wrong. Please try again later'));
-      }
-    }
+    on<UpdatePermissionStatus>((event, emit) => _updatePermission(event, emit));
   }
 
   void _getPrescriptions(
@@ -167,13 +119,13 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
       if (response.statusCode == 200) {
         emit(RequestFetched(
             permission: (response.data as List<dynamic>)
-                .map((e) => PrescriptionPermission.fromMap(e as Map<String, dynamic>))
+                .map((e) =>
+                    PrescriptionPermission.fromMap(e as Map<String, dynamic>))
                 .toList()));
       } else {
         emit(RequestFetchError(message: response.data["message"]));
       }
     } catch (e) {
-
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -205,13 +157,18 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
       }
     }
   }
-  
-  _updatePermission(UpdatePermissionStatus event, Emitter<PrescriptionState> emit) async{
+
+  _updatePermission(
+      UpdatePermissionStatus event, Emitter<PrescriptionState> emit) async {
     emit(UpdatingPermissionStatus());
     try {
-      final response = await PrescriptionRepo().updatePermissionStatus( permissionId: event.permissionId, status: event.status);
+      final response = await PrescriptionRepo().updatePermissionStatus(
+          permissionId: event.permissionId, status: event.status);
       if (response.statusCode == 201) {
-        emit(PermissionStatusUpdated(status: event.status, message: response.data["message"], id: event.permissionId));
+        emit(PermissionStatusUpdated(
+            status: event.status,
+            message: response.data["message"],
+            id: event.permissionId));
       } else {
         emit(PermissionStatusUpdateError(message: response.data["message"]));
       }
@@ -226,15 +183,19 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
             emit(TokenExpired());
           } else if (statusCode! >= 500 || statusCode >= 402) {
             if (e.response?.data["message"].runtimeType != String) {
-              emit(PermissionStatusUpdateError(message: e.response?.data["message"][0]));
+              emit(PermissionStatusUpdateError(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(PermissionStatusUpdateError(message: e.response?.data["message"]));
+              emit(PermissionStatusUpdateError(
+                  message: e.response?.data["message"]));
             }
           } else {
             if (e.response?.data["message"].runtimeType != String) {
-              emit(PermissionStatusUpdateError(message: e.response?.data["message"][0]));
+              emit(PermissionStatusUpdateError(
+                  message: e.response?.data["message"][0]));
             } else {
-              emit(PermissionStatusUpdateError(message: e.response?.data["message"]));
+              emit(PermissionStatusUpdateError(
+                  message: e.response?.data["message"]));
             }
           }
         } else {

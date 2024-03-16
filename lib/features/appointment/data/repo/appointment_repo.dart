@@ -35,4 +35,13 @@ class AppointmentRepo{
     );
     return response;
   }
+
+  Future<Response> cancelAppointment({required String appointmentId}) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.delete(
+      AppUrls.cancelAppointment(appointmentId: appointmentId),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response;
+  }
 }

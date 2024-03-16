@@ -76,7 +76,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   Map<String, String> appointmentTypeMap = {
     'Follow Up': 'FOLLOWUP',
     'Consultation': 'CONSULTATION',
-    'Therapy': 'THREAPY',
+    'Therapy': 'THERAPY',
     'Counseling': 'COUNSELING',
   };
   String selectedAppointmentTypes = 'Follow Up';

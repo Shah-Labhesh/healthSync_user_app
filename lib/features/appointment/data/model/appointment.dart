@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 
 import 'package:user_mobile_app/features/account/data/model/user.dart';
@@ -14,6 +15,7 @@ class Appointment {
     String? paymentStatus;
     String? reminderTime;
     String? appointmentStatus;
+    String? appointmentId;
     bool? isExpired;
     int? platformCost;
     int? totalFee;
@@ -32,6 +34,7 @@ class Appointment {
     this.paymentStatus,
     this.reminderTime,
     this.appointmentStatus,
+    this.appointmentId,
     this.isExpired,
     this.platformCost,
     this.totalFee,
@@ -52,6 +55,7 @@ class Appointment {
       slot: map['slot'] != null ? Slots.fromMap(map['slot'] as Map<String,dynamic>) : null,
       notes: map['notes'] != null ? map['notes'] as String : null,
       payment: map['payment'] != null ? map['payment'] as String : null,
+      appointmentId: map['appointmentId'] != null ? map['appointmentId'] as String : null,
       paymentStatus: map['paymentStatus'] != null ? map['paymentStatus'] as String : null,
       reminderTime: map['reminderTime'] != null ? map['reminderTime'] as String : null,
       appointmentStatus: map['appointmentStatus'] != null ? map['appointmentStatus'] as String : null,

@@ -32,7 +32,7 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
 
   int _selectedIndex = 0;
 
-  List<ShareMedicalRecord> medicalRecords = [];
+  List<MedicalRecord> medicalRecords = [];
   List<Prescription> prescriptions = [];
 
   bool recordPermission = false;
@@ -271,7 +271,7 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
                 else if (medicalRecords.isNotEmpty)
                   for (var record in medicalRecords)
                     RecordTile(
-                      records: record.medicalRecords!,
+                      records: record,
                       popupMenuItems: PopupMenuItem(
                         child: PopupMenuItem(
                           child: Column(
@@ -371,7 +371,7 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
               Navigator.pushNamed(context, 'upload_record_screen', arguments: patient!.id!)
                   .then((value) {
                 if (value != null) {
-                  // medicalRecords..add(value as MedicalRecord);
+                  medicalRecords.add(value as MedicalRecord);
                   setState(() {});
                 }
               });

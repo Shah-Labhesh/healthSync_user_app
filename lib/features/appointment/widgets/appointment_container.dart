@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -14,10 +16,13 @@ import 'package:user_mobile_app/features/appointment/screens/call_screen.dart';
 
 class AppointmentTile extends StatelessWidget {
   const AppointmentTile({
-    super.key,
-    required this.appointment,
+    Key? key,
+    this.onCancel,
     required this.doctor,
-  });
+    required this.appointment,
+  }) : super(key: key);
+
+  final Function()? onCancel;
 
   final bool doctor;
   bool checkTime(String time) {
@@ -317,25 +322,28 @@ class AppointmentTile extends StatelessWidget {
               if (checkTime(appointment.slot!.slotDateTime!) &&
                   appointment.payment == null)
                 Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: PaddingManager.paddingMedium,
-                      vertical: PaddingManager.paddingSmall,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: red600,
+                  child: GestureDetector(
+                    onTap: onCancel,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: PaddingManager.paddingMedium,
+                        vertical: PaddingManager.paddingSmall,
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: FontSizeManager.f16,
-                        fontWeight: FontWeightManager.semiBold,
-                        fontFamily: GoogleFonts.montserrat().fontFamily,
-                        color: red600,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: red600,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: FontSizeManager.f16,
+                          fontWeight: FontWeightManager.semiBold,
+                          fontFamily: GoogleFonts.montserrat().fontFamily,
+                          color: red600,
+                        ),
                       ),
                     ),
                   ),

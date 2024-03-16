@@ -22,7 +22,7 @@ class PatientViewBloc extends Bloc<PatientViewEvent, PatientViewState> {
       if (response.statusCode == 200) {
         emit(RecordsLoaded(
           medicalRecords: (response.data as List<dynamic>)
-              .map((e) => ShareMedicalRecord.fromMap(e as Map<String, dynamic>))
+              .map((e) => MedicalRecord.fromMap(e as Map<String, dynamic>))
               .toList(),
         ));
       } else {

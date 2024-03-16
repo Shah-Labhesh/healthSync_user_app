@@ -128,20 +128,12 @@ class _ChatScreenState extends State<ChatScreen> {
       currentUser = args['user'];
     }
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(HeightManager.h73),
+      appBar: const  PreferredSize(
+        preferredSize: Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: 'Chat',
           isBackButton: true,
-          action: PopupMenuButton(
-            itemBuilder: (context) {
-              return [
-                const PopupMenuItem(
-                  child: Text('Delete'),
-                ),
-              ];
-            },
-          ),
+          
         ),
       ),
       body: StreamBuilder<List<ChatMessage>>(

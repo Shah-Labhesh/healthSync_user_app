@@ -15,6 +15,7 @@ class SearchRepo {
     String? speciality,
     String? feeType,
     String? feeFrom,
+    required double ratings,
     String? feeTo,
     bool? popular,
   }) async {
@@ -31,9 +32,9 @@ class SearchRepo {
           'feeFrom': feeFrom,
           'feeTo': feeTo,
           'popular': popular,
+          'ratings': ratings
         },
         options: Options(headers: {'Authorization': 'Bearer $token'}));
-        print(response);
     return response;
   }
 

@@ -8,6 +8,7 @@ import 'package:user_mobile_app/features/appointment/data/repo/appointment_repo.
 class MyAppointmentBloc extends Bloc<MyAppointmentEvent, MyAppointmentState> {
   MyAppointmentBloc() : super(MyAppointmentInitial()) {
     on<FetchMyAppointmentEvent>((event, emit) => myAppointment(emit));
+    on<CancelAppointmentEvent>((event, emit) => cancelAppointment(event, emit));
 
   }
 
@@ -52,6 +53,48 @@ class MyAppointmentBloc extends Bloc<MyAppointmentEvent, MyAppointmentState> {
             message: 'Connection timed out. Please try again later'));
       }
       
+    }
+  }
+
+  void cancelAppointment(CancelAppointmentEvent event, Emitter<MyAppointmentState> emit) async {
+    emit(MyAppointmentCancelling());
+    try {
+      final response = await AppointmentRepo().cancelAppointment(appointmentId: event.appointmentId);
+      if (response.statusCode == 200) {
+        emit(MyAppointmentCancelSuccess(message: response.data['message']));
+      } else {
+        emit(MyAppointmentCancelFailed(message: response.data['message']));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(MyAppointmentCancelFailed(
+                message: 'Connection timed out. Please try again later'));
+          } else if (statusCode == 401) {
+            emit(TokenExpired());
+          } else if (statusCode! >= 500 || statusCode >= 402) {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(MyAppointmentCancelFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(MyAppointmentCancelFailed(message: e.response?.data["message"]));
+            }
+          } else {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(MyAppointmentCancelFailed(message: e.response?.data["message"][0]));
+            } else {
+              emit(MyAppointmentCancelFailed(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(MyAppointmentCancelFailed(
+              message: 'Connection timed out. Please try again later'));
+        }
+      } else {
+        emit(MyAppointmentCancelFailed(
+            message: 'Connection timed out. Please try again later'));
+      }
     }
   }
 }

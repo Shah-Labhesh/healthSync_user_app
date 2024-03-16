@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
@@ -41,7 +42,7 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
   String? specialityName;
   String? priceFrom;
   String? priceTo;
-  String? ratings;
+  double ratings = 0.0;
   bool? popular;
 
   void fetchData() {
@@ -51,6 +52,7 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
         feeTo: priceTo,
         feeType: selectedPriceType,
         popular: popular,
+        ratings: ratings,
         speciality: speciality,
         text: _searchText,
       ));
@@ -62,7 +64,7 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
         selectedPriceType != null ||
         priceFrom != null ||
         priceTo != null ||
-        ratings != null ||
+        ratings != 0.0 ||
         popular != null) {
       return true;
     }
@@ -79,7 +81,7 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
       selectedPriceType = null;
       priceFrom = null;
       priceTo = null;
-      ratings = null;
+      ratings = 0.0;
       popular = null;
     });
     fetchData();
@@ -445,24 +447,65 @@ class _SearchDoctorScreenState extends State<SearchDoctorScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            if (ratings != null) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return SimpleDialog(
+                                  shape: ShapeBorder.lerp(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    0.0,
+                                  ),
+                                  children: [
+                                    Center(
+                                      child: RatingBar.builder(
+                                        unratedColor: gray400,
+                                        itemCount: 5,
+                                        itemSize: 30,
+                                        tapOnlyMode: true,
+                                        itemPadding: const EdgeInsets.all(
+                                            PaddingManager.p6),
+                                        direction: Axis.horizontal,
+                                        initialRating:
+                                            ratings == 0.0 ? 0 : ratings,
+                                        allowHalfRating: false,
+                                        itemBuilder: (context, index) {
+                                          return const ImageIcon(
+                                            AssetImage(
+                                              filledStarIcon,
+                                            ),
+                                            color: orange400,
+                                          );
+                                        },
+                                        onRatingUpdate: (value) {
+                                          Navigator.pop(context, value);
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                            ).then((value) {
+                              if (value == null) {
+                                return;
+                              }
                               setState(() {
-                                ratings = null;
+                                ratings = value;
                               });
-                            } else {
-                              setState(() {
-                                ratings = '';
-                              });
-                            }
-                            fetchData();
+                              fetchData();
+                            });
                           },
                           child: FilterContainer(
                             title: 'Ratings',
                             dropDown: false,
-                            isSelected: ratings != null,
+                            isSelected: ratings != 0.0,
                             onCancelPressed: () {
                               setState(() {
-                                ratings = null;
+                                ratings = 0.0;
                               });
                               fetchData();
                             },

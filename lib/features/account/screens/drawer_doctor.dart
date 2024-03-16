@@ -192,18 +192,9 @@ class DoctorDrawer extends StatelessWidget {
                       color: gray50,
                       gap: HeightManager.h20,
                       onPressed: () {
-                        Navigator.pushNamed(context, 'payment_screen');
+                        Navigator.pushNamed(context, 'payment_screen', arguments: doctor.khaltiId);
                       },
                     ),
-                    // TileBarWidget(
-                    //   icon: prescriptionIcon,
-                    //   title: 'Prescriptions',
-                    //   color: gray50,
-                    //   gap: HeightManager.h20,
-                    //   onPressed: () {
-                    //     Navigator.pushNamed(context, 'prescription_screen');
-                    //   },
-                    // ),
                     TileBarWidget(
                       icon: mySlotIcon,
                       title: 'My Slots',

@@ -82,11 +82,13 @@ class AppUrls {
   static String bookAppointment = '$BASE_URL/appointment';
   static String getMyAppointments = '$BASE_URL/appointment/my-appointments';
   static String getAllAppointments = '$BASE_URL/appointment/all-appointments';
+  static String cancelAppointment({required String appointmentId}) =>
+      '$BASE_URL/appointment/$appointmentId';
 
   // medical record
   static String uploadRecord = '$BASE_URL/medical-record';
-  static String medicalRecords({required String sort}) =>
-      '$BASE_URL/medical-record?sort=$sort';
+  static String medicalRecords =
+      '$BASE_URL/medical-record';
   static String medicalRecordsByDoctor({required String sort}) =>
       '$BASE_URL/medical-record/doctor?sort=$sort';
   static String uploadRecordByDoctor({required String userId}) =>
@@ -140,4 +142,5 @@ class AppUrls {
   // chat
   static String chatRoom = '$BASE_URL/chat/my-rooms';
   static String createChatRoom = '$BASE_URL/chat/room';
+
 }
