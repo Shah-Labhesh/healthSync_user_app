@@ -91,7 +91,7 @@ Future<void> main() async {
   );
   FirebaseService.initMessaging();
   FirebaseService.initLocalNotification();
-  AppEnvironment.setupEnv(Environment.dev);
+  AppEnvironment.setupEnv(Environment.local);
 
   runApp(const MyApp());
 }

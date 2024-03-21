@@ -23,9 +23,7 @@ class TokenExpired extends FavoriteState {}
 class ToggleFavouriteLoading extends FavoriteState {}
 
 class ToggleFavouriteSuccess extends FavoriteState {
-  final String doctorId;
-
-  ToggleFavouriteSuccess({required this.doctorId});
+  
 }
 
 class ToggleFavouriteFailed extends FavoriteState {

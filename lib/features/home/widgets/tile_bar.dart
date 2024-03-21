@@ -13,12 +13,16 @@ class TileBarWidget extends StatelessWidget {
     required this.title,
     this.subTitle,
     this.padding,
+    this.onTap,
+    this.moreText,
   }) : super(key: key);
 
   final bool? more;
   final String title;
   final String? subTitle;
   final double? padding;
+  final String? moreText;
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,14 +53,17 @@ class TileBarWidget extends StatelessWidget {
             ),
           const Spacer(),
           if (more == true)
-            Text(
-              'See All',
-              style: TextStyle(
-                fontSize: FontSizeManager.f16,
-                fontWeight: FontWeightManager.bold,
-                color: red600,
-                fontFamily: GoogleFonts.montserrat().fontFamily,
-                letterSpacing: 0.5,
+            GestureDetector(
+              onTap: onTap,
+              child: Text(
+                '$moreText',
+                style: TextStyle(
+                  fontSize: FontSizeManager.f16,
+                  fontWeight: FontWeightManager.bold,
+                  color: red600,
+                  fontFamily: GoogleFonts.montserrat().fontFamily,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
         ],

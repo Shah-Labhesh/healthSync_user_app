@@ -21,7 +21,6 @@ class MyFavoriteScreen extends StatefulWidget {
 class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
   List<User> doctors = [];
 
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<FavoriteBloc, FavoriteState>(
@@ -31,12 +30,7 @@ class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
           Utils.handleTokenExpired(context);
         }
         if (state is ToggleFavouriteSuccess) {
-          for (User doctor in doctors) {
-            if (doctor.id == state.doctorId) {
-              doctors.remove(doctor);
-              break;
-            }
-          }
+          context.read<FavoriteBloc>().add(FetchFavoriteEvent());
         }
 
         if (state is ToggleFavouriteFailed) {
@@ -53,14 +47,22 @@ class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
           context.read<FavoriteBloc>().add(FetchFavoriteEvent());
         }
         if (state is FavoriteLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
         if (state is FavoriteLoadFailed) {
-          return Center(
-            child: Text(state.message),
+          return Scaffold(
+            body: Center(
+              child: Text(state.message),
+            ),
           );
+        }
+
+        if (state is FavoriteLoaded) {
+          doctors = state.doctors;
         }
 
         return RefreshIndicator(

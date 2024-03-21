@@ -67,7 +67,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     try {
       Response response = await FavoriteRepo().toggleFavourite(event.doctorId);
       if (response.statusCode == 200) {
-        emit(ToggleFavouriteSuccess(doctorId: event.doctorId));
+        emit(ToggleFavouriteSuccess());
       } else {
         emit(ToggleFavouriteFailed(
             message: 'Something went wrong. Please try again later'));

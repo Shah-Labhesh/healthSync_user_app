@@ -55,7 +55,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (widget.drawer) ...[
-              InkWell(
+              GestureDetector(
                 onTap: widget.onTap,
                 child: const Icon(
                   CupertinoIcons.bars,
@@ -93,7 +93,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
               ],
             ),
             const Spacer(),
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, 'notification_screen')
                     .then((value) {
@@ -131,14 +131,24 @@ class _HomeAppBarState extends State<HomeAppBar> {
                     ),
                     if (state is CountLoaded && state.count > 0) ...[
                       Positioned(
-                        right: 12,
-                        top: 10,
+                        right: 8,
+                        top: 6,
                         child: Container(
-                          height: HeightManager.h12,
-                          width: WidthManager.w12,
+                          height: HeightManager.h16,
+                          width: WidthManager.w16,
                           decoration: const BoxDecoration(
                             color: blue900,
                             shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              state.count.toString(),
+                              style: textTheme.labelSmall!.copyWith(
+                                fontSize: FontSizeManager.f10,
+                                fontWeight: FontWeightManager.regular,
+                                color: white,
+                              ),
+                            ),
                           ),
                         ),
                       ),

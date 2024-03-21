@@ -37,6 +37,9 @@ class _HomeContentState extends State<HomeContent> {
   List<User> doctors = [];
   List<Specialities> specialities = [];
 
+  bool isViewAll = false;
+  int count = 0;
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +48,6 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  bool isViewAll = false;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -94,6 +96,11 @@ class _HomeContentState extends State<HomeContent> {
           doctors = state.doctors;
           appointment = state.appointment;
           specialities = state.specialities;
+          if (isViewAll) {
+            count = doctors.length;
+          } else {
+            count = doctors.length > 5 ? 5 : doctors.length;
+          }
         }
         return RefreshIndicator(
           onRefresh: () async {
@@ -264,16 +271,27 @@ class _HomeContentState extends State<HomeContent> {
                     else
                       const NoAppointmentWidget(),
 
-                    const TileBarWidget(
+                    TileBarWidget(
                       title: 'NearBy Doctors',
                       more: true,
+                      moreText: isViewAll ? 'See Less' : 'See All',
+                      onTap: () {
+                        setState(() {
+                          isViewAll = !isViewAll;
+                          if (isViewAll) {
+                            count = doctors.length;
+                          } else {
+                            count = doctors.length > 5 ? 5 : doctors.length;
+                          }
+                        });
+                      },
                       padding: PaddingManager.paddingMedium2,
                     ),
                     // list generate
                     if (doctors.isEmpty)
                       const NoDoctorWidget()
                     else
-                      for (int i = 0; i < doctors.length; i++)
+                      for (int i = 0; i < count; i++)
                         DoctorTile(
                           doctor: doctors[i],
                           onPressed: () {
@@ -284,7 +302,6 @@ class _HomeContentState extends State<HomeContent> {
                           },
                         ),
 
-                    
                     const SizedBox(
                       height: HeightManager.h73,
                     ),
