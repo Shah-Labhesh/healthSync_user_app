@@ -60,6 +60,9 @@ class _LoginPageState extends State<LoginPage> {
             Utils.showSnackBar(context, 'You have successfully logged in',
                 isSuccess: true);
             Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+          }else{
+            Utils.showSnackBar(context, 'You can not login with this account',
+                isSuccess: false);
           }
         }
         if (state is UserNotVerified) {

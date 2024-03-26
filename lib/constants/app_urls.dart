@@ -86,22 +86,16 @@ class AppUrls {
       '$BASE_URL/appointment/$appointmentId';
 
   // medical record
-  static String uploadRecord = '$BASE_URL/medical-record';
   static String medicalRecords =
       '$BASE_URL/medical-record';
-  static String medicalRecordsByDoctor({required String sort}) =>
-      '$BASE_URL/medical-record/doctor?sort=$sort';
   static String uploadRecordByDoctor({required String userId}) =>
       '$BASE_URL/medical-record/$userId';
-  static String shareMedicalRecord(
-          {required String recordId, required String doctorId}) =>
-      '$BASE_URL/medical-record/share/$recordId/$doctorId';
-  static String revokeSharedRecord({required String recordId}) =>
-      '$BASE_URL/medical-record/revoke/$recordId';
-  static String updateRecord({required String recordId}) =>
+  static String recordById({required String recordId}) =>
       '$BASE_URL/medical-record/$recordId';
   static String getPatientRecords({required String userId}) =>
       '$BASE_URL/medical-record/view/$userId';
+      static String RevokePermission({required String requestId}) => 
+      '$BASE_URL/medical-record/revoke-permission/$requestId';
   static String allRequest = '$BASE_URL/medical-record/request';
   static String updateRequestStatus({required String requestId, required bool value}) =>
       '$BASE_URL/medical-record/approval/$requestId/$value';
@@ -115,6 +109,7 @@ class AppUrls {
       '$BASE_URL/prescription/permission/$requestId/$value';
   static String allPrescriptionRequest= '$BASE_URL/prescription/permission';
   static String requestPermission({required String userId}) => '$BASE_URL/prescription/permission/$userId';
+  static String revokePermissionPrescription({required String requestId}) => '$BASE_URL/prescription/permission/$requestId';
   
   // contact
   static String contactMessage(

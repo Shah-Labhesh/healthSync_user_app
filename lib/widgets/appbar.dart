@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
+import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_event.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_state.dart';
@@ -24,13 +25,13 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     context.read<NotificationBloc>().add(FetchUnreadNotificationCount());
   }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -70,7 +71,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   height: 50,
                 )
               else
-                InkWell(
+                GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, 'notification_screen');
                   },
@@ -103,14 +104,32 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         ),
                         if (state is CountLoaded && state.count > 0) ...[
                           Positioned(
-                            right: 12,
-                            top: 10,
+                            right: 8,
+                            top: 6,
                             child: Container(
-                              height: 12,
-                              width: 12,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: state.count > 9
+                                    ? HeightManager.h2
+                                    : HeightManager.h4,
+                                vertical: state.count > 9
+                                    ? WidthManager.w2
+                                    : WidthManager.w4,
+                              ),
                               decoration: const BoxDecoration(
                                 color: blue900,
                                 shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  state.count > 9
+                                      ? '9+'
+                                      : state.count.toString(),
+                                  style: textTheme.labelSmall!.copyWith(
+                                    fontSize: FontSizeManager.f10,
+                                    fontWeight: FontWeightManager.regular,
+                                    color: white,
+                                  ),
+                                ),
                               ),
                             ),
                           ),

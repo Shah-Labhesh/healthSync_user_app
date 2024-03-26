@@ -134,15 +134,17 @@ class _HomeAppBarState extends State<HomeAppBar> {
                         right: 8,
                         top: 6,
                         child: Container(
-                          height: HeightManager.h16,
-                          width: WidthManager.w16,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: state.count > 9 ? HeightManager.h2 : HeightManager.h4,
+                            vertical: state.count > 9 ? WidthManager.w2 : WidthManager.w4,
+                          ),
                           decoration: const BoxDecoration(
                             color: blue900,
                             shape: BoxShape.circle,
                           ),
                           child: Center(
                             child: Text(
-                              state.count.toString(),
+                              state.count > 9 ? '9+' : state.count.toString(),
                               style: textTheme.labelSmall!.copyWith(
                                 fontSize: FontSizeManager.f10,
                                 fontWeight: FontWeightManager.regular,

@@ -83,3 +83,14 @@ class RequestStatusError extends RecordState {
 
   RequestStatusError({required this.message});
 }
+
+class RevokingPermission extends RecordState {}
+
+class PermissionRevoked extends RecordState {
+}
+
+class PermissionRevokeError extends RecordState {
+  final String message;
+
+  PermissionRevokeError({required this.message});
+}

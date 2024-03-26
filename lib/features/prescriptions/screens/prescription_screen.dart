@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -42,6 +44,17 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   int _selectedIndex = 0;
 
   List<PrescriptionPermission> permissions = [];
+
+  fetchData() {
+    switch (_selectedIndex) {
+      case 0:
+        context.read<PrescriptionBloc>().add(FetchPrescriptionsEvent());
+        break;
+      case 1:
+        context.read<PrescriptionBloc>().add(FetchPermissionsEvent());
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +100,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             }
             Utils.showSnackBar(context, state.message);
           }
+
+          if (state is PermissionRevoked) {
+            Utils.showSnackBar(context, 'Revoking permission');
+          }
+          if (state is PermissionRevokeError) {
+            Utils.showSnackBar(context, state.message, isSuccess: false);
+          }
         },
         builder: (context, state) {
           if (state is PrescriptionInitial) {
@@ -99,244 +119,98 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
           if (state is RequestFetched) {
             permissions = state.permission;
           }
-          return SafeArea(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(children: [
-                const SizedBox(height: 20),
-                DefaultTabController(
-                  length: 2,
-                  child: TabBar(
-                    dividerColor: Colors.transparent,
-                    indicatorColor: blue900,
-                    labelStyle: TextStyle(
-                      fontSize: FontSizeManager.f16,
-                      fontWeight: FontWeightManager.semiBold,
-                      color: gray800,
-                      fontFamily: GoogleFonts.montserrat().fontFamily,
-                      letterSpacing: 0.5,
+          return LoadingOverlay(
+            isLoading:
+                state is UpdatePermissionStatus || state is RevokingPermission,
+            progressIndicator: LoadingAnimationWidget.threeArchedCircle(
+              color: blue900,
+              size: 60,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(children: [
+                  const SizedBox(height: 20),
+                  DefaultTabController(
+                    length: 2,
+                    child: TabBar(
+                      dividerColor: Colors.transparent,
+                      indicatorColor: blue900,
+                      labelStyle: TextStyle(
+                        fontSize: FontSizeManager.f16,
+                        fontWeight: FontWeightManager.semiBold,
+                        color: gray800,
+                        fontFamily: GoogleFonts.montserrat().fontFamily,
+                        letterSpacing: 0.5,
+                      ),
+                      onTap: (value) {
+                        setState(() {
+                          _selectedIndex = value;
+                        });
+                        if (value == 0) {
+                          context
+                              .read<PrescriptionBloc>()
+                              .add(FetchPrescriptionsEvent());
+                        }
+                        if (value == 1) {
+                          context
+                              .read<PrescriptionBloc>()
+                              .add(FetchPermissionsEvent());
+                        }
+                      },
+                      tabs: const [
+                        Tab(
+                          text: 'Prescriptions',
+                        ),
+                        Tab(
+                          text: 'Permissions',
+                        ),
+                      ],
                     ),
-                    onTap: (value) {
-                      setState(() {
-                        _selectedIndex = value;
-                      });
-                      if (value == 0) {
-                        context
-                            .read<PrescriptionBloc>()
-                            .add(FetchPrescriptionsEvent());
-                      }
-                      if (value == 1) {
-                        context
-                            .read<PrescriptionBloc>()
-                            .add(FetchPermissionsEvent());
-                      }
-                    },
-                    tabs: const [
-                      Tab(
-                        text: 'Prescriptions',
-                      ),
-                      Tab(
-                        text: 'Permissions',
-                      ),
-                    ],
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                if (_selectedIndex == 0) ...[
-                  if (state is PrescriptionLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  else if (state is PrescriptionError)
-                    Center(
-                      child: Text(state.message),
-                    )
-                  else if (prescriptions.isEmpty)
-                    const NoPrescriptionWidget()
-                  else
-                    for (Prescription prescription in prescriptions) ...[
-                      PrescriptionTile(
-                        isDoctor: doctor,
-                        prescription: prescription,
-                        
-                      ),
-                    ]
-                ],
-                if (_selectedIndex == 1) ...[
-                  if (state is FetchingRequest)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  else if (state is RequestFetchError)
-                    Center(
-                      child: Text(state.message),
-                    )
-                  else if (state is RequestFetched)
-                    for (PrescriptionPermission permission in permissions) ...[
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: PaddingManager.p14,
-                            horizontal: PaddingManager.p18),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingManager.p12,
-                          vertical: PaddingManager.p10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: black.withOpacity(0.08),
-                              spreadRadius: 1,
-                              blurRadius: 20,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Prescription Request',
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f16,
-                                fontWeight: FontWeightManager.semiBold,
-                                color: gray800,
-                                fontFamily: GoogleFonts.montserrat().fontFamily,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Doctor Name ${permission.doctor!.name!}',
-                              style: TextStyle(
-                                fontSize: FontSizeManager.f14,
-                                fontWeight: FontWeightManager.regular,
-                                color: gray800,
-                                fontFamily: GoogleFonts.montserrat().fontFamily,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            if (state is UpdatePermissionStatus)
-                              const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            else if (permission.accepted == false &&
-                                permission.rejected == false)
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        if (Utils.checkInternetConnection(context)) {
-                                          context.read<PrescriptionBloc>().add(
-                                            UpdatePermissionStatus(
-                                                permissionId: permission.id!,
-                                                status: true));
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: PaddingManager.p10,
-                                          vertical: PaddingManager.p12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: blue900,
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                          border: Border.all(
-                                            color: blue900,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Accept',
-                                            style: TextStyle(
-                                              fontSize: FontSizeManager.f14,
-                                              fontWeight:
-                                                  FontWeightManager.semiBold,
-                                              color: white,
-                                              fontFamily:
-                                                  GoogleFonts.montserrat()
-                                                      .fontFamily,
-                                              letterSpacing: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        if (Utils.checkInternetConnection(context)) {
-                                          context.read<PrescriptionBloc>().add(
-                                            UpdatePermissionStatus(
-                                                permissionId: permission.id!,
-                                                status: false));
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: PaddingManager.p10,
-                                          vertical: PaddingManager.p12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: white,
-                                          border: Border.all(
-                                            color: red600,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Reject',
-                                            style: TextStyle(
-                                              fontSize: FontSizeManager.f14,
-                                              fontWeight:
-                                                  FontWeightManager.semiBold,
-                                              color: red600,
-                                              fontFamily:
-                                                  GoogleFonts.montserrat()
-                                                      .fontFamily,
-                                              letterSpacing: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            else
-                              Text(
-                                "Status ${permission.accepted! ? 'Accepted' : 'Rejected'}",
-                                style: TextStyle(
-                                  fontSize: FontSizeManager.f14,
-                                  fontWeight: FontWeightManager.semiBold,
-                                  color:
-                                      permission.accepted! ? green900 : red600,
-                                  fontFamily:
-                                      GoogleFonts.montserrat().fontFamily,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                          ],
-                        ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (_selectedIndex == 0) ...[
+                    if (state is PrescriptionLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
                       )
-                    ]
-                  else
-                    const Center(
-                      child: Text('No permission request found'),
-                    )
-                ]
-              ]),
+                    else if (state is PrescriptionError)
+                      Center(
+                        child: Text(state.message),
+                      )
+                    else if (prescriptions.isEmpty)
+                      const NoPrescriptionWidget()
+                    else
+                      for (Prescription prescription in prescriptions) ...[
+                        PrescriptionTile(
+                          isDoctor: doctor,
+                          prescription: prescription,
+                        ),
+                      ]
+                  ],
+                  if (_selectedIndex == 1) ...[
+                    if (state is FetchingRequest)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (state is RequestFetchError)
+                      Center(
+                        child: Text(state.message),
+                      )
+                    else if (state is RequestFetched)
+                      for (PrescriptionPermission permission
+                          in permissions) ...[
+                        PrescriptionPermissionWidget(permission: permission)
+                      ]
+                    else
+                      const Center(
+                        child: Text('No permission request found'),
+                      )
+                  ]
+                ]),
+              ),
             ),
           );
         },
@@ -360,6 +234,200 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               ),
             )
           : null,
+    );
+  }
+}
+
+class PrescriptionPermissionWidget extends StatelessWidget {
+  const PrescriptionPermissionWidget({
+    super.key,
+    required this.permission,
+  });
+
+  final PrescriptionPermission permission;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(
+          vertical: PaddingManager.p14, horizontal: PaddingManager.p18),
+      padding: const EdgeInsets.symmetric(
+        horizontal: PaddingManager.p12,
+        vertical: PaddingManager.p10,
+      ),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: [
+          BoxShadow(
+            color: black.withOpacity(0.08),
+            spreadRadius: 1,
+            blurRadius: 20,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Prescription Request',
+                  style: TextStyle(
+                    fontSize: FontSizeManager.f16,
+                    fontWeight: FontWeightManager.semiBold,
+                    color: gray800,
+                    fontFamily: GoogleFonts.montserrat().fontFamily,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Doctor Name ${permission.doctor!.name!}',
+                  style: TextStyle(
+                    fontSize: FontSizeManager.f14,
+                    fontWeight: FontWeightManager.regular,
+                    color: gray800,
+                    fontFamily: GoogleFonts.montserrat().fontFamily,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                if (permission.accepted == false &&
+                    permission.rejected == false)
+                  Row(children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (Utils.checkInternetConnection(context)) {
+                            context.read<PrescriptionBloc>().add(
+                                UpdatePermissionStatus(
+                                    permissionId: permission.id!,
+                                    status: true));
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: PaddingManager.p10,
+                            vertical: PaddingManager.p12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: blue900,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: blue900,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Accept',
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f14,
+                                fontWeight: FontWeightManager.semiBold,
+                                color: white,
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (Utils.checkInternetConnection(context)) {
+                            context.read<PrescriptionBloc>().add(
+                                UpdatePermissionStatus(
+                                    permissionId: permission.id!,
+                                    status: false));
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: PaddingManager.p10,
+                            vertical: PaddingManager.p12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: white,
+                            border: Border.all(
+                              color: red600,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Reject',
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f14,
+                                fontWeight: FontWeightManager.semiBold,
+                                color: red600,
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ])
+                else
+                  Text(
+                    "Status ${permission.accepted! ? 'Accepted' : 'Rejected'}",
+                    style: TextStyle(
+                      fontSize: FontSizeManager.f14,
+                      fontWeight: FontWeightManager.semiBold,
+                      color: permission.accepted! ? green900 : red600,
+                      fontFamily: GoogleFonts.montserrat().fontFamily,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (permission.accepted == true) ...[
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: () {
+                if (Utils.checkInternetConnection(context)) {
+                  context
+                      .read<PrescriptionBloc>()
+                      .add(RevokePermission(permissionId: permission.id!));
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: PaddingManager.p10,
+                  vertical: PaddingManager.p12,
+                ),
+                decoration: BoxDecoration(
+                  color: white,
+                  border: Border.all(
+                    color: red600,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Center(
+                  child: Text(
+                    'Revoke',
+                    style: TextStyle(
+                      fontSize: FontSizeManager.f14,
+                      fontWeight: FontWeightManager.semiBold,
+                      color: red600,
+                      fontFamily: GoogleFonts.montserrat().fontFamily,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ]
+        ],
+      ),
     );
   }
 }

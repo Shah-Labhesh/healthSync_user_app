@@ -14,7 +14,7 @@ class RecordRepo {
 
   Future<Response> uploadRecord(Map<String, dynamic> record) async {
     final token = await SharedUtils.getToken();
-    Response response = await dio.post(AppUrls.uploadRecord,
+    Response response = await dio.post(AppUrls.medicalRecords,
         data: FormData.fromMap(record),
         options: Options(headers: {
           'Authorization': 'Bearer $token',
@@ -36,7 +36,7 @@ class RecordRepo {
 
   Future<Response> updateRecord(String recordId, Map<String, dynamic> record) async {
     final token = await SharedUtils.getToken();
-    Response response = await dio.put(AppUrls.updateRecord(recordId: recordId),
+    Response response = await dio.put(AppUrls.recordById(recordId: recordId),
         data: FormData.fromMap(record),
         options: Options(headers: {
           'Authorization': 'Bearer $token',
@@ -57,6 +57,14 @@ class RecordRepo {
   Future<Response> approveOrRejectReq(String requestId, bool status) async {
     final token = await SharedUtils.getToken();
     Response response = await dio.put(AppUrls.updateRequestStatus(requestId: requestId, value: status),
+        options: Options(headers: {'Authorization': 'Bearer $token'}));
+    return response;
+  }
+
+  // revoke 
+  Future<Response> revokePermission(String requestId) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.put(AppUrls.RevokePermission(requestId: requestId),
         options: Options(headers: {'Authorization': 'Bearer $token'}));
     return response;
   }

@@ -14,3 +14,8 @@ class UpdatePermissionStatus extends PrescriptionEvent {
   final bool status;
   UpdatePermissionStatus({required this.permissionId, required this.status});
 }
+
+class RevokePermission extends PrescriptionEvent {
+  final String permissionId;
+  RevokePermission({required this.permissionId});
+}

@@ -49,4 +49,14 @@ class PrescriptionRepo {
     );
     return response;
   }
+
+  // revoke 
+  Future<Response> revokePermission({required String permissionId}) async {
+    final token = await SharedUtils.getToken();
+    Response response = await dio.delete(
+      AppUrls.revokePermissionPrescription(requestId: permissionId),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response;
+  }
 }

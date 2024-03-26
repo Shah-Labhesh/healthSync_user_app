@@ -36,7 +36,7 @@ class ChatRoomTileWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            // if (image != null) 
+            if (image != null) 
             CachedNetworkImage(imageUrl: BASE_URL + image!,
               imageBuilder: (context, imageProvider) => Container(
                 height: HeightManager.h65,
@@ -61,19 +61,19 @@ class ChatRoomTileWidget extends StatelessWidget {
                   ),
                 ),
               )
+            )
+            else
+            Container(
+              height: HeightManager.h65,
+              width: WidthManager.w65,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(AppImages.defaultAvatar),
+                ),
+              ),
             ),
-            // else
-            // Container(
-            //   height: HeightManager.h65,
-            //   width: WidthManager.w65,
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(10),
-            //     image: DecorationImage(
-            //       fit: BoxFit.cover,
-            //       image: AssetImage(image),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(
               width: PaddingManager.paddingMedium,
             ),

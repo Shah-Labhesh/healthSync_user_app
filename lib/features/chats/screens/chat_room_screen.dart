@@ -99,7 +99,7 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                     else if (snapshot.hasData)
                       for (ChatRoom e in snapshot.data!)
                         ChatRoomTileWidget(
-                          image: doctor ? e.user!.avatar! : e.doctor!.avatar!,
+                          image: doctor ? e.user!.avatar : e.doctor!.avatar,
                           name:
                               doctor ? e.user!.name! : 'Dr. ${e.doctor!.name!}',
                           lastMessage: e.lastMessage ?? 'no message yet',

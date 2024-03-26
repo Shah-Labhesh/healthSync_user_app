@@ -26,3 +26,8 @@ class UpdateRequestStatus extends RecordEvent {
   final bool value;
   UpdateRequestStatus({required this.requestId, required this.value});
 }
+
+class RevokePermission extends RecordEvent {
+  final String requestId;
+  RevokePermission({required this.requestId});
+}

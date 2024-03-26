@@ -1,11 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:user_mobile_app/.env.dart';
 import 'package:user_mobile_app/Utils/firebase.dart';
-import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/theme.dart';
 import 'package:user_mobile_app/features/account/bloc/account_bloc.dart';
 import 'package:user_mobile_app/features/appointment/bloc/book_appointment_bloc/book_appointment_bloc.dart';
@@ -152,11 +150,11 @@ class _MyAppState extends State<MyApp> {
               ),
           'otp_verification': (context) => BlocProvider(
                 create: (context) => PasswordResetBloc(),
-                child: OTPVerificationScreen(),
+                child: const OTPVerificationScreen(),
               ),
           'reset_password': (context) => BlocProvider(
                 create: (context) => PasswordResetBloc(),
-                child: ResetPasswordScreen(),
+                child: const ResetPasswordScreen(),
               ),
           'user_home_screen': (context) => MultiBlocProvider(
                 providers: [
@@ -170,11 +168,11 @@ class _MyAppState extends State<MyApp> {
                     create: (context) => UserHomeBloc(),
                   ),
                 ],
-                child: HomeScreen(),
+                child: const HomeScreen(),
               ),
           'doctor_home_screen': (context) => BlocProvider(
                 create: (context) => DocHomeBloc(),
-                child: DoctorHomeScreen(),
+                child: const DoctorHomeScreen(),
               ),
           'map_screen': (context) => const MapWidget(),
           'qualification_screen': (context) => BlocProvider(
@@ -183,19 +181,19 @@ class _MyAppState extends State<MyApp> {
               ),
           'doc_profile': (context) => BlocProvider(
                 create: (context) => DocProfileBloc(),
-                child: DoctorProfileScreen(),
+                child: const DoctorProfileScreen(),
               ),
           'book_slot': (context) => BlocProvider(
                 create: (context) => BookAppointmentBloc(),
-                child: BookAppointmentScreen(),
+                child: const BookAppointmentScreen(),
               ),
           'book_summary': (context) => BlocProvider(
                 create: (context) => BookAppointmentBloc(),
-                child: AppointmentSummary(),
+                child: const AppointmentSummary(),
               ),
           'search_doctor': (context) => BlocProvider(
                 create: (context) => SearchBloc(),
-                child: SearchDoctorScreen(),
+                child: const SearchDoctorScreen(),
               ),
           'notification_screen': (context) => BlocProvider(
                 create: (context) => NotificationBloc(),
@@ -203,7 +201,7 @@ class _MyAppState extends State<MyApp> {
               ),
           'favorite_screen': (context) => BlocProvider(
                 create: (context) => FavoriteBloc(),
-                child: MyFavoriteScreen(),
+                child: const MyFavoriteScreen(),
               ),
           'chat_screen': (context) => const ChatScreen(),
           'chat_room_screen': (context) => const MyChatRoomScreen(),
@@ -217,7 +215,7 @@ class _MyAppState extends State<MyApp> {
               ),
           'medical_record_screen': (context) => BlocProvider(
                 create: (context) => RecordBloc(),
-                child: MedicalRecordScreen(),
+                child: const MedicalRecordScreen(),
               ),
           'edit_medical_record': (context) => BlocProvider(
                 create: (context) => RecordBloc(),
@@ -225,12 +223,12 @@ class _MyAppState extends State<MyApp> {
               ),
           'prescription_screen': (context) => BlocProvider(
                 create: (context) => PrescriptionBloc(),
-                child: PrescriptionScreen(),
+                child: const PrescriptionScreen(),
               ),
           'privacy_policy_screen': (context) => const PrivacyPolicyScreen(),
           'payment_screen': (context) => BlocProvider(
                 create: (context) => PaymentBloc(),
-                child: PaymentsScreen(),
+                child: const PaymentsScreen(),
               ),
           'settings_screen': (context) => MultiBlocProvider(
                 providers: [

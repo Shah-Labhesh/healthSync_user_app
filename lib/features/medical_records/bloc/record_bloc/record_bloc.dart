@@ -15,6 +15,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
     on<UpdateRecord>((event, emit) => _updateRecord(event, emit));
     on<FetchAllRequest>((event, emit) => _getRequests(event, emit));
     on<UpdateRequestStatus>((event, emit) => _updateRequest(event, emit));
+    on<RevokePermission>((event, emit) => _revokePermission(event, emit));
   }
 
   void _getrecords(FetchRecords event, Emitter<RecordState> emit) async {
@@ -279,6 +280,48 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
         }
       } else {
         emit(RequestStatusError(
+            message: 'Something went wrong. Please try again later'));
+      }
+    }
+  }
+
+  void _revokePermission(RevokePermission event, Emitter<RecordState> emit) async {
+    emit(RevokingPermission());
+    try {
+      final response = await RecordRepo().revokePermission(event.requestId);
+      if (response.statusCode == 200) {
+        emit(PermissionRevoked());
+      } else {
+        emit(PermissionRevokeError(message: 'Something went wrong'));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode;
+          if (statusCode == 522) {
+            emit(PermissionRevokeError(
+                message: 'Connection timed out. Please try again later'));
+          } else if (statusCode == 401) {
+            emit(TokenExpired());
+          } else if (statusCode! >= 500 || statusCode >= 402) {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(PermissionRevokeError(message: e.response?.data["message"][0]));
+            } else {
+              emit(PermissionRevokeError(message: e.response?.data["message"]));
+            }
+          } else {
+            if (e.response?.data["message"].runtimeType != String) {
+              emit(PermissionRevokeError(message: e.response?.data["message"][0]));
+            } else {
+              emit(PermissionRevokeError(message: e.response?.data["message"]));
+            }
+          }
+        } else {
+          emit(PermissionRevokeError(
+              message: 'Something went wrong. Please try again later'));
+        }
+      } else {
+        emit(PermissionRevokeError(
             message: 'Something went wrong. Please try again later'));
       }
     }

@@ -13,6 +13,7 @@ import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record
 import 'package:user_mobile_app/features/medical_records/bloc/record_bloc/record_state.dart';
 import 'package:user_mobile_app/features/medical_records/data/model/medical_record.dart';
 import 'package:user_mobile_app/features/medical_records/data/model/record_request.dart';
+import 'package:user_mobile_app/features/medical_records/widgets/permission_widget.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/record_tile.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/NoMedicalRecord.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -36,7 +37,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
 
   void fetchData() {
     if (Utils.checkInternetConnection(context)) {
-      context.read<RecordBloc>().add(FetchRecords());
+      switch (_selectedIndex) {
+        case 0:
+          context.read<RecordBloc>().add(FetchRecords());
+          break;
+        case 1:
+          context.read<RecordBloc>().add(FetchAllRequest());
+          break;
+      }
     }
   }
 
@@ -60,18 +68,29 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               Utils.handleTokenExpired(context);
             }
 
-            if (state is RequestStatusError){
+            if (state is RequestStatusError) {
               Utils.showSnackBar(context, state.message, isSuccess: false);
             }
 
             if (state is RequestStatusUpdated) {
-              context.read<RecordBloc>().add(FetchAllRequest());
+              fetchData();
               Utils.showSnackBar(context, state.message, isSuccess: true);
+            }
+
+            if (state is PermissionRevoked) {
+              fetchData();
+              Utils.showSnackBar(context, 'Permission revoked',
+                  isSuccess: true);
+            }
+
+            if (state is PermissionRevokeError) {
+              Utils.showSnackBar(context, state.message, isSuccess: false);
             }
           },
           builder: (context, state) {
             return LoadingOverlay(
-              isLoading: false,
+              isLoading:
+                  state is UpdatingRequestStatus || state is RevokingPermission,
               progressIndicator: LoadingAnimationWidget.threeArchedCircle(
                 color: blue900,
                 size: 60,
@@ -215,166 +234,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         )
                       else if (state.requests.isNotEmpty)
                         for (RecordRequest request in state.requests)
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: PaddingManager.p14,
-                                horizontal: PaddingManager.p18),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: PaddingManager.p12,
-                              vertical: PaddingManager.p10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: BorderRadius.circular(6),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: black.withOpacity(0.08),
-                                  spreadRadius: 1,
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Medical Record Request',
-                                  style: TextStyle(
-                                    fontSize: FontSizeManager.f16,
-                                    fontWeight: FontWeightManager.semiBold,
-                                    color: gray800,
-                                    fontFamily:
-                                        GoogleFonts.montserrat().fontFamily,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Doctor Name ${request.doctor!.name!}',
-                                  style: TextStyle(
-                                    fontSize: FontSizeManager.f14,
-                                    fontWeight: FontWeightManager.regular,
-                                    color: gray800,
-                                    fontFamily:
-                                        GoogleFonts.montserrat().fontFamily,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                if (state is UpdatingRequestStatus)
-                                  const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                else
-                                if (request.accepted == false &&
-                                    request.rejected == false)
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            if (Utils.checkInternetConnection(
-                                                context)) {
-                                              context.read<RecordBloc>().add(
-                                                  UpdateRequestStatus(
-                                                      requestId: request.id!,
-                                                      value: true));
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: PaddingManager.p10,
-                                              vertical: PaddingManager.p12,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: blue900,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              border: Border.all(
-                                                color: blue900,
-                                              ),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                'Accept',
-                                                style: TextStyle(
-                                                  fontSize: FontSizeManager.f14,
-                                                  fontWeight: FontWeightManager
-                                                      .semiBold,
-                                                  color: white,
-                                                  fontFamily:
-                                                      GoogleFonts.montserrat()
-                                                          .fontFamily,
-                                                  letterSpacing: 0.5,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            if (Utils.checkInternetConnection(
-                                                context)) {
-                                              context.read<RecordBloc>().add(
-                                                  UpdateRequestStatus(
-                                                      requestId: request.id!,
-                                                      value: false));
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: PaddingManager.p10,
-                                              vertical: PaddingManager.p12,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: white,
-                                              border: Border.all(
-                                                color: red600,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                'Reject',
-                                                style: TextStyle(
-                                                  fontSize: FontSizeManager.f14,
-                                                  fontWeight: FontWeightManager
-                                                      .semiBold,
-                                                  color: red600,
-                                                  fontFamily:
-                                                      GoogleFonts.montserrat()
-                                                          .fontFamily,
-                                                  letterSpacing: 0.5,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  Text(
-                                    "Status ${request.accepted! ? 'Accepted' : 'Rejected'}",
-                                    style: TextStyle(
-                                      fontSize: FontSizeManager.f14,
-                                      fontWeight: FontWeightManager.semiBold,
-                                      color:
-                                          request.accepted! ? green900 : red600,
-                                      fontFamily:
-                                          GoogleFonts.montserrat().fontFamily,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          )
+                          RecordRequestWidget(request: request)
                     ],
                   ],
                 ]),

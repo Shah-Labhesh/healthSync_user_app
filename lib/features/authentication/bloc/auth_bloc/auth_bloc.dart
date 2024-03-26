@@ -75,10 +75,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(AuthLoading());
     Response response;
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    print(googleUser);
     if (googleUser == null) {
       emit(LoginFailed(message: "Google Sign In Failed"));
       return;
     }
+
     try {
       response = await AuthRepo()
           .googleLogin(name: googleUser.displayName!, email: googleUser.email);

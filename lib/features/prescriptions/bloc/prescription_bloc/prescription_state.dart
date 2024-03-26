@@ -33,7 +33,6 @@ class PrescriptionUploadError extends PrescriptionState {
   PrescriptionUploadError({required this.message});
 }
 
-
 class FetchingRequest extends PrescriptionState {}
 
 class RequestFetched extends PrescriptionState {
@@ -68,5 +67,14 @@ class PermissionStatusUpdateError extends PrescriptionState {
   PermissionStatusUpdateError({required this.message});
 }
 
+class RevokingPermission extends PrescriptionState {}
+
+class PermissionRevoked extends PrescriptionState {}
+
+class PermissionRevokeError extends PrescriptionState {
+  final String message;
+
+  PermissionRevokeError({required this.message});
+}
 
 class TokenExpired extends PrescriptionState {}
