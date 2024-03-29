@@ -20,6 +20,7 @@ class ChatRoomStream {
         _chatRoomFetcher.sink.addError(response.data['message']);
       }
     } catch (e) {
+      print(e);
       _chatRoomFetcher.sink
           .addError('Something went wrong. Please try again later');
     }

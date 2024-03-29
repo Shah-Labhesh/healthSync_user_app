@@ -320,7 +320,7 @@ class AppointmentTile extends StatelessWidget {
                 ),
               const SizedBox(width: HeightManager.h6),
               if (checkTime(appointment.slot!.slotDateTime!) &&
-                  appointment.payment == null)
+                  appointment.paymentStatus == 'PENDING' && !doctor)
                 Expanded(
                   child: GestureDetector(
                     onTap: onCancel,

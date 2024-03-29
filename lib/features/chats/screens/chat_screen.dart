@@ -50,37 +50,39 @@ StompClient stompClient = StompClient(
 
 void onConnect(StompFrame frame) {
   try {
-    stompClient.subscribe(
-      destination: '/topic/$destination',
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Connection': 'Upgrade',
-        'Upgrade': 'websocket'
-      },
-      callback: (frame) {
-        Map<String, dynamic> result = json.decode(frame.body as String);
-        List<ChatMessage> message = (result['body'] as List<dynamic>)
-            .map((e) => ChatMessage.fromMap(e))
-            .toList();
-        chatStream.sink.add(message);
-      },
-    );
-
-    Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!stompClient.isActive) {
-        return;
-      }
-      stompClient.send(
-        destination: '/app/get-messages',
-        body: json.encode({'token': token, 'roomId': chatRoomId}),
+    if (!stompClient.isActive) {
+      return;
+    }
+    destination = chatRoomId;
+      stompClient.subscribe(
+        destination: '/topic/$destination',
         headers: {
           'Authorization': 'Bearer $token',
           'Connection': 'Upgrade',
-          'Upgrade': 'websocket',
-          'content-type': 'application/json',
+          'Upgrade': 'websocket'
         },
+        callback: (frame) {
+          List<ChatMessage> message = (json.decode(frame.body as String) as List<dynamic>)
+              .map((e) => ChatMessage.fromMap(e))
+              .toList();
+          chatStream.sink.add(message);
+        },
+
       );
-    });
+
+    
+    
+    stompClient.send(
+      destination: '/app/get-messages',
+      body: json.encode({'token': token, 'roomId': chatRoomId}),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Connection': 'Upgrade',
+        'Upgrade': 'websocket',
+        'content-type': 'application/json',
+      },
+    );
+    destination = chatRoomId;
   } catch (e) {
     debugPrint('Error: $e');
   }
@@ -128,12 +130,11 @@ class _ChatScreenState extends State<ChatScreen> {
       currentUser = args['user'];
     }
     return Scaffold(
-      appBar: const  PreferredSize(
+      appBar: const PreferredSize(
         preferredSize: Size.fromHeight(HeightManager.h73),
         child: AppBarCustomWithSceenTitle(
           title: 'Chat',
           isBackButton: true,
-          
         ),
       ),
       body: StreamBuilder<List<ChatMessage>>(

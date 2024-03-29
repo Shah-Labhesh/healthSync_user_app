@@ -49,7 +49,7 @@ class RecordRequestWidget extends StatelessWidget {
                   CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Medical Record Request',
+                  'Medical Record Permission',
                   style: TextStyle(
                     fontSize: FontSizeManager.f16,
                     fontWeight:
@@ -62,7 +62,7 @@ class RecordRequestWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Doctor Name ${request.doctor!.name!}',
+                  'Permission to : Dr. ${request.doctor!.name!}',
                   style: TextStyle(
                     fontSize: FontSizeManager.f14,
                     fontWeight: FontWeightManager.regular,
@@ -186,7 +186,7 @@ class RecordRequestWidget extends StatelessWidget {
                   )
                 else
                   Text(
-                    "Status ${request.accepted! ? 'Accepted' : 'Rejected'}",
+                    "Status : ${request.expired! ? 'Expired' :  request.accepted! ? 'Accepted' : 'Rejected'}",
                     style: TextStyle(
                       fontSize: FontSizeManager.f14,
                       fontWeight:
@@ -202,7 +202,7 @@ class RecordRequestWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (request.accepted == true) ...[
+          if (request.accepted == true && !request.expired!) ...[
             const SizedBox(width: 10),
             GestureDetector(
               onTap: () {
