@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:toastification/toastification.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
+import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/network/bloc/network_bloc.dart';
 
@@ -247,6 +249,28 @@ class Utils {
           ),
         ),
       ],
+    );
+  }
+
+  static Widget ImageWidget(String imageUrl,
+      {  double? height,  double? width}) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      placeholder: (context, url) => Image.asset(
+        AppImages.defaultAvatar,
+        height: height,
+        width: width,
+        fit: BoxFit.cover,
+      ),
+      errorWidget: (context, url, error) => Image.asset(
+        AppImages.defaultAvatar,
+        height: height,
+        width: width,
+        fit: BoxFit.cover,
+      ),
+      height: height,
+      width: width,
+      fit: BoxFit.cover,
     );
   }
 }

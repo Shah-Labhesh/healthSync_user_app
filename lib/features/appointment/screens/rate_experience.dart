@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -42,7 +41,6 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
     return Scaffold(
       body: BlocConsumer<RateExperienceBloc, RateExperienceState>(
         listener: (context, state) {
-          // TODO: implement listener
           if (state is TokenExpired) {
             Utils.handleTokenExpired(context);
           }
@@ -87,23 +85,10 @@ class _RateExperienceScreenState extends State<RateExperienceScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: user!.avatar != null
-                          ? CachedNetworkImage(
-                              imageUrl: BASE_URL + user!.avatar!,
-                              fit: BoxFit.cover,
+                          ? Utils.ImageWidget(
+                              BASE_URL + user!.avatar!,
                               height: HeightManager.h140,
                               width: WidthManager.w140,
-                              placeholder: (context, url) => Image.asset(
-                                AppImages.defaultAvatar,
-                                height: HeightManager.h140,
-                                width: WidthManager.w140,
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                AppImages.defaultAvatar,
-                                height: HeightManager.h140,
-                                width: WidthManager.w140,
-                                fit: BoxFit.cover,
-                              ),
                             )
                           : Image.asset(
                               AppImages.defaultAvatar,

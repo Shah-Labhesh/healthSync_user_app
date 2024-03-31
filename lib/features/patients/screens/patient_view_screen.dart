@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -125,29 +124,15 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: patient!.avatar != null
-                    ? CachedNetworkImage(
-                        imageUrl: BASE_URL + patient!.avatar!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) => Image.asset(
-                          AppImages.defaultAvatar,
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        progressIndicatorBuilder: (context, url, progress) {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: progress.progress,
-                            ),
-                          );
-                        },
+                    ? Utils.ImageWidget(
+                        BASE_URL + patient!.avatar!,
+                        height: HeightManager.h100,
+                        width: WidthManager.w100,
                       )
                     : Image.asset(
                         AppImages.defaultAvatar,
-                        height: 100,
-                        width: 100,
+                        height: HeightManager.h100,
+                        width: WidthManager.w100,
                         fit: BoxFit.cover,
                       ),
               ),

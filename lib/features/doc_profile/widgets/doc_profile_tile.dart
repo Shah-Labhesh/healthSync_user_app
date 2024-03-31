@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
@@ -35,23 +36,9 @@ class DocProfileTile extends StatelessWidget {
             height: HeightManager.h170,
             width: WidthManager.w160,
             child: doctor.avatar != null
-                ? CachedNetworkImage(
-                    imageUrl: BASE_URL + doctor.avatar!,
-                    progressIndicatorBuilder: (context, url, progress) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: progress.progress,
-                        ),
-                      );
-                    },
-                    errorWidget: (context, url, error) => const Center(
-                      child: Icon(
-                        Icons.error,
-                        color: red600,
-                      ),
-                    ),
-                    fit: BoxFit.cover,
-                  )
+                ? Utils.ImageWidget(
+                    BASE_URL + doctor.avatar!,
+                    )
                 : Image.asset(
                     AppImages.defaultAvatar,
                     fit: BoxFit.cover,

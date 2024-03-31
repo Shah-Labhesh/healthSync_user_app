@@ -41,14 +41,6 @@ class _HomeContentState extends State<HomeContent> {
   int count = 0;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<UserHomeBloc>().add(FetchUserHomeEvent());
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     TextTheme textTheme = theme.textTheme;
@@ -64,6 +56,19 @@ class _HomeContentState extends State<HomeContent> {
               element.favorite = !element.favorite!;
             }
           }
+           context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+        }
+        if (state is UserHomeLoaded) {
+          name = state.user.name!;
+          doctors = state.doctors;
+          appointment = state.appointment;
+          specialities = state.specialities;
+          if (isViewAll) {
+            count = doctors.length;
+          } else {
+            count = doctors.length > 5 ? 5 : doctors.length;
+          }
+          setState(() {});
         }
 
         if (state is ToggleFavouriteFailed) {

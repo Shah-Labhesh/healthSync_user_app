@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
@@ -37,31 +38,11 @@ class ChatRoomTileWidget extends StatelessWidget {
         child: Row(
           children: [
             if (image != null) 
-            CachedNetworkImage(imageUrl: BASE_URL + image!,
-              imageBuilder: (context, imageProvider) => Container(
-                height: HeightManager.h65,
-                width: WidthManager.w65,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: imageProvider,
-                  ),
-                ),
-              ),
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Container(
-                height: HeightManager.h65,
-                width: WidthManager.w65,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage(AppImages.defaultAvatar),
-                  ),
-                ),
-              )
-            )
+           Utils.ImageWidget(
+              BASE_URL + image!,
+              height: HeightManager.h65,
+              width: WidthManager.w65,
+             )
             else
             Container(
               height: HeightManager.h65,

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -275,7 +274,7 @@ class PrescriptionPermissionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Prescription Request',
+                  'Prescription Permission',
                   style: TextStyle(
                     fontSize: FontSizeManager.f16,
                     fontWeight: FontWeightManager.semiBold,
@@ -286,7 +285,7 @@ class PrescriptionPermissionWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Doctor Name ${permission.doctor!.name!}',
+                  'Permission to : ${permission.doctor!.name!}',
                   style: TextStyle(
                     fontSize: FontSizeManager.f14,
                     fontWeight: FontWeightManager.regular,
@@ -377,7 +376,7 @@ class PrescriptionPermissionWidget extends StatelessWidget {
                   ])
                 else
                   Text(
-                    "Status ${permission.accepted! ? 'Accepted' : 'Rejected'}",
+                    "Status ${ permission.expired! ? 'Expired' :  permission.accepted! ? 'Accepted' : 'Rejected'}",
                     style: TextStyle(
                       fontSize: FontSizeManager.f14,
                       fontWeight: FontWeightManager.semiBold,
@@ -389,7 +388,7 @@ class PrescriptionPermissionWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (permission.accepted == true) ...[
+          if (permission.accepted == true && permission.expired == false) ...[
             const SizedBox(width: 10),
             GestureDetector(
               onTap: () {

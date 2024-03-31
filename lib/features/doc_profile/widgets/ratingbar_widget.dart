@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
@@ -26,7 +27,9 @@ class RatingBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: PaddingManager.paddingMedium2, vertical: PaddingManager.p10),
+      padding: const EdgeInsets.symmetric(
+          horizontal: PaddingManager.paddingMedium2,
+          vertical: PaddingManager.p10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -36,24 +39,10 @@ class RatingBarWidget extends StatelessWidget {
               ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: userAvatar != null
-                      ? CachedNetworkImage(
+                      ? Utils.ImageWidget(
+                          BASE_URL + userAvatar!,
                           height: HeightManager.h40,
                           width: HeightManager.h40,
-                          imageUrl: BASE_URL + userAvatar!,
-                          progressIndicatorBuilder: (context, url, progress) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: progress.progress,
-                              ),
-                            );
-                          },
-                          errorWidget: (context, url, error) => const Center(
-                            child: Icon(
-                              Icons.error,
-                              color: red600,
-                            ),
-                          ),
-                          fit: BoxFit.cover,
                         )
                       : Image.asset(
                           height: HeightManager.h40,
@@ -93,8 +82,7 @@ class RatingBarWidget extends StatelessWidget {
               ),
             ),
             itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            onRatingUpdate: (rating) {
-            },
+            onRatingUpdate: (rating) {},
           ),
           const SizedBox(height: HeightManager.h10),
           if (review != null)

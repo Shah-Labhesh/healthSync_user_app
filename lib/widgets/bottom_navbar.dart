@@ -24,7 +24,6 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
   late int selectedIndex;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedIndex = widget.index;
   }

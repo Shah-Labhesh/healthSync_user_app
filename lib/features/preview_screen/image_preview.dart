@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -23,12 +24,9 @@ class ImagePreviewScreen extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: CachedNetworkImage(
-          imageUrl: BASE_URL + imageUrl,
-          placeholder: (context, url) => const CircularProgressIndicator(),
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-          fit: BoxFit.cover,
-        ),
+        child: Utils.ImageWidget(
+          BASE_URL + imageUrl,
+        )
       ),
     );
   }

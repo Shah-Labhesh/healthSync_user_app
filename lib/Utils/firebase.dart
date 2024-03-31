@@ -117,7 +117,8 @@ class FirebaseService {
       priority: Priority.high,
       showWhen: false,
     );
-    const NotificationDetails platformChannelSpecifics =
+   try {
+      const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
@@ -126,5 +127,8 @@ class FirebaseService {
       platformChannelSpecifics,
       payload: payload,
     );
+   } catch (e) {
+     print(e);
+   }
   }
 }

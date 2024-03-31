@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_icon.dart';
@@ -56,17 +57,10 @@ class AppointmentWidget extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: appointment.doctor!.avatar != null
-                    ? CachedNetworkImage(
+                    ? Utils.ImageWidget(
+                        BASE_URL + appointment.doctor!.avatar!,
                         height: HeightManager.h65,
                         width: WidthManager.w65,
-                        imageUrl: BASE_URL + appointment.doctor!.avatar!,
-                        placeholder: (context, url) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(Icons.error),
-                        ),
-                        fit: BoxFit.cover,
                       )
                     : Image.asset(
                         AppImages.defaultAvatar,

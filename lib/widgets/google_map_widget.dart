@@ -64,7 +64,6 @@ class _MapWidgetState extends State<MapWidget> {
       newLatlng = LatLng(locations[0].latitude, locations[0].longitude);
       _markers.clear();
     } on Exception catch (e) {
-      // TODO
       print(e);
     }
   }
@@ -79,7 +78,6 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCurrentLocation();
   }

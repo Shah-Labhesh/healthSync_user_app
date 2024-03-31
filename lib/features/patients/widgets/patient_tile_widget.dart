@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
@@ -45,24 +46,10 @@ class PatientTileWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(100),
               child: patient.avatar != null
-                  ? CachedNetworkImage(
-                      imageUrl: BASE_URL + patient.avatar!,
-                      progressIndicatorBuilder: (context, url, progress) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: progress.progress,
-                          ),
-                        );
-                      },
-                      errorWidget: (context, url, error) => const Center(
-                        child: Icon(
-                          Icons.error,
-                        ),
-                      ),
-                      fit: BoxFit.cover,
+                  ? Utils.ImageWidget(
+                      BASE_URL + patient.avatar!,
                       height: HeightManager.h45,
-                      width: WidthManager.w45,
-                    )
+                      width: WidthManager.w45,)
                   : Image.asset(
                       AppImages.defaultAvatar,
                       fit: BoxFit.cover,

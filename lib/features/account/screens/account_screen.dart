@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -109,18 +108,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: user!.avatar != null
-                        ? CachedNetworkImage(
-                            imageUrl: BASE_URL + user!.avatar!,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) => const Center(
-                              child: Icon(Icons.error),
-                            ),
+                        ? Utils.ImageWidget(
+                            BASE_URL + user!.avatar!,
                             height: HeightManager.h100,
                             width: WidthManager.w100,
-                            fit: BoxFit.cover,
                           )
                         : Image.asset(
                             AppImages.defaultAvatar,

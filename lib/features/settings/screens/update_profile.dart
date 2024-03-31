@@ -196,22 +196,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(100),
                                       ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: BASE_URL + args.avatar!,
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            const Center(
-                                          child: Icon(Icons.error),
-                                        ),
+                                      child: Utils.ImageWidget(
+                                        BASE_URL + args.avatar!,
                                         height: HeightManager.h120,
                                         width: WidthManager.w120,
-                                        fit: BoxFit.cover,
                                       ),
-                                    )
+                                  )
                                   : Container(
                                       height: HeightManager.h120,
                                       width: WidthManager.w120,

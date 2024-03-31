@@ -7,6 +7,7 @@ class PrescriptionPermission {
     User? user;
     bool? accepted;
     bool? rejected;
+    bool? expired;
 
     PrescriptionPermission({
         this.id,
@@ -14,6 +15,7 @@ class PrescriptionPermission {
         this.user,
         this.accepted,
         this.rejected,
+        this.expired,
     });
 
 
@@ -24,6 +26,7 @@ class PrescriptionPermission {
       user: map['user'] != null ? User.fromMap(map['user'] as Map<String,dynamic>) : null,
       accepted: map['accepted'] != null ? map['accepted'] as bool : null,
       rejected: map['rejected'] != null ? map['rejected'] as bool : null,
+      expired: map['expired'] != null ? map['expired'] as bool : null,
     );
   }
 

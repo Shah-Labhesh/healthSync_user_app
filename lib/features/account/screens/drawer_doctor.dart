@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,25 +67,10 @@ class DoctorDrawer extends StatelessWidget {
                             Radius.circular(50),
                           ),
                           child: doctor.avatar != null
-                              ? CachedNetworkImage(
-                                  imageUrl: BASE_URL + doctor.avatar!,
-                                  progressIndicatorBuilder:
-                                      (context, url, progress) {
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: progress.progress,
-                                      ),
-                                    );
-                                  },
-                                  errorWidget: (context, url, error) =>
-                                      const Center(
-                                    child: Icon(
-                                      Icons.error,
-                                    ),
-                                  ),
+                              ? Utils.ImageWidget(
+                                  BASE_URL + doctor.avatar!,
                                   height: HeightManager.h50,
                                   width: WidthManager.w50,
-                                  fit: BoxFit.cover,
                                 )
                               : Image.asset(
                                   AppImages.defaultAvatar,
@@ -192,7 +176,8 @@ class DoctorDrawer extends StatelessWidget {
                       color: gray50,
                       gap: HeightManager.h20,
                       onPressed: () {
-                        Navigator.pushNamed(context, 'payment_screen', arguments: doctor.khaltiId);
+                        Navigator.pushNamed(context, 'payment_screen',
+                            arguments: doctor.khaltiId);
                       },
                     ),
                     TileBarWidget(

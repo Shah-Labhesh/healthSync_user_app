@@ -25,7 +25,9 @@ class ChatScreen extends StatefulWidget {
 String token = '';
 String chatRoomId = '';
 String destination = 'get-messages';
-StreamController<List<ChatMessage>> chatStream = StreamController();
+StreamController<Map<String, List<ChatMessage>>> chatStream = StreamController();
+Map<String, List<ChatMessage>> messageMap = {};
+List<String> dateList = [];
 
 StompClient stompClient = StompClient(
   config: StompConfig(
@@ -62,16 +64,15 @@ void onConnect(StompFrame frame) {
           'Upgrade': 'websocket'
         },
         callback: (frame) {
-          List<ChatMessage> message = (json.decode(frame.body as String) as List<dynamic>)
+          List<ChatMessage> messages = (json.decode(frame.body as String) as List<dynamic>)
               .map((e) => ChatMessage.fromMap(e))
               .toList();
-          chatStream.sink.add(message);
+              mapMessageAccordingDate(messages);
+          chatStream.sink.add(messageMap);
         },
 
       );
 
-    
-    
     stompClient.send(
       destination: '/app/get-messages',
       body: json.encode({'token': token, 'roomId': chatRoomId}),
@@ -87,6 +88,18 @@ void onConnect(StompFrame frame) {
     debugPrint('Error: $e');
   }
 }
+
+mapMessageAccordingDate(List<ChatMessage> messages) {
+    for (ChatMessage message in messages) {
+      String date = message.createdAt!.splitDate();
+      if (messageMap.containsKey(date)) {
+        messageMap[date]!.add(message);
+      } else {
+        dateList.add(date);
+        messageMap[date] = [message];
+      }
+    }
+  }
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController controller = TextEditingController();
@@ -137,7 +150,7 @@ class _ChatScreenState extends State<ChatScreen> {
           isBackButton: true,
         ),
       ),
-      body: StreamBuilder<List<ChatMessage>>(
+      body: StreamBuilder<Map<String, List<ChatMessage>>>(
           stream: chatStream.stream,
           builder: (context, snapshot) {
             return SingleChildScrollView(
@@ -159,12 +172,49 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Text('No messages'),
                     )
                   else if (snapshot.hasData) ...[
-                    for (ChatMessage chat in snapshot.data!) ...[
+                    for (String date in dateList) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: PaddingManager.paddingMedium,
+                          vertical: PaddingManager.paddingSmall,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: gray200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: PaddingManager.p10,
+                              horizontal: PaddingManager.paddingMedium,
+                            ),
+                            child: Text(
+                              date == DateTime.now().toString().splitDate()
+                            ? 'Today'
+                            : date ==
+                                    DateTime.now()
+                                        .subtract(const Duration(days: 1))
+                                        .toString()
+                                        .splitDate()
+                                ? 'Yesterday'
+                                : date,
+                              style: TextStyle(
+                                color: gray800,
+                                fontSize: FontSizeManager.f12,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      for (ChatMessage chat in snapshot.data![date]!) ...[
                       ChatBubble(
                         isMe: chat.senderId == currentUser,
                         text: chat.message ?? '',
                         time: chat.createdAt!.splitTime(),
                       ),
+                    ],
                     ],
                   ],
                 ],

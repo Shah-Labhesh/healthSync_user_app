@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -325,10 +324,9 @@ class _AuthQualificationScreenState extends State<AuthQualificationScreen> {
                                     _certificate!,
                                     fit: BoxFit.cover,
                                   )
-                                : CachedNetworkImage(
-                                    imageUrl: BASE_URL +
+                                : Utils.ImageWidget(
+                                     BASE_URL +
                                         args['qualification']['image'],
-                                    fit: BoxFit.cover,
                                   )),
                         const SizedBox(
                           height: HeightManager.h20,

@@ -19,8 +19,8 @@ abstract class AppEnvironment{
                 longitude = 87.28337;
                 break;
             case Environment.dev:
-                androidBaseUrl = "http://192.168.1.66:8086/api/v1";
-                shareUrl = "http://192.168.1.66:8086";
+                androidBaseUrl = "https://fyp-health-sync.koyeb.app/api/v1";
+                shareUrl = "https://fyp-health-sync.koyeb.app";
                 mapApiKey = "AIzaSyBkVhR0qo33PVwEaedI6y504SzyzJf2l9U";
                 latitude = 26.4831;
                 longitude = 87.28337;

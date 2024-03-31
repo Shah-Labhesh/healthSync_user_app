@@ -76,16 +76,8 @@ class _DoctorTileState extends State<DoctorTile> {
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: widget.doctor.avatar != null
-                        ? CachedNetworkImage(
-                            imageUrl: BASE_URL + widget.doctor.avatar!,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) => const Center(
-                              child: Icon(Icons.error),
-                            ),
-                            fit: BoxFit.cover,
+                        ? Utils.ImageWidget(
+                            BASE_URL + widget.doctor.avatar!,
                           )
                         : Image.asset(
                             AppImages.defaultAvatar,

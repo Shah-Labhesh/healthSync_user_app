@@ -59,66 +59,79 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
               ),
             )
           : null,
-      body: StreamBuilder<List<ChatRoom>>(
-          stream: stream,
-          builder: (context, snapshot) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: PaddingManager.paddingMedium2,
-                vertical: PaddingManager.paddingSmall,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    if (!doctor) ...[
-                      BlocProvider(
-                        create: (context) => NotificationBloc(),
-                        child: const CustomAppBar(
-                          title: 'Chats',
-                          isBackButton: false,
-                          notification: true,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: HeightManager.h20,
-                      ),
-                    ],
-                    if (snapshot.connectionState == ConnectionState.waiting)
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    else if (snapshot.hasError)
-                      const Center(
-                        child: Text(
-                            'Something went wrong. Please try again later'),
-                      )
-                    else if (snapshot.data == null || snapshot.data!.isEmpty)
-                      const Center(
-                        child: Text('No chat rooms available'),
-                      )
-                    else if (snapshot.hasData)
-                      for (ChatRoom e in snapshot.data!)
-                        ChatRoomTileWidget(
-                          image: doctor ? e.user!.avatar : e.doctor!.avatar,
-                          name:
-                              doctor ? e.user!.name! : 'Dr. ${e.doctor!.name!}',
-                          lastMessage: e.lastMessage ?? 'no message yet',
-                          time: e.lastMessageAt != null
-                              ? e.lastMessageAt!.chatTimeAgo()
-                              : '----',
-                          onTap: () {
-                            Navigator.pushNamed(context, 'chat_screen',
-                                arguments: {
-                                  'roomId': e.id,
-                                  'user': doctor ? e.doctor!.id! : e.user!.id!,
-                                });
-                          },
-                        ),
-                  ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+          chatRoomStream.fetchChatRoom();
+        },
+        child: StreamBuilder<List<ChatRoom>>(
+            stream: stream,
+            builder: (context, snapshot) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: PaddingManager.paddingMedium2,
+                  vertical: PaddingManager.paddingSmall,
                 ),
-              ),
-            );
-          }),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (!doctor) ...[
+                        BlocProvider(
+                          create: (context) => NotificationBloc(),
+                          child: const CustomAppBar(
+                            title: 'Chats',
+                            isBackButton: false,
+                            notification: true,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: HeightManager.h20,
+                        ),
+                      ],
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      else if (snapshot.hasError)
+                        GestureDetector(
+                          onTap: () {
+                            chatRoomStream.fetchChatRoom();
+                          },
+                          child: const Center(
+                            child: Text(
+                                'Something went wrong. Please try again later'),
+                          ),
+                        )
+                      else if (snapshot.data == null || snapshot.data!.isEmpty)
+                        const Center(
+                          child: Text('No chat rooms available'),
+                        )
+                      else if (snapshot.hasData)
+                        for (ChatRoom e in snapshot.data!)
+                          ChatRoomTileWidget(
+                            image: doctor ? e.user!.avatar : e.doctor!.avatar,
+                            name: doctor
+                                ? e.user!.name!
+                                : 'Dr. ${e.doctor!.name!}',
+                            lastMessage: e.lastMessage ?? 'no message yet',
+                            time: e.lastMessageAt != null
+                                ? e.lastMessageAt!.chatTimeAgo()
+                                : '----',
+                            onTap: () {
+                              Navigator.pushNamed(context, 'chat_screen',
+                                  arguments: {
+                                    'roomId': e.id,
+                                    'user':
+                                        doctor ? e.doctor!.id! : e.user!.id!,
+                                  });
+                            },
+                          ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+      ),
     );
   }
 }

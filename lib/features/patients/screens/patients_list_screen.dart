@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
@@ -31,7 +31,6 @@ class _MyPatientsScreenState extends State<MyPatientsScreen> {
         ),
         body: BlocConsumer<MyPatientBloc, PatientState>(
           listener: (context, state) {
-            // TODO: implement listener
             if (state is TokenExpired) {
               Utils.handleTokenExpired(context);
             }

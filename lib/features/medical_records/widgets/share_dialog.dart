@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
 import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/app_urls.dart';
@@ -38,21 +38,10 @@ class ShareDialog extends StatelessWidget {
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: doctor.avatar != null
-                  ? CachedNetworkImage(
-                      imageUrl: BASE_URL + doctor.avatar!,
-                      progressIndicatorBuilder: (context, url, progress) {
-                        return const CircularProgressIndicator();
-                      },
-                      errorWidget: (context, url, error) {
-                        return const Icon(
-                          Icons.error,
-                          color: red600,
-                          size: 22,
-                        );
-                      },
-                      width: WidthManager.w40,
+                  ? Utils.ImageWidget(
+                      BASE_URL + doctor.avatar!,
                       height: HeightManager.h40,
-                      fit: BoxFit.cover,
+                      width: WidthManager.w40,
                     )
                   : Image.asset(
                       AppImages.defaultAvatar,

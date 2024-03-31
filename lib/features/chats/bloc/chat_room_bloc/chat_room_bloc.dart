@@ -12,15 +12,20 @@ class ChatRoomStream {
     try {
       final response = await ChatRepo().getChatRooms();
       if (response.statusCode == 200) {
+        if (_chatRoomFetcher.isClosed) return;
         _chatRoomFetcher.sink.add((response.data as List<dynamic>)
             .map((e) => ChatRoom.fromMap(e as Map<String, dynamic>))
             .toList());
         fetchChatRoom();
       } else {
+        if (_chatRoomFetcher.isClosed) return;
+
         _chatRoomFetcher.sink.addError(response.data['message']);
       }
     } catch (e) {
       print(e);
+      if (_chatRoomFetcher.isClosed) return;
+
       _chatRoomFetcher.sink
           .addError('Something went wrong. Please try again later');
     }

@@ -114,25 +114,10 @@ class UserAppointmentBox extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child: appointment.user!.avatar != null
-                          ? CachedNetworkImage(
-                              imageUrl: BASE_URL + appointment.user!.avatar!,
-                              progressIndicatorBuilder:
-                                  (context, url, progress) {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.progress,
-                                  ),
-                                );
-                              },
-                              errorWidget: (context, url, error) =>
-                                  const Center(
-                                child: Icon(
-                                  Icons.error,
-                                ),
-                              ),
+                          ? Utils.ImageWidget(
+                              BASE_URL + appointment.user!.avatar!,
                               height: HeightManager.h40,
                               width: WidthManager.w40,
-                              fit: BoxFit.cover,
                             )
                           : Image.asset(
                               AppImages.defaultAvatar,

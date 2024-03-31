@@ -61,24 +61,10 @@ class AppointmentTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: appointment.user!.avatar != null
-                      ? CachedNetworkImage(
-                          imageUrl: BASE_URL + appointment.user!.avatar!,
+                      ? Utils.ImageWidget(
+                          BASE_URL + appointment.user!.avatar!,
                           height: HeightManager.h80,
                           width: WidthManager.w80,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) {
-                            return const Icon(
-                              Icons.error,
-                              color: red600,
-                              size: 22,
-                            );
-                          },
-                          progressIndicatorBuilder: (context, url, progress) {
-                            return CircularProgressIndicator(
-                              value: progress.progress,
-                              color: red600,
-                            );
-                          },
                         )
                       : Image.asset(
                           AppImages.defaultAvatar,
@@ -91,24 +77,10 @@ class AppointmentTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: appointment.doctor!.avatar != null
-                      ? CachedNetworkImage(
-                          imageUrl: BASE_URL + appointment.doctor!.avatar!,
+                      ? Utils.ImageWidget(
+                          BASE_URL + appointment.doctor!.avatar!,
                           height: HeightManager.h80,
                           width: WidthManager.w80,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) {
-                            return const Icon(
-                              Icons.error,
-                              color: red600,
-                              size: 22,
-                            );
-                          },
-                          progressIndicatorBuilder: (context, url, progress) {
-                            return CircularProgressIndicator(
-                              value: progress.progress,
-                              color: red600,
-                            );
-                          },
                         )
                       : Image.asset(
                           AppImages.defaultAvatar,
@@ -320,7 +292,8 @@ class AppointmentTile extends StatelessWidget {
                 ),
               const SizedBox(width: HeightManager.h6),
               if (checkTime(appointment.slot!.slotDateTime!) &&
-                  appointment.paymentStatus == 'PENDING' && !doctor)
+                  appointment.paymentStatus == 'PENDING' &&
+                  !doctor)
                 Expanded(
                   child: GestureDetector(
                     onTap: onCancel,

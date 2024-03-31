@@ -27,7 +27,6 @@ class CustomAppBar extends StatefulWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<NotificationBloc>().add(FetchUnreadNotificationCount());
   }

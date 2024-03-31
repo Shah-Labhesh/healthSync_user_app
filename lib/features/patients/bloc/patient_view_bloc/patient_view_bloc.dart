@@ -119,7 +119,7 @@ class PatientViewBloc extends Bloc<PatientViewEvent, PatientViewState> {
     try {
       Response response = await PatientRepo().requestPermission(userId: event.patientId);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         emit(PermissionRequested(
           message: response.data["message"],
         ));
@@ -165,7 +165,7 @@ class PatientViewBloc extends Bloc<PatientViewEvent, PatientViewState> {
     try {
       Response response = await PatientRepo().requestRecordPermission(userId: event.patientId);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         emit(RecordPermissionRequested(
           message: response.data["message"],
         ));
