@@ -1,18 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
+import 'Package:http_parser/http_parser.dart';
+import 'package:user_mobile_app/Utils/image_picker.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
+import 'package:user_mobile_app/constants/app_urls.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/chats/data/model/chat_mesaage.dart';
 import 'package:user_mobile_app/features/chats/widgets/chat_bubble.dart';
+import 'package:user_mobile_app/main.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -25,13 +33,14 @@ class ChatScreen extends StatefulWidget {
 String token = '';
 String chatRoomId = '';
 String destination = 'get-messages';
-StreamController<Map<String, List<ChatMessage>>> chatStream = StreamController();
-Map<String, List<ChatMessage>> messageMap = {};
+StreamController<Map<String, List<ChatMessage>>> chatStream =
+    StreamController();
+
 List<String> dateList = [];
 
 StompClient stompClient = StompClient(
   config: StompConfig(
-    url: 'ws://10.0.2.2:8086/ws',
+    url: SOCKET_URL,
     onConnect: onConnect,
     beforeConnect: () async {},
     onDisconnect: (p0) {},
@@ -56,22 +65,24 @@ void onConnect(StompFrame frame) {
       return;
     }
     destination = chatRoomId;
-      stompClient.subscribe(
-        destination: '/topic/$destination',
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Connection': 'Upgrade',
-          'Upgrade': 'websocket'
-        },
-        callback: (frame) {
-          List<ChatMessage> messages = (json.decode(frame.body as String) as List<dynamic>)
-              .map((e) => ChatMessage.fromMap(e))
-              .toList();
-              mapMessageAccordingDate(messages);
-          chatStream.sink.add(messageMap);
-        },
-
-      );
+    stompClient.subscribe(
+      destination: '/topic/$destination',
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Connection': 'Upgrade',
+        'Upgrade': 'websocket'
+      },
+      callback: (frame) {
+        if (chatStream.isClosed) return;
+        List<ChatMessage> messages =
+            (json.decode(frame.body as String) as List<dynamic>)
+                .map((e) => ChatMessage.fromMap(e))
+                .toList();
+        dateList.clear();
+        final messageMap = mapMessageAccordingDate(messages);
+        chatStream.sink.add(messageMap);
+      },
+    );
 
     stompClient.send(
       destination: '/app/get-messages',
@@ -90,16 +101,18 @@ void onConnect(StompFrame frame) {
 }
 
 mapMessageAccordingDate(List<ChatMessage> messages) {
-    for (ChatMessage message in messages) {
-      String date = message.createdAt!.splitDate();
-      if (messageMap.containsKey(date)) {
-        messageMap[date]!.add(message);
-      } else {
-        dateList.add(date);
-        messageMap[date] = [message];
-      }
+  Map<String, List<ChatMessage>> messageMap = {};
+  for (ChatMessage message in messages) {
+    String date = message.createdAt!.splitDate();
+    if (messageMap.containsKey(date)) {
+      messageMap[date]!.add(message);
+    } else {
+      dateList.add(date);
+      messageMap[date] = [message];
     }
   }
+  return messageMap;
+}
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController controller = TextEditingController();
@@ -114,6 +127,36 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Widget showImageDialog(BuildContext context) {
+    File? image;
+    return SimpleDialog(
+      title: const Text('Select Image'),
+      children: [
+        SimpleDialogOption(
+          onPressed: () async {
+            image = await ImagePick.pickImage(source: ImageSource.camera);
+            if (image != null) {
+              Navigator.pop(context,image);
+            }
+            setState(() {});
+          },
+          child: const Text('Camera'),
+        ),
+        SimpleDialogOption(
+          onPressed: () async {
+            image =
+                await ImagePick.pickImage(source: ImageSource.gallery);
+            if (image != null) {
+              Navigator.pop(context,image);
+            }
+            setState(() {});
+          },
+          child: const Text('Gallery'),
+        ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -124,14 +167,17 @@ class _ChatScreenState extends State<ChatScreen> {
   initToken() async {
     token = await SharedUtils.getToken();
     stompClient.activate();
+    chatScreen = true;
   }
 
   @override
   void dispose() {
     super.dispose();
     chatStream.close();
+    dateList.clear();
     stompClient.deactivate();
     destination = 'get-messages';
+    chatScreen = false;
   }
 
   @override
@@ -167,9 +213,29 @@ class _ChatScreenState extends State<ChatScreen> {
                     const Center(
                       child: Text('Error'),
                     )
-                  else if (!snapshot.hasData)
-                    const Center(
-                      child: Text('No messages'),
+                  else if (snapshot.data == null || snapshot.data!.isEmpty)
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: gray200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: PaddingManager.p10,
+                            horizontal: PaddingManager.paddingMedium,
+                          ),
+                          child: Text(
+                            'No messages',
+                            style: TextStyle(
+                              color: gray800,
+                              fontSize: FontSizeManager.f12,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                            ),
+                          ),
+                        ),
+                      ),
                     )
                   else if (snapshot.hasData) ...[
                     for (String date in dateList) ...[
@@ -190,14 +256,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             child: Text(
                               date == DateTime.now().toString().splitDate()
-                            ? 'Today'
-                            : date ==
-                                    DateTime.now()
-                                        .subtract(const Duration(days: 1))
-                                        .toString()
-                                        .splitDate()
-                                ? 'Yesterday'
-                                : date,
+                                  ? 'Today'
+                                  : date ==
+                                          DateTime.now()
+                                              .subtract(const Duration(days: 1))
+                                              .toString()
+                                              .splitDate()
+                                      ? 'Yesterday'
+                                      : date,
                               style: TextStyle(
                                 color: gray800,
                                 fontSize: FontSizeManager.f12,
@@ -209,12 +275,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       for (ChatMessage chat in snapshot.data![date]!) ...[
-                      ChatBubble(
-                        isMe: chat.senderId == currentUser,
-                        text: chat.message ?? '',
-                        time: chat.createdAt!.splitTime(),
-                      ),
-                    ],
+                        ChatBubble(
+                          isMe: chat.senderId == currentUser,
+                          text: chat.message ?? '',
+                          time: chat.createdAt!.splitTime(),
+                        ),
+                      ],
                     ],
                   ],
                 ],
@@ -234,9 +300,56 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
+              GestureDetector(
+                onTap: () async {
+                    showDialog(
+                            context: context,
+                            builder: (context) => showImageDialog(context),
+                          ).then((val) async {
+                                 print('here before');
+                                try {
+                                  if (val != null) {
+                                    print(val.path);
+                                    final file = File(val!.path);
+                                    final List<int> imageBytes = await file.readAsBytes();
+
+                                    // Encode image file as base64
+                                    String base64Image = base64Encode(imageBytes);
+
+                                    stompClient.send(
+                                      destination: '/app/message',
+                                      body: json.encode({
+                                        'token': token,
+                                        'roomId': chatRoomId,
+                                        'message': "file",
+                                        'file': base64Image, // Send the base64 encoded image
+                                        'messageType': 'IMAGE',
+                                      }),
+                                      headers: {
+                                        'Authorization': 'Bearer $token',
+                                        'Connection': 'Upgrade',
+                                        'Upgrade': 'websocket',
+                                        'content-type': 'application/json', // Change content type to application/json
+                                      },
+                                    );
+                                    _scrollController.animateTo(
+                                      0.0,
+                                      curve: Curves.easeOut,
+                                      duration: const Duration(milliseconds: 300),
+                                    );
+                                    destination = chatRoomId;
+                                  }
+                                } catch (e) {
+                                  print(e.toString());
+                                  Utils.showSnackBar(context, e.toString());
+                                }
+
+                          });
+                },
+                child:const Icon(
                 Icons.attach_file,
                 color: gray800,
+              ),
               ),
               const SizedBox(
                 width: WidthManager.w5,
@@ -312,6 +425,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         'token': token,
                         'roomId': chatRoomId,
                         'message': controller.text,
+                        'messageType' : 'TEXT',
                       }),
                       headers: {
                         'Authorization': 'Bearer $token',

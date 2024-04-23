@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
-import 'package:user_mobile_app/widgets/field_with_suggestions.dart';
+// import 'package:user_mobile_app/widgets/field_with_suggestions.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget({super.key});
@@ -67,6 +67,7 @@ class _MapWidgetState extends State<MapWidget> {
       print(e);
     }
   }
+  
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -111,8 +112,10 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (pop) async {
+        if (pop) false;
         Navigator.pop(context, selectedLatlng);
         return Future.value(false);
       },
@@ -143,33 +146,33 @@ class _MapWidgetState extends State<MapWidget> {
                 _controller.complete(controller);
               },
             ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                margin: const EdgeInsets.only(
-                  top: 50,
-                  left: 20,
-                  right: 20,
-                ),
-                child: SuggestionField(
-                  title: 'Search Location',
-                  onSuggestionSelected: (text) {
-                    setState(() {
-                      searchController.text = text.toString();
-                    });
-                    fetchCoordinates(text.toString());
-                  },
-                  suggestionsCallback: (change) async {
-                    return await fetchPlaceByText(change);
-                  },
-                  itemBuilder: (context, itemData) {
-                    return ListTile(
-                      title: Text(itemData.toString()),
-                    );
-                  },
-                ),
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.topCenter,
+            //   child: Container(
+            //     margin: const EdgeInsets.only(
+            //       top: 50,
+            //       left: 20,
+            //       right: 20,
+            //     ),
+            //     child: SuggestionField(
+            //       title: 'Search Location',
+            //       onSuggestionSelected: (text) {
+            //         setState(() {
+            //           searchController.text = text.toString();
+            //         });
+            //         fetchCoordinates(text.toString());
+            //       },
+            //       suggestionsCallback: (change) async {
+            //         return await fetchPlaceByText(change);
+            //       },
+            //       itemBuilder: (context, itemData) {
+            //         return ListTile(
+            //           title: Text(itemData.toString()),
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

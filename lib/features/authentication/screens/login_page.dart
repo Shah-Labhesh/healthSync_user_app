@@ -279,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                                       spreadRadius: 2,
                                       blurRadius: 6,
                                       offset: const Offset(
-                                          0, 0.5), // changes position of shadow
+                                          0, 0.5),
                                     ),
                                   ],
                                 ),
@@ -288,19 +288,6 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            // Container(
-                            //   height: HeightManager.h105,
-                            //   width: WidthManager.w105,
-                            //   decoration: BoxDecoration(
-                            //     image: const DecorationImage(
-                            //       image: AssetImage(
-                            //         twitterIcon,
-                            //       ),
-                            //       fit: BoxFit.cover,
-                            //     ),
-                            //     borderRadius: BorderRadius.circular(5),
-                            //   ),
-                            // )
                           ],
                         )
                       ],

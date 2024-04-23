@@ -8,6 +8,7 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/chats/bloc/chat_room_bloc/chat_room_bloc.dart';
 import 'package:user_mobile_app/features/chats/data/model/chat_room.dart';
 import 'package:user_mobile_app/features/chats/widgets/chat_room_tile.dart';
+import 'package:user_mobile_app/features/chats/widgets/no_chatroom_widget.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/widgets/appbar.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -103,9 +104,7 @@ class _MyChatRoomScreenState extends State<MyChatRoomScreen> {
                           ),
                         )
                       else if (snapshot.data == null || snapshot.data!.isEmpty)
-                        const Center(
-                          child: Text('No chat rooms available'),
-                        )
+                        const NoChatRoomWidget()
                       else if (snapshot.hasData)
                         for (ChatRoom e in snapshot.data!)
                           ChatRoomTileWidget(

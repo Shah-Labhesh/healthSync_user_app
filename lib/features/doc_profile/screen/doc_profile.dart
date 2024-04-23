@@ -294,7 +294,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (qualification.isEmpty)
+                                  if (qualification.isEmpty && state is DocQualificationLoaded)
                                     Text(
                                       'No qualification added yet',
                                       style: TextStyle(
@@ -309,6 +309,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                     for (DocQualification qualification
                                         in qualification)
                                       Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           const Icon(
                                             Icons.circle,
@@ -317,7 +318,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                           ),
                                           const SizedBox(
                                               width: WidthManager.w10),
-                                          Text(
+                                          Flexible(
+                                            child: Text(
                                             '${qualification.title}, ${qualification.institute}',
                                             style: TextStyle(
                                               fontSize: FontSizeManager.f16,
@@ -328,6 +330,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                                   GoogleFonts.montserrat()
                                                       .fontFamily,
                                             ),
+                                          ),
                                           ),
                                         ],
                                       ),

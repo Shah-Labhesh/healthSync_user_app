@@ -97,11 +97,19 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
             );
           }
           if (state is DocHomeError) {
-            return Scaffold(
+            return GestureDetector(
+              onTap: () async {
+              if (Utils.checkInternetConnection(context)) {
+                context.read<DocHomeBloc>().add(GetDocHome());
+              }
+            },
+              child:Scaffold(
               body: Center(
                 child: Text(state.message),
               ),
-            );
+            ),
+            )
+            ;
           }
           if (state is DocHomeLoaded) {
             appointments = state.appointments;

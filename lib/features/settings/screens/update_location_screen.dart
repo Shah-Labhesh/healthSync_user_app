@@ -13,7 +13,7 @@ import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 import 'package:user_mobile_app/widgets/custom_rounded_button.dart';
-import 'package:user_mobile_app/widgets/field_with_suggestions.dart';
+// import 'package:user_mobile_app/widgets/field_with_suggestions.dart';
 
 class UpdateLocationScreen extends StatefulWidget {
   const UpdateLocationScreen({super.key});
@@ -114,8 +114,10 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (pop) async {
+        if (pop) false;
         Navigator.pop(context, selectedLatlng);
         return Future.value(false);
       },
@@ -150,33 +152,33 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
                 _controller.complete(controller);
               },
             ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                margin: const EdgeInsets.only(
-                  top: PaddingManager.paddingMedium2,
-                  left: PaddingManager.paddingMedium2,
-                  right: PaddingManager.paddingMedium2,
-                ),
-                child: SuggestionField(
-                  title: 'Search Location',
-                  onSuggestionSelected: (text) {
-                    setState(() {
-                      searchController.text = text.toString();
-                    });
-                    fetchCoordinates(text.toString());
-                  },
-                  suggestionsCallback: (change) async {
-                    return await fetchPlaceByText(change);
-                  },
-                  itemBuilder: (context, itemData) {
-                    return ListTile(
-                      title: Text(itemData.toString()),
-                    );
-                  },
-                ),
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.topCenter,
+            //   child: Container(
+            //     margin: const EdgeInsets.only(
+            //       top: PaddingManager.paddingMedium2,
+            //       left: PaddingManager.paddingMedium2,
+            //       right: PaddingManager.paddingMedium2,
+            //     ),
+            //     child: SuggestionField(
+            //       title: 'Search Location',
+            //       onSuggestionSelected: (text) {
+            //         setState(() {
+            //           searchController.text = text.toString();
+            //         });
+            //         fetchCoordinates(text.toString());
+            //       },
+            //       suggestionsCallback: (change) async {
+            //         return await fetchPlaceByText(change);
+            //       },
+            //       itemBuilder: (context, itemData) {
+            //         return ListTile(
+            //           title: Text(itemData.toString()),
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -186,7 +188,7 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
                 ),
                 child: CustomButtom(
                   title: 'Update',
-                  onPressed: () async {
+                  onPressed: ()  {
                     if (selectedLatlng == null) {
                       Utils.showSnackBar(context, 'Please select a location',
                           isSuccess: false);

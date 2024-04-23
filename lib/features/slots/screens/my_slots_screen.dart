@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/string_extension.dart';
 import 'package:user_mobile_app/Utils/utils.dart';
 import 'package:user_mobile_app/constants/app_color.dart';
@@ -138,68 +139,75 @@ class _MySlotsScreenState extends State<MySlotsScreen> {
               onRefresh: () async {
                 fetchData();
               },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: WidthManager.w20,
-                  vertical: PaddingManager.paddingMedium,
+              child: LoadingOverlay(
+                isLoading: state is AddingSlots || state is DeleteSlotsLoading || state is UpdateSlotsLoading,
+                progressIndicator: LoadingAnimationWidget.threeArchedCircle(
+                  color: blue900,
+                  size: 60,
                 ),
-                child: Column(
-                  children: [
-                    for (Slots slot in slots)
-                      SlotsTile(
-                        slots: slot,
-                        onEditTap: () {
-                          DateTime newDate;
-                          DateTime date = DateTime.parse(slot.slotDateTime!);
-                          TimeOfDay time =
-                              TimeOfDay(hour: date.hour, minute: date.minute);
-                          showDatePicker(
-                              context: context,
-                              initialDate: date,
-                              firstDate: date,
-                              lastDate: DateTime.now().add(
-                                const Duration(days: 30),
-                              )).then((value) {
-                            if (value == null) {
-                              Utils.showSnackBar(
-                                  context, "Please select date and time",
-                                  isSuccess: false);
-                              return;
-                            } else {
-                              newDate = value;
-                            }
-                            showTimePicker(context: context, initialTime: time)
-                                .then((t) {
-                              if (t == null) {
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: WidthManager.w20,
+                    vertical: PaddingManager.paddingMedium,
+                  ),
+                  child: Column(
+                    children: [
+                      for (Slots slot in slots)
+                        SlotsTile(
+                          slots: slot,
+                          onEditTap: () {
+                            DateTime newDate;
+                            DateTime date = DateTime.parse(slot.slotDateTime!);
+                            TimeOfDay time =
+                                TimeOfDay(hour: date.hour, minute: date.minute);
+                            showDatePicker(
+                                context: context,
+                                initialDate: date,
+                                firstDate: date,
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 30),
+                                )).then((value) {
+                              if (value == null) {
                                 Utils.showSnackBar(
                                     context, "Please select date and time",
                                     isSuccess: false);
                                 return;
+                              } else {
+                                newDate = value;
                               }
-
-                              if (slot.slotId == null) {
-                                Utils.showSnackBar(context, "Slot Id is null",
-                                    isSuccess: false);
-                                return;
-                              }
-                              if (Utils.checkInternetConnection(context)) {
-                                context.read<SlotsBloc>().add(
-                                      UpdateSlot(
-                                        slotId: slot.slotId!,
-                                        data: {
-                                          "slotDateTime":
-                                              convertPickedDateTimeToISO8601(
-                                                  newDate, t)
-                                        },
-                                      ),
-                                    );
-                              }
+                              showTimePicker(context: context, initialTime: time)
+                                  .then((t) {
+                                if (t == null) {
+                                  Utils.showSnackBar(
+                                      context, "Please select date and time",
+                                      isSuccess: false);
+                                  return;
+                                }
+                
+                                if (slot.slotId == null) {
+                                  Utils.showSnackBar(context, "Slot Id is null",
+                                      isSuccess: false);
+                                  return;
+                                }
+                                if (Utils.checkInternetConnection(context)) {
+                                  context.read<SlotsBloc>().add(
+                                        UpdateSlot(
+                                          slotId: slot.slotId!,
+                                          data: {
+                                            "slotDateTime":
+                                                convertPickedDateTimeToISO8601(
+                                                    newDate, t)
+                                          },
+                                        ),
+                                      );
+                                }
+                              });
                             });
-                          });
-                        },
-                      ),
-                  ],
+                          },
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

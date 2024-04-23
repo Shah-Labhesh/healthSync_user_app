@@ -7,6 +7,7 @@ import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/patients/bloc/patient_bloc/patient_bloc.dart';
 import 'package:user_mobile_app/features/patients/bloc/patient_bloc/patient_event.dart';
 import 'package:user_mobile_app/features/patients/bloc/patient_bloc/patient_state.dart';
+import 'package:user_mobile_app/features/patients/widgets/no_patient_widget.dart';
 import 'package:user_mobile_app/features/patients/widgets/patient_tile_widget.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
@@ -63,12 +64,9 @@ class _MyPatientsScreenState extends State<MyPatientsScreen> {
                 ),
                 child: Column(
                   children: [
-                    // search bar
-                    // list of patients
+                    
                     if (patients.isEmpty)
-                      const Center(
-                        child: Text('No Patients'),
-                      )
+                      const NoPatientWidget()
                     else
                     for (var patient in patients)
                       PatientTileWidget(patient: patient)

@@ -25,7 +25,8 @@ class EmailVerificationScreen extends StatefulWidget {
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
-  // timer for resend otp
+ 
+ 
   Timer? _timer;
 
   int _start = 59;

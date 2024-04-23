@@ -22,8 +22,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (response.statusCode == 201) {
         final firebaseResponse = await AuthRepo().postFirebaseToken(
             token: response.data["token"],
-            firebaseToken: await FirebaseService.requestPermission());
-        if (firebaseResponse.statusCode == 201) {
+            firebaseToken: await FirebaseService.getToken());
+        if (firebaseResponse.statusCode == 201 && response.data["role"] != "ADMIN") {
           emit(LoginSucess(data: {'role': response.data["role"]}));
           SharedUtils.setToken(response.data["token"]);
           SharedUtils.setRole(response.data["role"]);
@@ -88,7 +88,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (response.statusCode == 201) {
         final firebaseResponse = await AuthRepo().postFirebaseToken(
             token: response.data["token"],
-            firebaseToken: await FirebaseService.requestPermission());
+            firebaseToken: await FirebaseService.getToken());
         if (firebaseResponse.statusCode == 201) {
           emit(LoginSucess(data: {'role': response.data["role"]}));
           SharedUtils.setToken(response.data["token"]);
@@ -130,10 +130,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
 class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
   UserRegisterBloc() : super(UserRegisterInitial()) {
-    on<UserRegisterEvent>((event, emit) => login(emit, event));
+    on<UserRegisterEvent>((event, emit) => register(emit, event));
   }
 
-  login(Emitter<UserRegisterState> emit, UserRegisterEvent event) async {
+  register(Emitter<UserRegisterState> emit, UserRegisterEvent event) async {
     emit(UserRegisterLoading());
     Response response;
     try {
@@ -146,6 +146,7 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
         }));
       }
     } catch (e) {
+       print(e);
       if (e is DioException) {
         if (e.response != null) {
           final statusCode = e.response!.statusCode;
@@ -167,6 +168,7 @@ class UserRegisterBloc extends Bloc<RegisterEvent, UserRegisterState> {
               message: 'Connection timed out. Please try again later'));
         }
       } else {
+        print(e);
         emit(RegistrationFailed(
             message: 'Connection timed out. Please try again later'));
       }
@@ -329,7 +331,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
       if (response.statusCode == 201) {
         emit(PasswordInitiated(data: {
           "message":
-              "Email Verification Otp sent. Please check your email for the verification code."
+              "Password reset Otp sent. Please check your email for the verification code."
         }));
       }
     } catch (e) {
@@ -372,7 +374,7 @@ class PasswordResetBloc extends Bloc<ForgotPasswordEvent, PasswordResetState> {
       if (response.statusCode == 201) {
         emit(PasswordResetOtpResent(data: {
           "message":
-              "Email Verification Otp sent. Please check your email for the verification code."
+              "Password reset Otp sent. Please check your email for the verification code."
         }));
       }
     } catch (e) {

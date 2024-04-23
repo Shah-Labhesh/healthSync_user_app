@@ -1,11 +1,18 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:user_mobile_app/main.dart';
 
 class FirebaseService {
-  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static Future<String> requestPermission() async {
+  static Future<void> requestPermissionAndInitMessaging() async {
+    await requestPermission();
+    _initMessaging();
+    _initLocalNotification();
+  }
+
+  static Future<void> requestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
@@ -17,16 +24,11 @@ class FirebaseService {
       sound: true,
     );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
       print('User granted permission');
-      return getToken();
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
-      return getToken();
     } else {
       print('User declined or has not accepted permission');
-      return '';
     }
   }
 
@@ -36,45 +38,66 @@ class FirebaseService {
     return token;
   }
 
-  static void initMessaging() {
-    onMessage();
-    onMessageOpenedApp();
-    onBackgroundMessage();
-    onInitialMessage();
+  static void _initMessaging() {
+    _onMessage();
+    _onMessageOpenedApp();
+    _onBackgroundMessage();
+    _onInitialMessage();
   }
 
-  static void onMessage() {
+  static void _onMessage() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
-        showNotification(message.notification?.title ?? '',
-            message.notification?.body ?? '', '');
+        print("title of message: ${message.notification!.title}");
+        print("chat screen value : $chatScreen");
+        if (message.notification?.title == "New Message" && chatScreen){
+           print('Message also contained a notification: 3232');
+          return;
+        }else{
+           print('Message also contained a notification: 3232');
+
+        _showNotification(
+          message.notification?.title ?? '',
+          message.notification?.body ?? '',
+        );
+        }
       }
     });
   }
 
-  static void onMessageOpenedApp() {
+  static void _onMessageOpenedApp() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
       print('Message data: ${message.data}');
     });
   }
 
-  static void onBackgroundMessage() {
+  static void _onBackgroundMessage() {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
-    showNotification(message.notification?.title ?? '',
-        message.notification?.body ?? '', '');
+    print("title of message: ${message.notification!.title}");
+    print("chat screen value : $chatScreen");
+
+    if (message.notification?.title == "New Message" && chatScreen){
+      return;
+    }else{
+
+    _showNotification(
+      message.notification?.title ?? '',
+      message.notification?.body ?? '',
+    );
+    }
     print('Message data: ${message.data}');
   }
 
-  static void onInitialMessage() {
+  static void _onInitialMessage() {
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         print('A new onMessageOpenedApp event was published!');
@@ -83,31 +106,19 @@ class FirebaseService {
     });
   }
 
-  static Future<void> initLocalNotification() async {
+  static Future<void> _initLocalNotification() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveBackgroundNotificationResponse: (details) {
-        print('onDidReceiveBackgroundNotification: $details');
-        
-      },
-      onDidReceiveNotificationResponse: (details) {
-        print('onDidReceiveNotification: $details');
-      },
     );
   }
 
-  static Future<void> selectNotification(String? payload) async {
-    if (payload != null) {
-      print('Notification payload: $payload');
-    }
-  }
 
-  static Future<void> showNotification(
-      String title, String body, String payload) async {
+  static Future<void> _showNotification(
+      String title, String body) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       '32323e2',
@@ -117,18 +128,17 @@ class FirebaseService {
       priority: Priority.high,
       showWhen: false,
     );
-   try {
+    try {
       const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
-      payload: payload,
-    );
-   } catch (e) {
-     print(e);
-   }
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        title,
+        body,
+        platformChannelSpecifics,
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 }

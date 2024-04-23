@@ -1,6 +1,7 @@
 import 'package:user_mobile_app/.env.dart';
 
 String BASE_URL = AppEnvironment.androidBaseUrl;
+String SOCKET_URL = "ws://10.0.2.2:8086/ws";
 
 class AppUrls {
   // authenticaion

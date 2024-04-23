@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:user_mobile_app/Utils/shared_preferences_utils.dart';
@@ -247,6 +248,11 @@ class DoctorDrawer extends StatelessWidget {
                             context: context,
                             builder: (context) =>
                                 Utils().logoutDialog(context, () {
+                                  GoogleSignInAccount? googleSignInAccount =
+                                GoogleSignIn().currentUser;
+                            if (googleSignInAccount != null) {
+                              GoogleSignIn().disconnect();
+                            }
                               bloc.add(LogoutEvent());
                             }),
                           );

@@ -363,19 +363,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                 googleIcon,
                               ),
                             ),
-                            // Container(
-                            //   height: HeightManager.h105,
-                            //   width: WidthManager.w105,
-                            //   decoration: BoxDecoration(
-                            //     image: const DecorationImage(
-                            //       image: AssetImage(
-                            //         twitterIcon,
-                            //       ),
-                            //       fit: BoxFit.cover,
-                            //     ),
-                            //     borderRadius: BorderRadius.circular(5),
-                            //   ),
-                            // )
                           ],
                         ),
                         const SizedBox(

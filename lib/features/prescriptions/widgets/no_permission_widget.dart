@@ -5,25 +5,27 @@ import 'package:user_mobile_app/constants/app_images.dart';
 import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 
-class NoAppointmentWidget extends StatelessWidget {
-  const NoAppointmentWidget({super.key});
+class NoPermissionWidget extends StatelessWidget {
+  const NoPermissionWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.1,
-        vertical: MediaQuery.of(context).size.width * 0.2
+        vertical: MediaQuery.of(context).size.width * 0.3
       ),
       child: Center(
         child: Column(
           children: [
             Image.asset(
-              AppImages.noAppointmentImage,
+              AppImages.noRequestImage,
+              height: HeightManager.h200,
+              width: WidthManager.w200,
             ),
             const SizedBox(height: HeightManager.h50),
             Text(
-              'No Appointments',
+              'No Permission Requests',
               style: TextStyle(
                 fontSize: FontSizeManager.f22,
                 fontWeight: FontWeight.bold,
@@ -33,7 +35,7 @@ class NoAppointmentWidget extends StatelessWidget {
             ),
             const SizedBox(height: HeightManager.h20),
             Text(
-              'Your schedule is clear; there are no appointments scheduled',
+              'No permission requests pending your approval.',
               style: TextStyle(
                 fontSize: FontSizeManager.f14,
                 fontWeight: FontWeightManager.regular,

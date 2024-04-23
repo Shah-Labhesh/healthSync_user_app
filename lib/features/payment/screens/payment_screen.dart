@@ -14,6 +14,7 @@ import 'package:user_mobile_app/features/payment/bloc/payment_bloc/payment_bloc.
 import 'package:user_mobile_app/features/payment/bloc/payment_bloc/payment_event.dart';
 import 'package:user_mobile_app/features/payment/bloc/payment_bloc/payment_state.dart';
 import 'package:user_mobile_app/features/payment/data/model/payment.dart';
+import 'package:user_mobile_app/features/payment/widgets/no_transaction_widget.dart';
 import 'package:user_mobile_app/features/payment/widgets/sort_container.dart';
 import 'package:user_mobile_app/features/payment/widgets/transaction_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -313,9 +314,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     ),
                     const SizedBox(height: HeightManager.h20),
                     if (payments.isEmpty)
-                      const Center(
-                        child: Text('No transactions available'),
-                      )
+                      const NoTransactionWidget()
                     else
                       for (var item in payments)
                         TransactionTile(

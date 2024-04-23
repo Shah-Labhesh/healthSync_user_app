@@ -13,13 +13,13 @@ import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/authentication/data/model/specialities.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
-import 'package:user_mobile_app/features/home/widgets/no_doctor_widget.dart';
 import 'package:user_mobile_app/features/notification/bloc/notification_bloc/notification_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_bloc.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_event.dart';
 import 'package:user_mobile_app/features/search_doctors/bloc/search_bloc/search_state.dart';
 import 'package:user_mobile_app/features/search_doctors/data/model/search_param.dart';
 import 'package:user_mobile_app/features/search_doctors/widgets/filter_container.dart';
+import 'package:user_mobile_app/features/search_doctors/widgets/no_doctor_widget.dart';
 import 'package:user_mobile_app/widgets/appbar.dart';
 import 'package:user_mobile_app/widgets/custom_textfield.dart';
 

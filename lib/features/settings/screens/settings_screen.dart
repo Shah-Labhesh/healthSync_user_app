@@ -262,7 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: TileWithText(
                         text: 'Address',
                         isSwitch: false,
-                        value: args.address ?? '-',
+                        value: '',
                       ),
                     ),
                     if (isFeeEdit)

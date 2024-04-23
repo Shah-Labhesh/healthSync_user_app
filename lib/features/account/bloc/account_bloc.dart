@@ -58,7 +58,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   void logOut(LogoutEvent event, Emitter<AccountState> emit) async {
     emit(LoggingOut());
     try {
-      final deviceToken = await FirebaseService.requestPermission();
+      final deviceToken = await FirebaseService.getToken();
       Response response = await AccountRepo().logout(deviceToken: deviceToken);
       if (response.statusCode == 200) {
         emit(LoggedOut());

@@ -8,6 +8,7 @@ import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_bloc.dart';
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_event.dart';
 import 'package:user_mobile_app/features/favorite/bloc/favorite_bloc/favorite_state.dart';
+import 'package:user_mobile_app/features/favorite/widgets/no_favorites_widget.dart';
 import 'package:user_mobile_app/features/home/widgets/doctor_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 
@@ -89,6 +90,9 @@ class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
+                    if (doctors.isEmpty)
+                      const NoFavoriteWidget()
+                    else
                     for (User doctor in doctors)
                       DoctorTile(
                         doctor: doctor,

@@ -11,7 +11,6 @@ import 'package:user_mobile_app/constants/font_value.dart';
 import 'package:user_mobile_app/constants/value_manager.dart';
 import 'package:user_mobile_app/features/account/data/model/user.dart';
 import 'package:user_mobile_app/features/appointment/data/model/appointment.dart';
-import 'package:user_mobile_app/features/appointment/widgets/no_appointment_widget.dart';
 import 'package:user_mobile_app/features/authentication/data/model/specialities.dart';
 import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_bloc.dart';
 import 'package:user_mobile_app/features/home/bloc/user_home_bloc/user_home_event.dart';
@@ -56,7 +55,7 @@ class _HomeContentState extends State<HomeContent> {
               element.favorite = !element.favorite!;
             }
           }
-           context.read<UserHomeBloc>().add(FetchUserHomeEvent());
+          context.read<UserHomeBloc>().add(FetchUserHomeEvent());
         }
         if (state is UserHomeLoaded) {
           name = state.user.name!;
@@ -274,7 +273,28 @@ class _HomeContentState extends State<HomeContent> {
                     if (appointment.isNotEmpty)
                       AppointmentWidget(appointment: appointment[0])
                     else
-                      const NoAppointmentWidget(),
+                      Center(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              AppImages.noAppointmentImage,
+                              height: HeightManager.h150,
+                            ),
+                            const SizedBox(height: HeightManager.h8),
+                            
+                            Text(
+                              'Your schedule is clear; there are no appointments scheduled',
+                              style: TextStyle(
+                                fontSize: FontSizeManager.f14,
+                                fontWeight: FontWeightManager.regular,
+                                fontFamily: GoogleFonts.inter().fontFamily,
+                                color: gray500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
 
                     TileBarWidget(
                       title: 'NearBy Doctors',

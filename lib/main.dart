@@ -87,9 +87,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseService.initMessaging();
-  FirebaseService.initLocalNotification();
-  AppEnvironment.setupEnv(Environment.dev);
+  FirebaseService.requestPermissionAndInitMessaging();
+  AppEnvironment.setupEnv(Environment.local);
 
   runApp(const MyApp());
 }
@@ -101,6 +100,8 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
+bool chatScreen = false;
 
 class _MyAppState extends State<MyApp> {
   @override

@@ -19,4 +19,7 @@ class AppImages{
   static const String noMessageImage = 'assets/images/no_message_image.png';
   static const String noPaymentImage = 'assets/images/no_payment_image.png';
   static const String noNotificationImage = 'assets/images/no_notification_image.png';
+  static const String noPatientImage = 'assets/images/no_patient_image.png';
+  static const String noRequestImage = 'assets/images/no_request_image.png';
+  static const String noFavoriteImage = 'assets/images/no_favorites_image.png';
 }

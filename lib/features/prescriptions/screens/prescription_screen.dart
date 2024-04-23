@@ -13,6 +13,7 @@ import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/pr
 import 'package:user_mobile_app/features/prescriptions/bloc/prescription_bloc/prescription_state.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/permission_prescription.dart';
 import 'package:user_mobile_app/features/prescriptions/data/model/prescription.dart';
+import 'package:user_mobile_app/features/prescriptions/widgets/no_permission_widget.dart';
 import 'package:user_mobile_app/features/prescriptions/widgets/no_prescription_widget.dart';
 import 'package:user_mobile_app/features/prescriptions/widgets/prescription_tile.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
@@ -199,10 +200,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                         child: Text(state.message),
                       )
                     else if (state is RequestFetched)
-                      for (PrescriptionPermission permission
-                          in permissions) ...[
-                        PrescriptionPermissionWidget(permission: permission)
-                      ]
+                      if (permissions.isNotEmpty)
+                        for (PrescriptionPermission permission
+                            in permissions) ...[
+                          PrescriptionPermissionWidget(permission: permission)
+                        ]
+                      else
+                        const NoPermissionWidget()
                     else
                       const Center(
                         child: Text('No permission request found'),
@@ -376,7 +380,7 @@ class PrescriptionPermissionWidget extends StatelessWidget {
                   ])
                 else
                   Text(
-                    "Status ${ permission.expired! ? 'Expired' :  permission.accepted! ? 'Accepted' : 'Rejected'}",
+                    "Status ${permission.expired! ? 'Expired' : permission.accepted! ? 'Accepted' : 'Rejected'}",
                     style: TextStyle(
                       fontSize: FontSizeManager.f14,
                       fontWeight: FontWeightManager.semiBold,

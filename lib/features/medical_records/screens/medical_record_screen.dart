@@ -16,6 +16,9 @@ import 'package:user_mobile_app/features/medical_records/data/model/record_reque
 import 'package:user_mobile_app/features/medical_records/widgets/permission_widget.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/record_tile.dart';
 import 'package:user_mobile_app/features/medical_records/widgets/NoMedicalRecord.dart';
+import 'package:user_mobile_app/features/prescriptions/widgets/no_permission_widget.dart';
+import 'package:user_mobile_app/features/preview_screen/image_preview.dart';
+import 'package:user_mobile_app/features/preview_screen/pdf_preview.dart';
 import 'package:user_mobile_app/widgets/custom_appbar.dart';
 import 'package:user_mobile_app/widgets/custom_popup_item.dart';
 
@@ -195,6 +198,39 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                       });
                                     },
                                   ),
+                                  CustomPopupItem(
+                                    title: 'Preview',
+                                    icon: CupertinoIcons.eye_fill,
+                                    onTap: () {
+                                      if (Utils.checkInternetConnection(
+                                              context) ==
+                                          false) {
+                                        return;
+                                      }
+                                      if (record.recordType == 'PDF') {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                          builder: (context) {
+                                            return PDFPreviewScreen(
+                                              pdfPath: record.record!,
+                                              isFromNetwork: true,
+                                            );
+                                          },
+                                        ));
+                                      }
+
+                                      if (record.recordType == 'IMAGE') {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                          builder: (context) {
+                                            return ImagePreviewScreen(
+                                              imageUrl: record.record!,
+                                            );
+                                          },
+                                        ));
+                                      }
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
@@ -220,18 +256,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                       )
                     else if (state is RequestFetched) ...[
                       if (state.requests.isEmpty)
-                        Center(
-                          child: Text(
-                            'No request found',
-                            style: TextStyle(
-                              fontSize: FontSizeManager.f16,
-                              fontWeight: FontWeightManager.semiBold,
-                              color: gray800,
-                              fontFamily: GoogleFonts.montserrat().fontFamily,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        )
+                        NoPermissionWidget()
                       else if (state.requests.isNotEmpty)
                         for (RecordRequest request in state.requests)
                           RecordRequestWidget(request: request)

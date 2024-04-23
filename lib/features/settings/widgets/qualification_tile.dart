@@ -45,7 +45,8 @@ class QualificationTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              Flexible(
+                child:Text(
                 qualification.title ?? '-',
                 style: TextStyle(
                   color: gray800,
@@ -53,6 +54,7 @@ class QualificationTile extends StatelessWidget {
                   fontWeight: FontWeightManager.semiBold,
                   fontFamily: GoogleFonts.lato().fontFamily,
                 ),
+              ),
               ),
               Text(
                 'Pass Out Year',
@@ -69,7 +71,8 @@ class QualificationTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              Flexible(
+                child: Text(
                 qualification.institute ?? '-',
                 style: TextStyle(
                   color: gray400,
@@ -77,6 +80,7 @@ class QualificationTile extends StatelessWidget {
                   fontWeight: FontWeightManager.medium,
                   fontFamily: GoogleFonts.lato().fontFamily,
                 ),
+              ),
               ),
               Text(
                 qualification.passOutYear!.splitDate(),
