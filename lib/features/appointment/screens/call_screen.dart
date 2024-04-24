@@ -34,9 +34,9 @@ class _CallScreenState extends State<CallScreen> {
   Widget build(BuildContext context) {
     return ZegoUIKitPrebuiltCall(
       appID:
-          1498060823, // Fill in the appID that you get from ZEGOCLOUD Admin Console.
+          247742668, // Fill in the appID that you get from ZEGOCLOUD Admin Console.
       appSign:
-          "1a5f7c2f4c255c95156d3f86b4cba674d29af22966031f4650024f82f92247c4", // Fill in the appSign that you get from ZEGOCLOUD Admin Console.
+          "ba737273e729b3fa41f2f29978c0f61e7c4e5a99352ee65538654bb21190ce5c", // Fill in the appSign that you get from ZEGOCLOUD Admin Console.
       events: ZegoUIKitPrebuiltCallEvents(
         onCallEnd: (endReason, state) {
           // You can handle the call end event here.
